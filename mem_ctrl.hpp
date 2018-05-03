@@ -14,12 +14,14 @@ SC_MODULE(mem_ctrl)
   SC_HAS_PROCESS(mem_ctrl);
   mem_ctrl(sc_module_name, int&, const int,
 	   sc_event*, sc_event*, int&, int&, deque<int>&);
+  int num_of_sv();
  protected:
   int sv_num, sv_len, lambda, target;
   sc_event  *e_ready, *e_next;
   deque <int> data;
   //METHODS
   void grab_from_mem();
+  
   
 };
 
