@@ -15,7 +15,7 @@ int sc_main(int argc, char* argv[])
    sc_event e_ready; // mem_ctrl->core
    sc_event e_next;	// core->mem_ctrl
 	deque <double> data;
-	int lambda=1;
+	double lambda=1;
 	int target=1;
 
 	acc_core = new Core("acc_core",sv_num, sv_len, &e_ready, &e_next, lambda, target, data);
@@ -24,6 +24,6 @@ int sc_main(int argc, char* argv[])
 	sc_start(200, sc_core::SC_NS);
 	cout << "Simulation finished at " << sc_time_stamp() << std::endl;
 	delete acc_core;
-	delete mem_ctrl;	
+	//delete mem_ctrl;	
 	return 0;
 }

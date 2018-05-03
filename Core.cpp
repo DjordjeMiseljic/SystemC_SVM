@@ -1,7 +1,7 @@
 #include "Core.hpp"
 
 Core::Core(sc_module_name name, int& sv_num, const int sv_len, 
-			  sc_event *e_ready, sc_event *e_next, int& lambda,
+			  sc_event *e_ready, sc_event *e_next, double& lambda,
 		     int& target, deque<double> &data):sv_num(sv_num),
 															sv_len(sv_len),
 															e_ready(e_ready),
