@@ -13,11 +13,11 @@ int sc_main(int argc, char* argv[])
 	const int sv_len = 784;
    sc_event e_ready; // mem_ctrl->core
    sc_event e_next;	// core->mem_ctrl
-	deque <int> data;
+	deque <double> data;
 	int lambda=1;
 	int tau=1;
 
-	acc_core = new Core("acc_core",sv_num, sv_len, &e_ready, &e_next, &lambda, &tau, &data);
+	acc_core = new Core("acc_core",sv_num, sv_len, &e_ready, &e_next, lambda, tau, data);
 
 	sc_start(200, sc_core::SC_NS);
 	cout << "Simulation finished at " << sc_time_stamp() << std::endl;

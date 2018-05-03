@@ -9,17 +9,19 @@ SC_MODULE(Core)
 {
 public:
 	SC_HAS_PROCESS(Core);
-	Core(sc_module_name name, const int sv_num, const int sv_len, sc_event *e_ready, sc_event *e_next, int* lambda, int* tau, deque<int> *data);
+	Core(sc_module_name name, const int sv_num, const int sv_len, sc_event *e_ready, sc_event *e_next, int& lambda, int& tau, deque<double> &data);
 	void proc();
 protected:
 	sc_event *e_next;
 	sc_event *e_ready;
-	int *lambda;
-	int *tau;
-	deque <int> *data;
+	int lambda;
+	int tau;
+	deque <double> data;
+	deque <double> y;
 	const int sv_num;
 	const int sv_len;
 
+	long double acc;
 };
 
 #endif
