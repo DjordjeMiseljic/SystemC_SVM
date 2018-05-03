@@ -1,8 +1,8 @@
-#ifndef MEM_CTRL_C
-#define MEM_CTRL_C
-#include "mem_ctrl.hpp"
+#ifndef MEMCTRL_C
+#define MEMCTRL_C
+#include "MemCtrl.hpp"
 
-mem_ctrl::mem_ctrl(sc_module_name name, int& sv_num, const int sv_len,
+MemCtrl::MemCtrl(sc_module_name name, int& sv_num, const int sv_len,
 		   sc_event *e_ready, sc_event *e_next, int& lambda,
 		   int& target, deque<int>& data):sc_module(name),
 						  sv_num(sv_num),
@@ -15,7 +15,7 @@ mem_ctrl::mem_ctrl(sc_module_name name, int& sv_num, const int sv_len,
 {
    SC_THREAD(grab_from_mem);
 }
-void mem_ctrl::grab_from_mem()
+void MemCtrl::grab_from_mem()
 {
    while(1)
    {
@@ -33,7 +33,7 @@ void mem_ctrl::grab_from_mem()
    }
   
 }
-int mem_ctrl::num_of_sv()
+int MemCtrl::num_of_sv()
 {
    int count;
    ifstream sv_file("../ML_number_recognition/saved_data/support_vectors/sv0.txt");

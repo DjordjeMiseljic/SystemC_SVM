@@ -1,20 +1,18 @@
 #include "Core.hpp"
-#include <cstdlib>
-#include <ctime>
 
-Core::Core(sc_module_name name, int& sv_num, const int sv_len, sc_event *e_ready, sc_event *e_next, int& lambda, int& target, deque<double> &data):
-	sv_num(sv_num),
-	sv_len(sv_len),
-	e_ready(e_ready),
-	e_next(e_next),
-	lambda(lambda),
-	target(target),
-	data(data)
+Core::Core(sc_module_name name, int& sv_num, const int sv_len, 
+			  sc_event *e_ready, sc_event *e_next, int& lambda,
+		     int& target, deque<double> &data):sv_num(sv_num),
+															sv_len(sv_len),
+															e_ready(e_ready),
+															e_next(e_next),
+															lambda(lambda),
+															target(target),
+															data(data)
 {
 	cout<<"Core constucted"<<endl;
 	SC_THREAD(proc);
 	acc=0;
-
 }
 
 void Core::proc()

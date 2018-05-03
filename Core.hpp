@@ -2,6 +2,8 @@
 #define CORE_H
 #include <systemc>
 #include <deque>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 using namespace sc_core;
 
@@ -14,11 +16,11 @@ public:
 protected:
 	sc_event *e_next;
 	sc_event *e_ready;
-	int lambda;
-	int target;
-	deque <double> data;
+	int &lambda;
+	int &target;
+	deque <double> &data;
 	deque <double> y;
-	const int sv_num;
+	int &sv_num;
 	const int sv_len;
 
 	long double acc;
