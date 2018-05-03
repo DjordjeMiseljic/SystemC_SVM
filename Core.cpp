@@ -2,13 +2,13 @@
 #include <cstdlib>
 #include <ctime>
 
-Core::Core(sc_module_name name, const int sv_num, const int sv_len, sc_event *e_ready, sc_event *e_next, int& lambda, int& tau, deque<double> &data):
+Core::Core(sc_module_name name, int& sv_num, const int sv_len, sc_event *e_ready, sc_event *e_next, int& lambda, int& target, deque<double> &data):
 	sv_num(sv_num),
 	sv_len(sv_len),
 	e_ready(e_ready),
 	e_next(e_next),
 	lambda(lambda),
-	tau(tau),
+	target(target),
 	data(data)
 {
 	cout<<"Core constucted"<<endl;
@@ -37,7 +37,7 @@ void Core::proc()
 			p+=(y[i]*data[i]);
 		p=p*p*p;
 		p=(lambda)*p;
-		p=(tau)*p;
+		p=(target)*p;
 		acc+=p;
 		
 		cout<<"p= "<<p<<"\tacc= "<<acc<<"\t@ "<<sc_time_stamp()<<"\t#"<<name()<<endl;
