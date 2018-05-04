@@ -4,6 +4,7 @@
 #include <deque>
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
 	using namespace std;
 	using namespace sc_core;
 

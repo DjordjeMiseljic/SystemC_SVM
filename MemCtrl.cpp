@@ -54,11 +54,11 @@ void MemCtrl::grab_from_mem()
             data.push_back(stod(y_line));
          }
          getline(r_file, r_line, ' ');
-         res = stof(r_line);
+         res = stod(r_line);
          //cout<<"res is: "<<res<<endl;
 
          getline(b_file,b_line);
-         lambda = stof(b_line);
+         lambda = stod(b_line);
          cout<<"bias is: "<<lambda<<endl;
          
          e_ready->notify(SC_ZERO_TIME);
@@ -77,12 +77,12 @@ void MemCtrl::grab_from_mem()
             {
                getline(sv_file, sv_line, ' ');
                data.push_back(stod(sv_line));
-               //cout<<"stof is: "<<stod(sv_line)<<"\tsv_line is: "<<sv_line<<endl;
+               //cout<<"stod is: "<<stod(sv_line)<<"\tsv_line is: "<<sv_line<<endl;
             }
             //cout<<"data size is: "<<data.size()<<endl;
             getline(l_file, l_line);
             lambda = stod(l_line);
-            //cout<<"lambda is: "<<stof(l_line)<<endl;
+            //cout<<"lambda is: "<<stod(l_line)<<endl;
 
             getline(t_file, t_line);
             target = stod(t_line);
