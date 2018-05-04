@@ -4,16 +4,16 @@
 #include <deque>
 #include <cstdlib>
 #include <ctime>
-using namespace std;
-using namespace sc_core;
+	using namespace std;
+	using namespace sc_core;
 
-SC_MODULE(Core)
-{
-	public:
-		SC_HAS_PROCESS(Core);
-		Core(sc_module_name name, int& sv_num, int sv_len,
-			sc_event *e_ready, sc_event *e_next, double& lambda,
-			int& target, deque<double> &data);
+	SC_MODULE(Core)
+	{
+		public:
+			SC_HAS_PROCESS(Core);
+			Core(sc_module_name name, int& sv_num, int sv_len,
+				sc_event *e_ready, sc_event *e_next, double& lambda,
+				int& target, deque<double> &data);
 		void proc();
 	protected:
 		int &sv_num;
