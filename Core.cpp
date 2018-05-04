@@ -10,40 +10,43 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
                                                           target(target),
                                                           data(data),
                                                           res(res)
-		{
-			cout<<"Core constucted"<<endl;
-			SC_THREAD(proc);
-			acc=0;
-		}
+{
+   cout<<"Core constucted"<<endl;
+   SC_THREAD(proc);
+   acc=0;
+}
 
-	void Core::proc()
-	{
-		int k=sv_num;
-		long double p;
+void Core::proc()
+{
+   
+   long double p;
 
-		e_next->notify(SC_ZERO_TIME);
-		wait(*e_ready);
-		//copy inputs to y 
-		for(int i=0;i<sv_len;i++)
-			y.push_back(data[i]);
+   e_next->notify(SC_ZERO_TIME);
 
-		while(k)
-		{
-			p=0;
-			e_next->notify(SC_ZERO_TIME);
-			wait(*e_ready);
-			for(int i=0; i<sv_len; i++)
-				p+=(y[i]*data[i]);
-			p=p*p*p;
-			p=(lambda)*p;
-			p=(target)*p;
-			acc+=p;
+   wait(*e_ready);
+   int k=sv_num;
+   //copy inputs to y 
+   for(int i=0;i<sv_len;i++)
+      y.push_back(data[i]);
 
-			wait(1,SC_NS);
-			cout<<"p= "<<p<<"\tacc= "<<acc<<"\t@ "<<sc_time_stamp()<<"\t#"<<name()<<endl;
-			k--;
-		}
-		cout<<"classification finished\nacc= "<<acc<<endl;
-		return;	
-	}
+   while(k)
+      {
+         p=0;
+         e_next->notify(SC_ZERO_TIME);
+         wait(*e_ready);
+         for(int i=0; i<sv_len; i++)
+            p+=(y[i]*data[i]);
+         p=p*p*p;
+         p=(lambda)*p;
+         p=(target)*p;
+         acc+=p;
+
+         wait(1,SC_NS);
+         cout<<"p= "<<p<<"\tacc= "<<acc<<"\treal res is: "<<res<<"\t@ "<<sc_time_stamp()<<"\t#"<<name()<<endl;
+         cout<<"k is: "<<k<<endl;
+         k--;
+      }
+   //cout<<"classification finished\nacc= "<<acc<<endl;
+   return;	
+}
 
