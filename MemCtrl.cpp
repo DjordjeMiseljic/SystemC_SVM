@@ -60,6 +60,7 @@ void MemCtrl::grab_from_mem()
          getline(b_file,b_line);
          lambda = stof(b_line);
          cout<<"bias is: "<<lambda<<endl;
+         
          e_ready->notify(SC_ZERO_TIME);
          //cout<<"e_ready sent"<<endl;
          
