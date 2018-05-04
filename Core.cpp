@@ -37,26 +37,34 @@ void Core::proc()
    cout<<endl;
    while(k)
       {
+         cout<<"iteration"<<(sv_num-k)<<endl;
          cout<<"for k= "<<k<<" : "<<endl;
          e_next->notify(SC_ZERO_TIME);
          wait(*e_ready);
-         //cout<<"tmp=";
-         p=1.0;
+         cout<<"dlen="<<data.size()<<"ylen"<<y.size()<<endl;
+         //cout<<"$$$=";
+         p=1;
+         for(int j=0; j<(sv_num-k); j++)
+            data.push_front(0.0);
          for(int i=0; i<sv_len; i++)
          {
+            
+            //if(i%7==0)
+              // cout<<endl;
             tmp=y[i]*data[i];
             p+=tmp;
-            //cout<<" "<<y[i];
+            //cout<<" "<<data[i];
          }
          cout<<"\n   pdot:"<<p;
          
          p=p*p*p;
          cout<<"   pcube:"<<p;
          
-         p=(lambda)*p;
-         cout<<"   plambda:"<<p<<endl;
+         p=lambda*p;
+         cout<<"   pl:"<<p<<endl;
+         cout<<"   lambda:"<<lambda<<endl;
          
-         p=(target)*p;
+         p=target*p;
         
          wait(1,SC_NS);
          
