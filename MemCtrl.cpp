@@ -31,10 +31,10 @@ void MemCtrl::grab_from_mem()
    {
 
       wait(*e_next);
-      cout<<"e_next received"<<endl;
+      //cout<<"e_next received"<<endl;
       data.clear();
       sv_num = num_of_sv();
-      //cout<<"sv_num is: "<<sv_num<<endl;
+      cout<<"sv_num is: "<<sv_num<<endl;
       ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
       ifstream sv_file("../ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
       ifstream l_file("../ML_number_recognition_SVM/saved_data/lambdas/lambdas0.txt");
@@ -51,9 +51,9 @@ void MemCtrl::grab_from_mem()
          }
          getline(r_file, r_line, ' ');
          res = stof(r_line);
-         cout<<"res is: "<<res<<endl;
+         //cout<<"res is: "<<res<<endl;
          e_ready->notify(SC_ZERO_TIME);
-         cout<<"e_ready sent"<<endl;
+         //cout<<"e_ready sent"<<endl;
          
 
          while(i<sv_num)
@@ -62,7 +62,7 @@ void MemCtrl::grab_from_mem()
             //cout<<"sv_num is: "<<sv_num<<endl;
             wait(*e_next);
             //cout<<"i is:"<<i<<endl;
-            cout<<"e_next received in second while"<<endl;
+            //cout<<"e_next received in second while"<<endl;
             data.clear();
             for(int j = 0; j<sv_len; j++)
             {
@@ -70,7 +70,7 @@ void MemCtrl::grab_from_mem()
                data.push_back(stof(sv_line));
                //cout<<"stof is: "<<stod(sv_line)<<"\tsv_line is: "<<sv_line<<endl;
             }
-            cout<<"data size is: "<<data.size()<<endl;
+            //cout<<"data size is: "<<data.size()<<endl;
             getline(l_file, l_line);
             lambda = stof(l_line);
             //cout<<"lambda is: "<<stof(l_line)<<endl;

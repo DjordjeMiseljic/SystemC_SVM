@@ -26,7 +26,7 @@
       double &res;
 		
 		deque <double> y;
-		long double acc;
+		double acc;
 };
 
 #endif
