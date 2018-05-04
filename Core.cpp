@@ -18,35 +18,40 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
 
 void Core::proc()
 {
-   
-   long double p;
+   int k;
+   double p;
 
    e_next->notify(SC_ZERO_TIME);
-
    wait(*e_ready);
-   int k=sv_num;
+   k=sv_num;
    //copy inputs to y 
    for(int i=0;i<sv_len;i++)
       y.push_back(data[i]);
-
    while(k)
       {
-         p=0;
+         cout<<"for k= "<<k<<" : "<<endl;
+         p=1;
          e_next->notify(SC_ZERO_TIME);
          wait(*e_ready);
          for(int i=0; i<sv_len; i++)
             p+=(y[i]*data[i]);
+         cout<<"\tpdot:"<<p;
          p=p*p*p;
+         cout<<"\tpcube"<<p;
          p=(lambda)*p;
+         cout<<"\tplambda"<<p<<endl;
          p=(target)*p;
-         acc+=p;
 
          wait(1,SC_NS);
-         cout<<"p= "<<p<<"\tacc= "<<acc<<"\treal res is: "<<res<<"\t@ "<<sc_time_stamp()<<"\t#"<<name()<<endl;
-         cout<<"k is: "<<k<<endl;
+         
+         printf("   current acc= %1.5e    p= %1.5e    new acc= %1.5e    ",acc,p,(acc+p));
+         cout<<"@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
+         //cout<<"\tcurrent acc= "<<acc<<"\tp= "<<p<<"\t@ "<<sc_time_stamp()<<"\t#"<<name()<<endl;
+         
+         acc+=p;
          k--;
       }
-   //cout<<"classification finished\nacc= "<<acc<<endl;
+   cout<<"classification finished\nres= "<<acc<<"\nreal_res= "<<res<<endl;
    return;	
 }
 
