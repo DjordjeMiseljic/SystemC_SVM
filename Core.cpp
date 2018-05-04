@@ -20,10 +20,12 @@ void Core::proc()
 {
    int k;
    double p;
-
+   double b;
    e_next->notify(SC_ZERO_TIME);
    wait(*e_ready);
    k=sv_num;
+   b=lambda;
+   cout<<"BIAS:"<<b<<endl;
    //copy inputs to y 
    for(int i=0;i<sv_len;i++)
       y.push_back(data[i]);
@@ -35,13 +37,12 @@ void Core::proc()
          wait(*e_ready);
          for(int i=0; i<sv_len; i++)
             p+=(y[i]*data[i]);
-         cout<<"\tpdot:"<<p;
+         cout<<"   pdot:"<<p;
          p=p*p*p;
-         cout<<"\tpcube"<<p;
+         cout<<"   pcube:"<<p;
          p=(lambda)*p;
-         cout<<"\tplambda"<<p<<endl;
+         cout<<"   plambda:"<<p<<endl;
          p=(target)*p;
-
          wait(1,SC_NS);
          
          printf("   current acc= %1.5e    p= %1.5e    new acc= %1.5e    ",acc,p,(acc+p));
@@ -51,6 +52,7 @@ void Core::proc()
          acc+=p;
          k--;
       }
+   acc+=b;
    cout<<"classification finished\nres= "<<acc<<"\nreal_res= "<<res<<endl;
    return;	
 }
