@@ -2,7 +2,7 @@
 #define MEMCTRL_C
 #include "MemCtrl.hpp"
 
-MemCtrl::MemCtrl(sc_module_name name, int& sv_num, const int sv_len,
+MemCtrl::MemCtrl(sc_module_name name, int& sv_num, int sv_len,
 		 sc_event *e_ready, sc_event *e_next, double& lambda,
 		 int& target, deque<double>& data):sc_module(name),
 						   sv_num(sv_num),
@@ -13,8 +13,9 @@ MemCtrl::MemCtrl(sc_module_name name, int& sv_num, const int sv_len,
 						   target(target),
 						   data(data)
 {
-   cout<<"mem_ctrl contructed"<<endl;
+
    SC_THREAD(grab_from_mem);
+   cout<<"Memory controller constructed"<<endl;
 }
 void MemCtrl::grab_from_mem()
 {
@@ -24,6 +25,7 @@ void MemCtrl::grab_from_mem()
    string l_line;
    int i=0;
    while(1)
+
    {
 	 
       wait(*e_next);
@@ -40,7 +42,8 @@ void MemCtrl::grab_from_mem()
       if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open())
       {
 
-	 for(int i=0; i<784; i++)
+
+	 for(int i=0; i<sv_len; i++)
 	 {
 	    getline(y_file, y_line, ' ');
 	    cout<<y_line<<endl;
@@ -52,6 +55,7 @@ void MemCtrl::grab_from_mem()
 	 cout<<data.size()<<endl;
 	 while(i<sv_num)
 	 {
+
 
 	    wait(*e_next);
 	    cout<<"e_next received"<<endl;
@@ -91,6 +95,7 @@ int MemCtrl::num_of_sv()
    string line;
    ifstream sv_file("/home/nikola/Documents/git_folders/ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
    if(sv_file.is_open())
+
    {
       while(getline(sv_file,line))
 	 count++;
