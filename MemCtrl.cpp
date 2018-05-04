@@ -26,9 +26,11 @@ void MemCtrl::grab_from_mem()
    string t_line;
    string l_line;
    string r_line;
+   string b_line;
    int i=0;
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
+   ifstream b_file("../ML_number_recognition_SVM/saved_data/bias/bias.txt");
    while(1)
    {
 
@@ -36,17 +38,14 @@ void MemCtrl::grab_from_mem()
       //cout<<"e_next received"<<endl;
       data.clear();
       sv_num = num_of_sv();
-
+      
       //cout<<"sv_num is: "<<sv_num<<endl;
-      ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-
-
       ifstream sv_file("../ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
       ifstream l_file("../ML_number_recognition_SVM/saved_data/lambdas/lambdas0.txt");
       ifstream t_file("../ML_number_recognition_SVM/saved_data/targets/targets0.txt");
 
 
-      if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open() && r_file.is_open() )
+      if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open() && r_file.is_open() && b_file.is_open() )
       {
          for(int i=0; i<sv_len; i++)
          {
@@ -57,6 +56,10 @@ void MemCtrl::grab_from_mem()
          getline(r_file, r_line, ' ');
          res = stof(r_line);
          //cout<<"res is: "<<res<<endl;
+
+         getline(b_file,b_line);
+         lambda = stof(b_line);
+         cout<<"bias is: "<<lambda<<endl;
          e_ready->notify(SC_ZERO_TIME);
          //cout<<"e_ready sent"<<endl;
          
@@ -102,6 +105,7 @@ void MemCtrl::grab_from_mem()
    }
    r_file.close();
    y_file.close();
+   b_file.close();
 }
 
 int MemCtrl::num_of_sv()
