@@ -14,7 +14,7 @@ SC_MODULE(MemCtrl)
 		SC_HAS_PROCESS(MemCtrl);
 		MemCtrl(sc_module_name name, int& sv_num, int sv_len,
 			sc_event* e_ready, sc_event* e_next, double& lambda, 
-			int& target, deque<double>& data);
+			int& target, deque<double>& data, double& res);
 		int num_of_sv();
 	protected:
 		int &sv_num;
@@ -24,6 +24,7 @@ SC_MODULE(MemCtrl)
 		double &lambda;
 		int &target;
 		deque <double> &data;
+      double &res;
 		//METHODS
 		void grab_from_mem();
 

@@ -3,15 +3,16 @@
 #include "MemCtrl.hpp"
 
 MemCtrl::MemCtrl(sc_module_name name, int& sv_num, int sv_len,
-		 sc_event *e_ready, sc_event *e_next, double& lambda,
-		 int& target, deque<double>& data):sc_module(name),
-						   sv_num(sv_num),
-						   sv_len(sv_len),
-						   e_ready(e_ready),
-						   e_next(e_next),
-						   lambda(lambda),
-						   target(target),
-						   data(data)
+                 sc_event *e_ready, sc_event *e_next, double& lambda,
+                 int& target, deque<double>& data, double& res):sc_module(name),
+                                                                sv_num(sv_num),
+                                                                sv_len(sv_len),
+                                                                e_ready(e_ready),
+                                                                e_next(e_next),
+                                                                lambda(lambda),
+                                                                target(target),
+                                                                data(data),
+                                                                res(res)
 {
 
    SC_THREAD(grab_from_mem);
@@ -43,7 +44,7 @@ void MemCtrl::grab_from_mem()
       for(int i=0; i<sv_len; i++)
       {
          getline(y_file, y_line, ' ');
-         cout<<y_line<<endl;
+         //cout<<y_line<<endl;
          data.push_back(stof(y_line));
       }
       e_ready->notify(SC_ZERO_TIME);
