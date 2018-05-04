@@ -27,6 +27,8 @@ void MemCtrl::grab_from_mem()
    string l_line;
    string r_line;
    int i=0;
+   ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
    while(1)
    {
 
@@ -35,11 +37,11 @@ void MemCtrl::grab_from_mem()
       data.clear();
       sv_num = num_of_sv();
       //cout<<"sv_num is: "<<sv_num<<endl;
-      ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+      
       ifstream sv_file("../ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
       ifstream l_file("../ML_number_recognition_SVM/saved_data/lambdas/lambdas0.txt");
       ifstream t_file("../ML_number_recognition_SVM/saved_data/targets/targets0.txt");
-      ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
+
 
       if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open() && r_file.is_open() )
       {
@@ -47,7 +49,7 @@ void MemCtrl::grab_from_mem()
          {
             getline(y_file, y_line, ' ');
             //cout<<y_line<<endl;
-            data.push_back(stof(y_line));
+            data.push_back(stod(y_line));
          }
          getline(r_file, r_line, ' ');
          res = stof(r_line);
@@ -67,16 +69,16 @@ void MemCtrl::grab_from_mem()
             for(int j = 0; j<sv_len; j++)
             {
                getline(sv_file, sv_line, ' ');
-               data.push_back(stof(sv_line));
+               data.push_back(stod(sv_line));
                //cout<<"stof is: "<<stod(sv_line)<<"\tsv_line is: "<<sv_line<<endl;
             }
             cout<<"data size is: "<<data.size()<<endl;
             getline(l_file, l_line);
-            lambda = stof(l_line);
+            lambda = stod(l_line);
             //cout<<"lambda is: "<<stof(l_line)<<endl;
 
             getline(t_file, t_line);
-            target = stof(t_line);
+            target = stod(t_line);
             //cout<<"target "<<i+1<<" is: "<<target<<endl;
             i++;
 
@@ -88,14 +90,15 @@ void MemCtrl::grab_from_mem()
          cout<<"couldn't open one of the files"<<endl;
          return;
       }
-      y_file.close();
+      
       sv_file.close();
       l_file.close();
       t_file.close();
-      r_file.close();
+
 
    }
-
+   r_file.close();
+   y_file.close();
 }
 
 int MemCtrl::num_of_sv()
