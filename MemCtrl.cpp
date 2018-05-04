@@ -47,12 +47,16 @@ void MemCtrl::grab_from_mem()
 
       if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open() && r_file.is_open() && b_file.is_open() )
       {
+         getline(y_file,y_line);
+         getline(y_file,y_line);
          for(int i=0; i<sv_len; i++)
          {
             getline(y_file, y_line, ' ');
             //cout<<y_line<<endl;
             data.push_back(stod(y_line));
          }
+         getline(r_file, r_line);
+         getline(r_file, r_line);
          getline(r_file, r_line, ' ');
          res = stod(r_line);
          //cout<<"res is: "<<res<<endl;
