@@ -32,10 +32,10 @@ void MemCtrl::grab_from_mem()
    data.clear();
    sv_num = num_of_sv();
    cout<<sv_num<<endl;
-   ifstream y_file("/home/nikola/Documents/git_folders/ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   ifstream sv_file("/home/nikola/Documents/git_folders/ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
-   ifstream l_file("/home/nikola/Documents/git_folders/ML_number_recognition_SVM/saved_data/lambdas/lambdas0.txt");
-   ifstream t_file("/home/nikola/Documents/git_folders/ML_number_recognition_SVM/saved_data/targets/targets0.txt");
+   ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   ifstream sv_file("../ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
+   ifstream l_file("../ML_number_recognition_SVM/saved_data/lambdas/lambdas0.txt");
+   ifstream t_file("../ML_number_recognition_SVM/saved_data/targets/targets0.txt");
    if(!t_file.is_open())
       cout<<"sv_not openede"<<endl;
    if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open())
@@ -88,7 +88,7 @@ int MemCtrl::num_of_sv()
 {
    int count;
    string line;
-   ifstream sv_file("/home/nikola/Documents/git_folders/ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
+   ifstream sv_file("../ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
    if(sv_file.is_open())
 
    {
