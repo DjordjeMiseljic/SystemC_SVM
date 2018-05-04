@@ -2,7 +2,7 @@
 #define MEMCTRL_C
 #include "MemCtrl.hpp"
 
-MemCtrl::MemCtrl(sc_module_name name, int& sv_num, const int sv_len,
+MemCtrl::MemCtrl(sc_module_name name, int& sv_num, int sv_len,
 		 sc_event *e_ready, sc_event *e_next, double& lambda,
 		 int& target, deque<double>& data):sc_module(name),
 						   sv_num(sv_num),

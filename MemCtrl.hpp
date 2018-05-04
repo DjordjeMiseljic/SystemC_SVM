@@ -12,16 +12,17 @@ SC_MODULE(MemCtrl)
 {
 	public:
 		SC_HAS_PROCESS(MemCtrl);
-		MemCtrl(sc_module_name, int&, const int,
-			sc_event*, sc_event*, double&, int&, deque<double>&);
+		MemCtrl(sc_module_name name, int& sv_num, int sv_len,
+			sc_event* e_ready, sc_event* e_next, double& lambda, 
+			int& target, deque<double>& data);
 		int num_of_sv();
 	protected:
 		int &sv_num;
 		int sv_len; 
-		double &lambda;
-		int &target;
 		sc_event  *e_ready;
 		sc_event  *e_next;
+		double &lambda;
+		int &target;
 		deque <double> &data;
 		//METHODS
 		void grab_from_mem();
