@@ -19,63 +19,48 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
 void Core::proc()
 {
    int k;
-   long double p;
+   double p;
    double b;
-   double tmp;
    e_next->notify(SC_ZERO_TIME);
    wait(*e_ready);
    k=sv_num;
    b=lambda;
-   cout<<"BIAS:"<<b<<endl;
-   //copy inputs to y 
-   //cout<<"Y: ";
+
    for(int i=0;i<sv_len;i++)
-   {
       y.push_back(data[i]);
-      //cout<<"\t"<<data[i];
-   }
    cout<<endl;
    while(k)
       {
-         cout<<"iteration"<<(sv_num-k)<<endl;
-         cout<<"for k= "<<k<<" : "<<endl;
+         //cout<<"for k= "<<k<<" : "<<endl;
          e_next->notify(SC_ZERO_TIME);
          wait(*e_ready);
-         cout<<"dlen="<<data.size()<<"ylen"<<y.size()<<endl;
-         //cout<<"$$$=";
+         //cout<<"dlen="<<data.size()<<"ylen"<<y.size()<<endl;
          p=1;
-         // for(int j=0; j<(sv_num-k); j++)
-         //    data.push_front(0.0);
          for(int i=0; i<sv_len; i++)
-         {
-            
-            //if(i%7==0)
-              // cout<<endl;
-            tmp=y[i]*data[i];
-            p+=tmp;
-            //cout<<" "<<data[i];
-         }
-         cout<<"\n   pdot:"<<p;
+            p+=y[i]*data[i];
          
+         /* if(i%7==0)
+               cout<<endl;
+            cout<<" "<<data[i];*/
          p=p*p*p;
-         cout<<"   pcube:"<<p;
+         //cout<<"   pcube:"<<p;
          
          p=lambda*p;
-         cout<<"   pl:"<<p<<endl;
-         cout<<"   lambda:"<<lambda<<endl;
          
          p=target*p;
         
          wait(1,SC_NS);
          
-         cout<<"\tcurrent acc="<<acc<<"\tp="<<p<<"\tnew acc="<<(acc+p);
-         cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
+         //cout<<"\tcurrent acc="<<acc<<"\tp="<<p<<"\tnew acc="<<(acc+p);
+         //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
          
          acc+=p;
          k--;
       }
    acc+=b;
+  
    cout<<"classification finished\nres= "<<acc<<"\nreal_res= "<<res<<endl;
+   cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
    return;	
 }
 
