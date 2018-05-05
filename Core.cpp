@@ -21,46 +21,49 @@ void Core::proc()
    int k;
    double p;
    double b;
-   e_next->notify(SC_ZERO_TIME);
-   wait(*e_ready);
-   k=sv_num;
-   b=lambda;
+   while(true)
+   {
+      e_next->notify(SC_ZERO_TIME);
+      wait(*e_ready);
+      k=sv_num;
+      b=lambda;
 
-   for(int i=0;i<sv_len;i++)
-      y.push_back(data[i]);
-   cout<<endl;
-   while(k)
-      {
-         //cout<<"for k= "<<k<<" : "<<endl;
-         e_next->notify(SC_ZERO_TIME);
-         wait(*e_ready);
-         //cout<<"dlen="<<data.size()<<"ylen"<<y.size()<<endl;
-         p=1;
-         for(int i=0; i<sv_len; i++)
-            p+=y[i]*data[i];
-         
-         /* if(i%7==0)
-               cout<<endl;
-            cout<<" "<<data[i];*/
-         p=p*p*p;
-         //cout<<"   pcube:"<<p;
-         
-         p=lambda*p;
-         
-         p=target*p;
-        
-         wait(1,SC_NS);
-         
-         //cout<<"\tcurrent acc="<<acc<<"\tp="<<p<<"\tnew acc="<<(acc+p);
-         //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
-         
-         acc+=p;
-         k--;
-      }
-   acc+=b;
-  
-   cout<<"classification finished\nres= "<<acc<<"\nreal_res= "<<res<<endl;
-   cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
+      for(int i=0;i<sv_len;i++)
+         y.push_back(data[i]);
+
+      while(k)
+         {
+            //cout<<"for k= "<<k<<" : "<<endl;
+            e_next->notify(SC_ZERO_TIME);
+            wait(*e_ready);
+            //cout<<"dlen="<<data.size()<<"ylen"<<y.size()<<endl;
+            p=1;
+            for(int i=0; i<sv_len; i++)
+               p+=y[i]*data[i];
+            
+            /* if(i%7==0)
+                  cout<<endl;
+               cout<<" "<<data[i];*/
+            p=p*p*p;
+            //cout<<"   pcube:"<<p;
+            
+            p=lambda*p;
+            
+            p=target*p;
+           
+            wait(1,SC_NS);
+            
+            //cout<<"\tcurrent acc="<<acc<<"\tp="<<p<<"\tnew acc="<<(acc+p);
+            //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
+            
+            acc+=p;
+            k--;
+         }
+      acc+=b;
+     
+      cout<<"classification finished:\tres= "<<acc<<"\t["<<res<<"]";
+      cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
+   }
    return;	
 }
 
