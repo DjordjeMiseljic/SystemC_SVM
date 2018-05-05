@@ -28,6 +28,7 @@ void Core::proc()
       k=sv_num;
       b=lambda;
       acc=0;
+      y.clear();
       for(int i=0;i<sv_len;i++)
          y.push_back(data[i]);
 

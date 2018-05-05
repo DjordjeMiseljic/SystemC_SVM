@@ -27,12 +27,13 @@ void MemCtrl::grab_from_mem()
    string l_line;
    string r_line;
    string b_line;
-   int i=0;
 
+   int image_num = 0;
+   int k=0;
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
    
-   while(1)
+   while(image_num<100)
    {
 
       wait(*e_next);
@@ -54,6 +55,7 @@ void MemCtrl::grab_from_mem()
             {
                getline(y_file, y_line, '\n');
                data.push_back(stod(y_line));
+
             }
             else
             {
@@ -62,7 +64,8 @@ void MemCtrl::grab_from_mem()
             }
             
          }
-         cout<<"image sent"<<endl;
+         //cout<<"y_line 358 is: "<<data[500]<<endl;
+         cout<<"image num "<<image_num++<<"sent"<<endl;
          getline(r_file, r_line, ' ');
          res = stod(r_line);
 
