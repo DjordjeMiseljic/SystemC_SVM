@@ -31,7 +31,7 @@ void MemCtrl::grab_from_mem()
 
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
-   ifstream b_file("../ML_number_recognition_SVM/saved_data/bias/bias.txt");
+   
    while(1)
    {
 
@@ -39,12 +39,12 @@ void MemCtrl::grab_from_mem()
       //cout<<"e_next received"<<endl;
       data.clear();
       sv_num = num_of_sv();
-      
+      k = 0;
       //cout<<"sv_num is: "<<sv_num<<endl;
       ifstream sv_file("../ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
       ifstream l_file("../ML_number_recognition_SVM/saved_data/lambdas/lambdas0.txt");
       ifstream t_file("../ML_number_recognition_SVM/saved_data/targets/targets0.txt");
-
+      ifstream b_file("../ML_number_recognition_SVM/saved_data/bias/bias.txt");
 
       if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open() && r_file.is_open() && b_file.is_open() )
       {
@@ -62,6 +62,7 @@ void MemCtrl::grab_from_mem()
             }
             
          }
+         cout<<"image sent"<<endl;
          getline(r_file, r_line, ' ');
          res = stod(r_line);
 
@@ -70,12 +71,12 @@ void MemCtrl::grab_from_mem()
 
          lambda = stod(b_line);
          //cout<<"bias is: "<<lambda<<endl;
-
+         
          e_ready->notify(SC_ZERO_TIME);
          
          
 
-         while(i<sv_num)
+         while(k<sv_num)
          {
 
             
@@ -106,10 +107,11 @@ void MemCtrl::grab_from_mem()
             getline(t_file, t_line);
             target = stod(t_line);
             //cout<<"target "<<i+1<<" is: "<<target<<endl;
-            i++;
+            k++;
 
             e_ready->notify(SC_ZERO_TIME);
          }
+
       }
       else
       {
@@ -120,12 +122,12 @@ void MemCtrl::grab_from_mem()
       sv_file.close();
       l_file.close();
       t_file.close();
-
+      b_file.close();
 
    }
    r_file.close();
    y_file.close();
-   b_file.close();
+
 }
 
 int MemCtrl::num_of_sv()
