@@ -29,7 +29,6 @@ void MemCtrl::grab_from_mem()
    string b_line;
    int i=0;
 
-   
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
    ifstream b_file("../ML_number_recognition_SVM/saved_data/bias/bias.txt");
@@ -68,7 +67,8 @@ void MemCtrl::grab_from_mem()
 
 
          getline(b_file,b_line);
-         lambda = stod(b_line);
+         lambda = stod(b_line);//extracting bias
+         
          cout<<"bias is: "<<lambda<<endl;
          e_ready->notify(SC_ZERO_TIME);
          
