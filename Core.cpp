@@ -23,7 +23,9 @@ void Core::proc()
    double b;
    while(true)
    {
-      e_next->notify(SC_ZERO_TIME);
+      //cout<<"next notify <-------\t#"<<name()<<endl;
+      //e_next->notify(SC_ZERO_TIME);
+      //cout<<"wait rdy\t#"<<name()<<endl;
       wait(*e_ready);
       k=sv_num;
       b=lambda;
@@ -35,7 +37,9 @@ void Core::proc()
       while(k)
          {
             //cout<<"for k= "<<k<<" : "<<endl;
+           // cout<<"next notify <-------\t#"<<name()<<endl;
             e_next->notify(SC_ZERO_TIME);
+           // cout<<"wait rdy\t#"<<name()<<endl;
             wait(*e_ready);
             //cout<<"dlen="<<data.size()<<"ylen"<<y.size()<<endl;
             p=1;
@@ -61,6 +65,7 @@ void Core::proc()
             k--;
          }
       acc+=b;
+      //cout<<"fin notify ********\t#"<<name()<<endl;
       e_fin->notify(SC_ZERO_TIME);
       cout<<"classification finished:\tres= "<<acc<<"\t["<<res<<"]";
       cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;

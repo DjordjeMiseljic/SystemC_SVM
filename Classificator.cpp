@@ -28,18 +28,19 @@ void Classificator::classify()
    int number;
    while(true)
    {  
-      k=10;
-      while(k)
+      k=0;
+      while(k<10)
       { 
+         e_next[k].notify(SC_ZERO_TIME);
          wait(e_fin);
-         k--; 
+         k++; 
       }
 
       max=cores[0]->get_acc();
       number=0;
       for(int i=1; i<10; i++)
       {
-        if(max>cores[i]->get_acc())
+        if(max<cores[i]->get_acc())
         {
            max=cores[i]->get_acc();
            number=i;

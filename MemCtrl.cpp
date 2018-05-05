@@ -32,6 +32,7 @@ void MemCtrl::grab_from_mem()
    int sv_count=0;
    int num_of_img;
    int num=0;
+   deque <double> y_deq;
 
    
    num_of_img=num_of_test_img();
@@ -41,15 +42,14 @@ void MemCtrl::grab_from_mem()
 
    while(image_num<num_of_img)
    {
-      cout<<"num is: "<<num<<endl;
+     // cout<<"wait_next "<<num<<"\t#"<<name()<<endl;
       wait(e_next[num]);
-      wait(1,SC_NS);
+      //cout<<"num is: "<<num<<endl;
       //cout<<"e_next received"<<endl;
-      data.clear();
       
       sv_num = num_of_sv(num);
 
-      cout<<"sv_num is: "<<sv_num<<endl;
+      //cout<<"sv_num is: "<<sv_num<<endl;
       str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
       str = str + to_string(num);
       str = str+".txt";
@@ -69,10 +69,12 @@ void MemCtrl::grab_from_mem()
       ifstream b_file(str);
       
 
+      data.clear();
       if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open() && r_file.is_open() && b_file.is_open() )
       {
          if(num == 0)
-         {
+         {  
+            y_deq.clear();
             for(int i=0; i<sv_len; i++)
             {
                if(i == sv_len-1 )
@@ -80,9 +82,10 @@ void MemCtrl::grab_from_mem()
                else
                   getline(y_file, y_line, ' ');
 
-               data.push_back(stod(y_line));
+               y_deq.push_back(stod(y_line));
             }
          }
+         data=y_deq;
          getline(b_file,b_line);
          lambda = stod(b_line);
          //cout<<"image num "<<image_num++<<"sent"<<endl;
@@ -95,13 +98,15 @@ void MemCtrl::grab_from_mem()
          
 
          
+         //cout<<"rdy notify "<<num<<"------->\t#"<<name()<<endl;
          e_ready[num].notify(SC_ZERO_TIME);
          sv_count=0;
          while(sv_count<sv_num)
          {
+            //cout<<"wait_next "<<num<<"\t#"<<name()<<endl;
             wait(e_next[num]);
             //cout<<"i is:"<<i<<endl;
-            cout<<"e_next recieved"<<endl;
+            //cout<<"e_next recieved"<<endl;
             data.clear();
             for(int j = 0; j<sv_len; j++)
             {
@@ -124,6 +129,7 @@ void MemCtrl::grab_from_mem()
             //cout<<"target "<<i+1<<" is: "<<target<<endl;
             sv_count++;
 
+            //cout<<"rdy notify "<<num<<"------->\t#"<<name()<<endl;
             e_ready[num].notify(SC_ZERO_TIME);
          }
 
