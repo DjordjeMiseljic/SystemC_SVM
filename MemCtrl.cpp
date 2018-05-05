@@ -67,7 +67,8 @@ void MemCtrl::grab_from_mem()
          
 
          //cout<<"image num "<<image_num++<<"sent"<<endl;
-         image_num++; 
+
+         image_num++;
          for(int j=0; j<10;j++)
          {
             if(j == 9)
