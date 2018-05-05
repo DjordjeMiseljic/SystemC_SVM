@@ -12,7 +12,7 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
                                                           data(data),
                                                           res(res)
 {
-   cout<<"Core constucted"<<endl;
+   cout<<name<<" constucted"<<endl;
    SC_THREAD(proc);
 }
 
@@ -61,7 +61,7 @@ void Core::proc()
             k--;
          }
       acc+=b;
-      e_fin->notify();
+      e_fin->notify(SC_ZERO_TIME);
       cout<<"classification finished:\tres= "<<acc<<"\t["<<res<<"]";
       cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
    }

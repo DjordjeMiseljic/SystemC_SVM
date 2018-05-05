@@ -18,7 +18,7 @@ int sc_main(int argc, char* argv[])
 	double lambda=1;
 	int target=1;
    double res=0;
-
+   
 	Cl = new Classificator("acc_core",sv_num, sv_len, e_ready, e_next, lambda, target, data, res);
 	Mem_Ctrl = new MemCtrl("mem_ctrl",sv_num, sv_len, e_ready, e_next, lambda, target, data, res);
 

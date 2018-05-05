@@ -43,12 +43,13 @@ void MemCtrl::grab_from_mem()
    {
       cout<<"num is: "<<num<<endl;
       wait(e_next[num]);
-      cout<<"e_next received"<<endl;
+      wait(1,SC_NS);
+      //cout<<"e_next received"<<endl;
       data.clear();
       
       sv_num = num_of_sv(num);
 
-      //cout<<"sv_num is: "<<sv_num<<endl;
+      cout<<"sv_num is: "<<sv_num<<endl;
       str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
       str = str + to_string(num);
       str = str+".txt";
@@ -100,7 +101,7 @@ void MemCtrl::grab_from_mem()
          {
             wait(e_next[num]);
             //cout<<"i is:"<<i<<endl;
-            
+            cout<<"e_next recieved"<<endl;
             data.clear();
             for(int j = 0; j<sv_len; j++)
             {

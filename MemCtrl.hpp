@@ -20,8 +20,8 @@ SC_MODULE(MemCtrl)
 	protected:
 		int &sv_num;
 		int sv_len; 
-		sc_event  *e_ready;
-		sc_event  *e_next;
+		sc_event *e_ready;
+      sc_event *e_next;
 		double &lambda;
 		int &target;
 		deque <double> &data;
