@@ -59,7 +59,7 @@ void Core::proc()
       }
    acc+=b;
   
-   cout<<"classification finished\nres= "<<acc<<"\nreal_res= "<<res<<endl;
+   cout<<"classification finished:\tres= "<<acc<<"\t["<<res<<"]";
    cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
    return;	
 }

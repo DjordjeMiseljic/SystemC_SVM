@@ -69,7 +69,7 @@ void MemCtrl::grab_from_mem()
 
          getline(b_file,b_line);
          lambda = stod(b_line);
-         cout<<"bias is: "<<lambda<<endl;
+         //cout<<"bias is: "<<lambda<<endl;
          e_ready->notify(SC_ZERO_TIME);
          
          
