@@ -29,13 +29,16 @@ void MemCtrl::grab_from_mem()
    string b_line;
    
    int image_num = 0;
-   int k=0;
+   int sv_count=0;
+   int num_of_img;
    deque<double> res_deque;
    
+   num_of_img=num_of_test_img();
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
-   
-   while(image_num<100)
+
+
+   while(image_num<num_of_img)
    {
 
       wait(*e_next);
@@ -43,7 +46,7 @@ void MemCtrl::grab_from_mem()
       data.clear();
       res_deque.clear();
       sv_num = num_of_sv();
-      k = 0;
+      sv_count=0;
       //cout<<"sv_num is: "<<sv_num<<endl;
       ifstream sv_file("../ML_number_recognition_SVM/saved_data/support_vectors/sv0.txt");
       ifstream l_file("../ML_number_recognition_SVM/saved_data/lambdas/lambdas0.txt");
@@ -80,7 +83,7 @@ void MemCtrl::grab_from_mem()
          //cout<<"bias is: "<<lambda<<endl;
          
          e_ready->notify(SC_ZERO_TIME);
-         while(k<sv_num)
+         while(sv_count<sv_num)
          {
             wait(*e_next);
             //cout<<"i is:"<<i<<endl;
@@ -104,7 +107,7 @@ void MemCtrl::grab_from_mem()
             getline(t_file, t_line);
             target = stod(t_line);
             //cout<<"target "<<i+1<<" is: "<<target<<endl;
-            k++;
+            sv_count++;
 
             e_ready->notify(SC_ZERO_TIME);
          }
@@ -138,6 +141,22 @@ int MemCtrl::num_of_sv()
       while(getline(sv_file,line))
          count++;
       sv_file.close();
+   }
+   else
+      cout<<"error opening support vector file"<<endl;
+   return count;
+}
+int MemCtrl::num_of_test_img()
+{
+   int count = 0;
+   string line;
+   ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   if(y_file.is_open())
+
+   {
+      while(getline(y_file,line))
+         count++;
+      y_file.close();
    }
    else
       cout<<"error opening support vector file"<<endl;
