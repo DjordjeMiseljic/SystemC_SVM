@@ -12,14 +12,16 @@ SC_MODULE(Core)
    public:
       SC_HAS_PROCESS(Core);
       Core(sc_module_name name, int& sv_num, int sv_len,
-         sc_event *e_ready, sc_event *e_next, double& lambda,
+         sc_event *e_ready, sc_event *e_next, sc_event *e_fin, double& lambda,
          int& target, deque<double> &data, double &res);
       void proc();
+      double get_acc();
 	protected:
 		int &sv_num;
 		int sv_len;
 		sc_event *e_ready;
 		sc_event *e_next;
+      sc_event *e_fin;
 		double &lambda;
 		int &target;
 		deque <double> &data;
