@@ -28,6 +28,8 @@ void MemCtrl::grab_from_mem()
    string r_line;
    string b_line;
    int i=0;
+
+   
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
    ifstream b_file("../ML_number_recognition_SVM/saved_data/bias/bias.txt");
@@ -49,33 +51,41 @@ void MemCtrl::grab_from_mem()
       {
          for(int i=0; i<sv_len; i++)
          {
-            getline(y_file, y_line, ' ');
-            //cout<<y_line<<endl;
-            data.push_back(stod(y_line));
+            if(i == sv_len-1 )
+            {
+               getline(y_file, y_line, '\n');
+               data.push_back(stod(y_line));
+            }
+            else
+            {
+               getline(y_file, y_line, ' ');
+               data.push_back(stod(y_line));
+            }
+            
          }
          getline(r_file, r_line, ' ');
          res = stod(r_line);
-         //cout<<"res is: "<<res<<endl;
+
 
          getline(b_file,b_line);
          lambda = stod(b_line);
          cout<<"bias is: "<<lambda<<endl;
          e_ready->notify(SC_ZERO_TIME);
-         //cout<<"e_ready sent"<<endl;
+         
          
 
          while(i<sv_num)
          {
 
-            //cout<<"sv_num is: "<<sv_num<<endl;
+            
             wait(*e_next);
             //cout<<"i is:"<<i<<endl;
-            //cout<<"e_next received in second while"<<endl;
+            
             data.clear();
             for(int j = 0; j<sv_len; j++)
             {
 
-               if(j == 783)
+               if(j == sv_len-1)
                {
                   getline(sv_file, sv_line, '\n');
                   data.push_back(stod(sv_line));
