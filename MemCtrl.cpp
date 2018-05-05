@@ -27,9 +27,11 @@ void MemCtrl::grab_from_mem()
    string l_line;
    string r_line;
    string b_line;
-
+   
    int image_num = 0;
    int k=0;
+   deque<double> res_deque;
+   
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
    
@@ -39,6 +41,7 @@ void MemCtrl::grab_from_mem()
       wait(*e_next);
       //cout<<"e_next received"<<endl;
       data.clear();
+      res_deque.clear();
       sv_num = num_of_sv();
       k = 0;
       //cout<<"sv_num is: "<<sv_num<<endl;
@@ -52,37 +55,33 @@ void MemCtrl::grab_from_mem()
          for(int i=0; i<sv_len; i++)
          {
             if(i == sv_len-1 )
-            {
                getline(y_file, y_line, '\n');
-               data.push_back(stod(y_line));
-
-            }
             else
-            {
                getline(y_file, y_line, ' ');
-               data.push_back(stod(y_line));
-            }
-            
+
+            data.push_back(stod(y_line));
          }
-         //cout<<"y_line 358 is: "<<data[500]<<endl;
-         cout<<"image num "<<image_num++<<"sent"<<endl;
-         getline(r_file, r_line, ' ');
-         res = stod(r_line);
+         
 
-
+         //cout<<"image num "<<image_num++<<"sent"<<endl;
+        
+         for(int j=0; j<10;j++)
+         {
+            if(j == 9)
+               getline(r_file, r_line, '\n');
+            else
+               getline(r_file, r_line, ' ');
+            res_deque.push_back(stod(r_line));
+         }
+         res = res_deque[0];
          getline(b_file,b_line);
 
          lambda = stod(b_line);
          //cout<<"bias is: "<<lambda<<endl;
          
          e_ready->notify(SC_ZERO_TIME);
-         
-         
-
          while(k<sv_num)
          {
-
-            
             wait(*e_next);
             //cout<<"i is:"<<i<<endl;
             
@@ -91,15 +90,10 @@ void MemCtrl::grab_from_mem()
             {
 
                if(j == sv_len-1)
-               {
                   getline(sv_file, sv_line, '\n');
-                  data.push_back(stod(sv_line));
-               }
                else
-               {
                   getline(sv_file, sv_line, ' ');
-                  data.push_back(stod(sv_line));
-               }
+               data.push_back(stod(sv_line));  
                //cout<<"stod is: "<<stod(sv_line)<<"\tsv_line is: "<<sv_line<<endl;
             }
             //cout<<"data size is: "<<data.size()<<endl;
