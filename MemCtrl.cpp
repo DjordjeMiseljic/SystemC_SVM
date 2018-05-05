@@ -74,8 +74,17 @@ void MemCtrl::grab_from_mem()
             data.clear();
             for(int j = 0; j<sv_len; j++)
             {
-               getline(sv_file, sv_line, ' ');
-               data.push_back(stod(sv_line));
+
+               if(j == 783)
+               {
+                  getline(sv_file, sv_line, '\n');
+                  data.push_back(stod(sv_line));
+               }
+               else
+               {
+                  getline(sv_file, sv_line, ' ');
+                  data.push_back(stod(sv_line));
+               }
                //cout<<"stod is: "<<stod(sv_line)<<"\tsv_line is: "<<sv_line<<endl;
             }
             //cout<<"data size is: "<<data.size()<<endl;

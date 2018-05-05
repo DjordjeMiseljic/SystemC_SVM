@@ -44,8 +44,8 @@ void Core::proc()
          cout<<"dlen="<<data.size()<<"ylen"<<y.size()<<endl;
          //cout<<"$$$=";
          p=1;
-         for(int j=0; j<(sv_num-k); j++)
-            data.push_front(0.0);
+         // for(int j=0; j<(sv_num-k); j++)
+         //    data.push_front(0.0);
          for(int i=0; i<sv_len; i++)
          {
             
