@@ -1,11 +1,12 @@
 #include "Core.hpp"
 
 Core::Core(sc_module_name name, int& sv_num, int sv_len, 
-           sc_event *e_ready, sc_event *e_next, double& lambda,
+           sc_event *e_ready, sc_event *e_next, sc_event *e_fin, double& lambda,
            int& target, deque<double> &data, double &res):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
                                                           e_next(e_next),
+                                                          e_fin(e_fin),
                                                           lambda(lambda),
                                                           target(target),
                                                           data(data),
@@ -13,7 +14,6 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
 {
    cout<<"Core constucted"<<endl;
    SC_THREAD(proc);
-   acc=0;
 }
 
 void Core::proc()
@@ -61,10 +61,14 @@ void Core::proc()
             k--;
          }
       acc+=b;
-     
+      e_fin->notify();
       cout<<"classification finished:\tres= "<<acc<<"\t["<<res<<"]";
       cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
    }
    return;	
 }
 
+double Core::get_acc()
+{
+   return acc;
+}
