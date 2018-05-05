@@ -41,9 +41,9 @@ void MemCtrl::grab_from_mem()
 
    while(image_num<num_of_img)
    {
-      
+      cout<<"num is: "<<num<<endl;
       wait(e_next[num]);
-      //cout<<"e_next received"<<endl;
+      cout<<"e_next received"<<endl;
       data.clear();
       
       sv_num = num_of_sv(num);
