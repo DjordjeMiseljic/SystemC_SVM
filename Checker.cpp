@@ -1,9 +1,10 @@
 #include "Checker.hpp"
 
 Checker::Checker(sc_module_name name,  sc_event *e_fin, 
-                 double &res, int &number): e_fin(e_fin),
-                                            res(res),
-                                            number(number)
+                 double &res, int &number, double &max_acc): e_fin(e_fin),
+                                                             res(res),
+                                                             number(number),
+                                                             max_acc(max_acc)
 {
    cout<<name<<" constucted"<<endl;
    SC_THREAD(verify);
@@ -69,6 +70,7 @@ void Checker::verify()
 
    percentage=(double)correct_cl/(double)num_of_cl;
    cout<<"number of classifications : "<<num_of_cl<<"\tpercentage: "<<100*percentage<<"%\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
+   cout<<"maximum accumulated number : "<<max_acc<<endl;
    r_file.close();
    l_file.close();
    return;	

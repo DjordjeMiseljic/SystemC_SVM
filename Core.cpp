@@ -2,7 +2,7 @@
 
 Core::Core(sc_module_name name, int& sv_num, int sv_len, 
            sc_event *e_ready, sc_event *e_next, sc_event *e_fin, double& lambda,
-           int& target, deque<double> &data, double &res):sv_num(sv_num),
+           int& target, deque<double> &data, double &res, double &max_acc):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
                                                           e_next(e_next),
@@ -10,7 +10,8 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
                                                           lambda(lambda),
                                                           target(target),
                                                           data(data),
-                                                          res(res)
+                                                          res(res),
+                                                          max_acc(max_acc)
 {
    cout<<name<<" constucted"<<endl;
    SC_THREAD(proc);
@@ -39,10 +40,30 @@ void Core::proc()
             for(int i=0; i<sv_len; i++)
                p+=y[i]*data[i];
 
+            if(p>max_acc)
+            {
+              max_acc=p; 
+              //cout<<"P1"<<endl;
+            }
+
+            p/=10;
             p=p*p*p;
-            
+
+            if(p>max_acc)
+            {
+              max_acc=p; 
+              //cout<<"P2"<<endl;
+            }
+
             p=lambda*p;
-            
+            p*=1000;
+
+            if(p>max_acc)
+            {
+              max_acc=p; 
+              //cout<<"P3"<<endl;
+            }
+
             p=target*p;
            
             wait(1,SC_NS);
