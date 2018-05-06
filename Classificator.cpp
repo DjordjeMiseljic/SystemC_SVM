@@ -23,6 +23,7 @@ Classificator::Classificator(sc_module_name name, int& sv_num, int sv_len,
 
 void Classificator::classify()
 {
+   int num_of_cl =0;
    int k;
    double max;
    int number;
@@ -47,6 +48,7 @@ void Classificator::classify()
         } 
       }
       cout<<"Number is: "<<number<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
+      cout<<"number of classifications : "<<num_of_cl++<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
    }
    return;	
 }

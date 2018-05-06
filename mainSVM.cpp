@@ -22,7 +22,7 @@ int sc_main(int argc, char* argv[])
 	Cl = new Classificator("acc_core",sv_num, sv_len, e_ready, e_next, lambda, target, data, res);
 	Mem_Ctrl = new MemCtrl("mem_ctrl",sv_num, sv_len, e_ready, e_next, lambda, target, data, res);
 
-	sc_start(10, sc_core::SC_US);
+	sc_start(100, sc_core::SC_US);
 	cout << "Simulation finished at " << sc_time_stamp() << std::endl;
 	delete Cl;
 	delete Mem_Ctrl;	
