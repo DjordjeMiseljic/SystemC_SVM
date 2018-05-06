@@ -18,45 +18,43 @@ MemCtrl::MemCtrl(sc_module_name name, int& sv_num, int sv_len,
 
    SC_THREAD(grab_from_mem);
    cout<<"Memory controller constructed"<<endl;
-}
-void MemCtrl::grab_from_mem()
-{
-   string y_line;
-   string sv_line;
-   string t_line;
-   string l_line;
-   string r_line;
-   string b_line;
-   string str;
-   int image_num = 0;
-   int sv_count=0;
-   int num_of_img;
-   int num=0;
-   deque <double> y_deq;
-
-   
-   num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
-
-
-   while(image_num<num_of_img)
+   }
+   void MemCtrl::grab_from_mem()
    {
-      wait(e_next[num]);
-      str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
-      str = str + to_string(num);
-      str = str+".txt";
-      sv_num = num_of_lines(str);
-      ifstream sv_file(str);
-      str = "../ML_number_recognition_SVM/saved_data/lambdas/lambdas";
-      str = str + to_string(num);
-      str = str+".txt";
-      ifstream l_file(str);
-      str = "../ML_number_recognition_SVM/saved_data/targets/targets";
-      str = str + to_string(num);
-      str = str+".txt";
-      ifstream t_file(str);
+      string y_line;
+      string sv_line;
+      string t_line;
+      string l_line;
+      //string r_line;
+      string b_line;
+      string str;
+      int image_num = 0;
+      int sv_count=0;
+      int num_of_img;
+      int num=0;
+      deque <double> y_deq;
+
       
+      num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+      ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+
+      while(image_num<num_of_img)
+      {
+         wait(e_next[num]);
+         str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
+         str = str + to_string(num);
+         str = str+".txt";
+         sv_num = num_of_lines(str);
+         ifstream sv_file(str);
+         str = "../ML_number_recognition_SVM/saved_data/lambdas/lambdas";
+         str = str + to_string(num);
+         str = str+".txt";
+         ifstream l_file(str);
+         str = "../ML_number_recognition_SVM/saved_data/targets/targets";
+         str = str + to_string(num);
+         str = str+".txt";
+         ifstream t_file(str);
+         
       str = "../ML_number_recognition_SVM/saved_data/bias/bias";
       str = str + to_string(num);
       str = str+".txt";
@@ -64,7 +62,7 @@ void MemCtrl::grab_from_mem()
       
 
       data.clear();
-      if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open() && r_file.is_open() && b_file.is_open() )
+      if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open() && /*r_file.is_open() &&*/ b_file.is_open() )
       {
          if(num == 0)
          {  
@@ -82,11 +80,6 @@ void MemCtrl::grab_from_mem()
          getline(b_file,b_line);
          lambda = stod(b_line);
 
-         if(num == 9)
-            getline(r_file, r_line, '\n');
-         else
-            getline(r_file, r_line, ' ');
-         res = stod(r_line);
          
          e_ready[num].notify(SC_ZERO_TIME);
          sv_count=0;
@@ -129,7 +122,6 @@ void MemCtrl::grab_from_mem()
          num=0;
       }  
    }
-   r_file.close();
    y_file.close();
 
 }
