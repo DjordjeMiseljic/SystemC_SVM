@@ -15,13 +15,13 @@ SC_MODULE(MemCtrl)
 		MemCtrl(sc_module_name name, int& sv_num, int sv_len,
 			sc_event* e_ready, sc_event* e_next, double& lambda, 
 			int& target, deque<double>& data, double& res);
-		int num_of_sv();
+		int num_of_lines(string str);
                 int num_of_test_img();
 	protected:
 		int &sv_num;
 		int sv_len; 
-		sc_event  *e_ready;
-		sc_event  *e_next;
+		sc_event *e_ready;
+      sc_event *e_next;
 		double &lambda;
 		int &target;
 		deque <double> &data;
