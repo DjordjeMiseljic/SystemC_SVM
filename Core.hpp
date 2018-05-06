@@ -21,14 +21,14 @@ SC_MODULE(Core)
 		int sv_len;
 		sc_event *e_ready;
 		sc_event *e_next;
-         sc_event *e_fin;
-         double &lambda;
-         int &target;
-         deque <double> &data;
-         double &res;
-         
-         deque <double> y;
-         double acc;
+      sc_event *e_fin;
+      double &lambda;
+      int &target;
+      deque <double> &data;
+      double &res;
+
+      deque <double> y;
+      double acc;
    };
 
 #endif

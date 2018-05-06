@@ -54,9 +54,10 @@ void Core::proc()
             k--;
          }
       acc+=b;
+      res=acc;
       e_fin->notify(SC_ZERO_TIME);
-      cout<<"classification finished:\tres= "<<acc<<"\t["<<res<<"]";
-      cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
+      //cout<<"classification finished:\tres= "<<acc<<"\t["<<res<<"]";
+      //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
    }
    return;	
 }
