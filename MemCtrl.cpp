@@ -35,24 +35,18 @@ void MemCtrl::grab_from_mem()
    deque <double> y_deq;
 
    
-   num_of_img=num_of_test_img();
+   num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
 
 
    while(image_num<num_of_img)
    {
-     // cout<<"wait_next "<<num<<"\t#"<<name()<<endl;
       wait(e_next[num]);
-      //cout<<"num is: "<<num<<endl;
-      //cout<<"e_next received"<<endl;
-      
-      sv_num = num_of_sv(num);
-
-      //cout<<"sv_num is: "<<sv_num<<endl;
       str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
       str = str + to_string(num);
       str = str+".txt";
+      sv_num = num_of_lines(str);
       ifstream sv_file(str);
       str = "../ML_number_recognition_SVM/saved_data/lambdas/lambdas";
       str = str + to_string(num);
@@ -81,58 +75,41 @@ void MemCtrl::grab_from_mem()
                   getline(y_file, y_line, '\n');
                else
                   getline(y_file, y_line, ' ');
-
                y_deq.push_back(stod(y_line));
             }
          }
          data=y_deq;
          getline(b_file,b_line);
          lambda = stod(b_line);
-         //cout<<"image num "<<image_num++<<"sent"<<endl;
+
          if(num == 9)
             getline(r_file, r_line, '\n');
          else
             getline(r_file, r_line, ' ');
-
          res = stod(r_line);
          
-
-         
-         //cout<<"rdy notify "<<num<<"------->\t#"<<name()<<endl;
          e_ready[num].notify(SC_ZERO_TIME);
          sv_count=0;
          while(sv_count<sv_num)
          {
-            //cout<<"wait_next "<<num<<"\t#"<<name()<<endl;
             wait(e_next[num]);
-            //cout<<"i is:"<<i<<endl;
-            //cout<<"e_next recieved"<<endl;
             data.clear();
             for(int j = 0; j<sv_len; j++)
             {
-
                if(j == sv_len-1)
                   getline(sv_file, sv_line, '\n');
                else
                   getline(sv_file, sv_line, ' ');
 
                data.push_back(stod(sv_line));  
-               //cout<<"stod is: "<<stod(sv_line)<<"\tsv_line is: "<<sv_line<<endl;
             }
-            //cout<<"data size is: "<<data.size()<<endl;
             getline(l_file, l_line);
             lambda = stod(l_line);
-            //cout<<"lambda is: "<<stod(l_line)<<endl;
-
             getline(t_file, t_line);
             target = stod(t_line);
-            //cout<<"target "<<i+1<<" is: "<<target<<endl;
             sv_count++;
-
-            //cout<<"rdy notify "<<num<<"------->\t#"<<name()<<endl;
             e_ready[num].notify(SC_ZERO_TIME);
          }
-
       }
       else
       {
@@ -157,13 +134,10 @@ void MemCtrl::grab_from_mem()
 
 }
 
-int MemCtrl::num_of_sv(int num)
+int MemCtrl::num_of_lines(string str)
 {
    int count = 0;
-   string line,str;
-   str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
-   str = str + to_string(num);
-   str = str+".txt";
+   string line;
    ifstream sv_file(str);
    if(sv_file.is_open())
 
@@ -176,21 +150,6 @@ int MemCtrl::num_of_sv(int num)
       cout<<"error opening support vector file"<<endl;
    return count;
 }
-int MemCtrl::num_of_test_img()
-{
-   int count = 0;
-   string line;
-   ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   if(y_file.is_open())
 
-   {
-      while(getline(y_file,line))
-         count++;
-      y_file.close();
-   }
-   else
-      cout<<"error opening support vector file"<<endl;
-   return count;
-}
 
 #endif
