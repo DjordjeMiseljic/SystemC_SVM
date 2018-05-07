@@ -27,95 +27,68 @@ void MemCtrl::grab_from_mem()
    string sv_line;
    string t_line;
    string l_line;
-   //string r_line;
+   string r_line;
    string b_line;
    string str;
    int image_num = 0;
    int sv_count=0;
    int num_of_img;
-   int num=0;
+   int num = 0;
+   int j,k = 0;
    deque <double> y_deq;
 
    file_extract();
    num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt"); 
+   //cout<<"num_of_img: "<<num_of_img<<endl;
+   
 
    while(image_num<num_of_img)
    {
+      
+      //cout<<"num is:" <<num<<endl;
       wait(e_next[num]);
-      str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
-      str = str + to_string(num);
-      str = str+".txt";
-      sv_num = num_of_lines(str);
-      ifstream sv_file(str);
-      str = "../ML_number_recognition_SVM/saved_data/lambdas/lambdas";
-      str = str + to_string(num);
-      str = str+".txt";
-      ifstream l_file(str);
-      str = "../ML_number_recognition_SVM/saved_data/targets/targets";
-      str = str + to_string(num);
-      str = str+".txt";
-      ifstream t_file(str);
-         
-      str = "../ML_number_recognition_SVM/saved_data/bias/bias";
-      str = str + to_string(num);
-      str = str+".txt";
-      ifstream b_file(str);
-      
-
+      sv_num = sv_lines[num];
+      //cout<<"e_next received"<<endl;
       data.clear();
-      if(sv_file.is_open() && y_file.is_open() && l_file.is_open() && t_file.is_open() && /*r_file.is_open() &&*/ b_file.is_open() )
-      {
-         if(num == 0)
-         {  
-            y_deq.clear();
-            for(int i=0; i<sv_len; i++)
-            {
-               if(i == sv_len-1 )
-                  getline(y_file, y_line, '\n');
-               else
-                  getline(y_file, y_line, ' ');
-               y_deq.push_back(stod(y_line));
-            }
+      if(num == 0)
+      {  
+         y_deq.clear();
+         for(int i=0; i<sv_len; i++)
+         {
+            y_deq.push_back(images[j]);
+            //cout<<"images["<<j<<"]: "<<images[j]<<endl;
+            j++;
          }
-         data=y_deq;
-         getline(b_file,b_line);
-         lambda = stod(b_line);
+      }
+      data=y_deq;
+      
+      lambda = biases[num];
 
          
-         e_ready[num].notify(SC_ZERO_TIME);
-         sv_count=0;
-         while(sv_count<sv_num)
-         {
-            wait(e_next[num]);
-            data.clear();
-            for(int j = 0; j<sv_len; j++)
-            {
-               if(j == sv_len-1)
-                  getline(sv_file, sv_line, '\n');
-               else
-                  getline(sv_file, sv_line, ' ');
-
-               data.push_back(stod(sv_line));  
-            }
-            getline(l_file, l_line);
-            lambda = stod(l_line);
-            getline(t_file, t_line);
-            target = stod(t_line);
-            sv_count++;
-            e_ready[num].notify(SC_ZERO_TIME);
-         }
-      }
-      else
+      e_ready[num].notify(SC_ZERO_TIME);
+      sv_count=0;
+      k = 0;
+      //cout<<"sv_lines num: "<<sv_lines[num]<<endl;
+      while(sv_count<sv_lines[num])
       {
-         cout<<"couldn't open one of the files"<<endl;
-         return;
+         
+         //cout<<"waiting_for e_next2"<<endl;
+         wait(e_next[num]);
+         data.clear();
+         for(int i = 0; i<sv_len; i++)
+         {
+            data.push_back(sv[num][k]);
+            //cout<<"sv["<<num<<"]"<<"["<<k<<"]"<<"is: "<<sv[num][k]<<endl;
+            k++;
+         }
+         
+         lambda = lambdas[num][sv_count];
+         
+         target = targets[num][sv_count];
+         sv_count++;
+         e_ready[num].notify(SC_ZERO_TIME);
       }
       
-      sv_file.close();
-      l_file.close();
-      t_file.close();
-      b_file.close();
       if(num<9)
          num++;
       else
@@ -124,9 +97,10 @@ void MemCtrl::grab_from_mem()
          num=0;
       }  
    }
-   y_file.close();
+   
 
 }
+
 
 
 
@@ -142,6 +116,7 @@ void MemCtrl::file_extract()
    int j, k=0;
    
    lines=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   //cout<<"num of images: "<<lines<<endl;
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
 
    
@@ -159,6 +134,7 @@ void MemCtrl::file_extract()
             getline(y_file, y_line, ' ');
             k++;
          }
+         //cout<<"image pixel "<<i<<" is: "<<stod(y_line)<<endl;
          images.push_back(stod(y_line));
       }
    else
@@ -177,6 +153,7 @@ void MemCtrl::file_extract()
       ifstream b_file(str);
       getline(b_file,b_line);
       biases[i] = stod(b_line);
+      //cout<<"biases: "<<biases[i]<<endl;
       //extracting support vectors
       str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
       str = str + to_string(i);

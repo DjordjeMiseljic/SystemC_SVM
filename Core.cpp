@@ -46,7 +46,7 @@ void Core::proc()
               //cout<<"P1"<<endl;
             }
 
-            p/=10;
+            p*=0.1;
             p=p*p*p;
 
             if(p>max_acc)
