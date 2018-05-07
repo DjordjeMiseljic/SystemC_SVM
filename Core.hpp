@@ -13,7 +13,7 @@ SC_MODULE(Core)
       SC_HAS_PROCESS(Core);
       Core(sc_module_name name, int& sv_num, int sv_len,
          sc_event *e_ready, sc_event *e_next, sc_event *e_fin, double& lambda,
-         int& target, deque<double> &data, double &res);
+         int& target, deque<double> &data, double &res, double &max_acc);
       void proc();
       double get_acc();
 	protected:
@@ -26,6 +26,7 @@ SC_MODULE(Core)
       int &target;
       deque <double> &data;
       double &res;
+      double &max_acc;
 
       deque <double> y;
       double acc;
