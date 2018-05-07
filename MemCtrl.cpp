@@ -39,46 +39,34 @@ void MemCtrl::grab_from_mem()
 
    file_extract();
    num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   //cout<<"num_of_img: "<<num_of_img<<endl;
-   
-
    while(image_num<num_of_img)
    {
-      
-      //cout<<"num is:" <<num<<endl;
       wait(e_next[num]);
+         
       sv_num = sv_lines[num];
-      //cout<<"e_next received"<<endl;
       data.clear();
       if(num == 0)
       {  
          y_deq.clear();
          for(int i=0; i<sv_len; i++)
          {
-            y_deq.push_back(images[j]);
-            //cout<<"images["<<j<<"]: "<<images[j]<<endl;
-            j++;
+            y_deq.push_back(images[j]);x
+                                          j++;
          }
       }
       data=y_deq;
-      
       lambda = biases[num];
 
-         
       e_ready[num].notify(SC_ZERO_TIME);
       sv_count=0;
       k = 0;
-      //cout<<"sv_lines num: "<<sv_lines[num]<<endl;
       while(sv_count<sv_lines[num])
-      {
-         
-         //cout<<"waiting_for e_next2"<<endl;
+      {         
          wait(e_next[num]);
          data.clear();
          for(int i = 0; i<sv_len; i++)
          {
             data.push_back(sv[num][k]);
-            //cout<<"sv["<<num<<"]"<<"["<<k<<"]"<<"is: "<<sv[num][k]<<endl;
             k++;
          }
          
@@ -116,7 +104,6 @@ void MemCtrl::file_extract()
    int j, k=0;
    
    lines=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   //cout<<"num of images: "<<lines<<endl;
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
 
    
@@ -134,7 +121,6 @@ void MemCtrl::file_extract()
             getline(y_file, y_line, ' ');
             k++;
          }
-         //cout<<"image pixel "<<i<<" is: "<<stod(y_line)<<endl;
          images.push_back(stod(y_line));
       }
    else
@@ -153,7 +139,6 @@ void MemCtrl::file_extract()
       ifstream b_file(str);
       getline(b_file,b_line);
       biases[i] = stod(b_line);
-      //cout<<"biases: "<<biases[i]<<endl;
       //extracting support vectors
       str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
       str = str + to_string(i);
