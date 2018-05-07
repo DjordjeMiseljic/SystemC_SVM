@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <iomanip>
 using namespace std;
 using namespace sc_core;
 

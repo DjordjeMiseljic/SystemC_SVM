@@ -44,13 +44,13 @@ void Checker::verify()
             if(true_number==number)
             {
                correct_cl++;
-               cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<GREEN<<" : classified number : "<<number<<"["<<true_number<<"] :true_number";
-               cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+               cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<RST<<D_GREEN<<" :: classified number: "<<number<<"["<<true_number<<"] :true_number"<<RST;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
             }
             else
             {
-               cout<<B_RED<<"MISCLASSIFICATION"<<RED<<" : classified number : "<<number<<"["<<true_number<<"] :true_number";
-               cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+               cout<<B_RED<<"     MISCLASSIFICATION"<<RST<<D_RED<<" :: classified number: "<<number<<"["<<true_number<<"] :true_number"<<RST;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
             }
             
             num_of_images--;
@@ -61,19 +61,19 @@ void Checker::verify()
             num++;
          else
             num=0;
+
          if(abs(true_res-res)>0.00001)
          {
-            cout<<BC_YELLOW<<"WARNING"<<BC_RST<<YELLOW<<" res mismatch   : ";
-            printf("core_res: %4f [%4f] :true_res",res,true_res);
-            //cout<<"core_res: "<<res<<" ["<<true_res<<"] :true_res"; 
-            cout<<RST<<DIM<<"     @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+            cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" res mismatch   :: ";
+            cout<<"core_res: "<<fixed<<setprecision(4)<<res<<"["<<fixed<<setprecision(4)<<true_res<<"] :true_res"<<RST;
+            cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
          }   
       }
    else
-      cout<<BC_RED<<"ERROR"<<BC_RST<<RED<<" OPENING RES/LABEL FILE"<<RST<<endl;
+      cout<<BKG_RED<<BLACK<<"ERROR"<<BKG_RST<<D_RED<<" OPENING RES/LABEL FILE"<<RST<<endl;
 
    percentage=(double)correct_cl/(double)num_of_cl;
-   cout<<"number of classifications : "<<num_of_cl<<GREEN<<"\tpercentage: "<<B_GREEN<<100*percentage<<"%\t@"<<RST<<DIM<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
+   cout<<"number of classifications : "<<num_of_cl<<D_MAGNETA<<"\tpercentage: "<<B_MAGNETA<<100*percentage<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
    cout<<"maximum accumulated number : "<<max_acc<<endl;
    r_file.close();
    l_file.close();
@@ -95,7 +95,7 @@ int Checker::num_of_lines(string str)
    else
    {
 
-      cout<<BC_RED<<"ERROR"<<BC_RST<<RED<<" OPENING SV FILE"<<endl;
+      cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" OPENING SV FILE"<<endl;
       cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
    }
    return count;
