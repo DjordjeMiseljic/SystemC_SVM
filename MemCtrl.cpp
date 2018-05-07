@@ -23,13 +23,7 @@ MemCtrl::MemCtrl(sc_module_name name, int& sv_num, int sv_len,
 
 void MemCtrl::grab_from_mem()
 {
-   string y_line;
-   string sv_line;
-   string t_line;
-   string l_line;
-   string r_line;
-   string b_line;
-   string str;
+   
    int image_num = 0;
    int sv_count=0;
    int num_of_img;
@@ -50,8 +44,8 @@ void MemCtrl::grab_from_mem()
          y_deq.clear();
          for(int i=0; i<sv_len; i++)
          {
-            y_deq.push_back(images[j]);x
-                                          j++;
+            y_deq.push_back(images[j]);
+            j++;
          }
       }
       data=y_deq;
