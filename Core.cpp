@@ -77,7 +77,7 @@ void Core::proc()
       acc+=b;
       res=acc;
       e_fin->notify(SC_ZERO_TIME);
-      //cout<<"classification finished:\tres= "<<acc<<"\t["<<res<<"]";
+      cout<<"single core classification finished:\tres= "<<acc<<"\t["<<res<<"]";
       //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
    }
    return;	

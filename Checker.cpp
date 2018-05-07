@@ -42,10 +42,13 @@ void Checker::verify()
             getline(l_file, l_line);
             true_number = stoi(l_line);
             if(true_number==number)
+            {
                correct_cl++;
+               cout<<" classified number: "<<number<<"["<<true_number<<"] :true_number";
+            }
             else
             {
-               cout<<"classified number: "<<number<<"["<<true_number<<"] :true_number";
+               cout<<"MISCLASSIFICATION : classified number: "<<number<<"["<<true_number<<"] :true_number";
                cout<<"         @"<<sc_time_stamp()<<"   #"<<name()<<endl;
             }
             
