@@ -6,7 +6,7 @@ Checker::Checker(sc_module_name name,  sc_event *e_fin,
                                                              number(number),
                                                              max_acc(max_acc)
 {
-   cout<<name<<" constucted"<<endl;
+   cout<<"Checker constucted"<<endl;
    SC_THREAD(verify);
 }
 
@@ -44,13 +44,13 @@ void Checker::verify()
             if(true_number==number)
             {
                correct_cl++;
-               cout<<GREEN<<" classified number: "<<number<<"["<<true_number<<"] :true_number"<<RST;
-               cout<<"         @"<<sc_time_stamp()<<"   #"<<name()<<endl;
+               cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<GREEN<<" : classified number : "<<number<<"["<<true_number<<"] :true_number";
+               cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
             }
             else
             {
-               cout<<"MISCLASSIFICATION : classified number: "<<number<<"["<<true_number<<"] :true_number";
-               cout<<"         @"<<sc_time_stamp()<<"   #"<<name()<<endl;
+               cout<<B_RED<<"MISCLASSIFICATION"<<RED<<" : classified number : "<<number<<"["<<true_number<<"] :true_number";
+               cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
             }
             
             num_of_images--;
@@ -63,17 +63,17 @@ void Checker::verify()
             num=0;
          if(abs(true_res-res)>0.00001)
          {
-            cout<<RED<<" WARNING: NUMBERS DON'T MATCH: "<<RST;
+            cout<<BC_YELLOW<<"WARNING"<<BC_RST<<YELLOW<<" res mismatch   : ";
             printf("core_res: %4f [%4f] :true_res",res,true_res);
             //cout<<"core_res: "<<res<<" ["<<true_res<<"] :true_res"; 
-            cout<<"         @"<<sc_time_stamp()<<"   #"<<name()<<endl;
+            cout<<RST<<DIM<<"     @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
          }   
       }
    else
-      cout<<"ERROR OPENING FILE"<<endl;
+      cout<<BC_RED<<"ERROR"<<BC_RST<<RED<<" OPENING RES/LABEL FILE"<<RST<<endl;
 
    percentage=(double)correct_cl/(double)num_of_cl;
-   cout<<"number of classifications : "<<num_of_cl<<"\tpercentage: "<<100*percentage<<"%\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
+   cout<<"number of classifications : "<<num_of_cl<<GREEN<<"\tpercentage: "<<B_GREEN<<100*percentage<<"%\t@"<<RST<<DIM<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
    cout<<"maximum accumulated number : "<<max_acc<<endl;
    r_file.close();
    l_file.close();
@@ -93,7 +93,11 @@ int Checker::num_of_lines(string str)
       sv_file.close();
    }
    else
-      cout<<"error opening support vector file"<<endl;
+   {
+
+      cout<<BC_RED<<"ERROR"<<BC_RST<<RED<<" OPENING SV FILE"<<endl;
+      cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+   }
    return count;
 }
 

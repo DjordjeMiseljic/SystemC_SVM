@@ -18,7 +18,7 @@ Classificator::Classificator(sc_module_name name, int& sv_num, int sv_len,
    max_acc=0;
    for(int i=0; i<10; i++)
    {
-      string str("core_no_");
+      string str("Core_no_");
       string num=to_string(i);
       str=str+num;
       cores[i]=new Core(str.c_str(),sv_num, sv_len, &e_ready[i], &e_next[i], e_fin, lambda, target, data, res, max_acc);
