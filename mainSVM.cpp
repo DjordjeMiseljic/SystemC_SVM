@@ -24,10 +24,11 @@ int sc_main(int argc, char* argv[])
 	double lambda=1;
 	int target=1;
    double res=0;
+   double max_acc=0;
    
-	Cl = new Classificator("classificator",sv_num, sv_len, e_ready, e_next, &e_fin, lambda, target, data, res, number);
+	Cl = new Classificator("classificator",sv_num, sv_len, e_ready, e_next, &e_fin, lambda, target, data, res, number, max_acc);
 	Mem_Ctrl = new MemCtrl("mem_ctrl",sv_num, sv_len, e_ready, e_next, lambda, target, data, res);
-   Check = new Checker("checker", &e_fin, res, number);
+   Check = new Checker("checker", &e_fin, res, number, max_acc);
 
 	sc_start(20, sc_core::SC_SEC);
 	cout << "Simulation finished at " << sc_time_stamp() << std::endl;
