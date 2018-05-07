@@ -1,6 +1,5 @@
 #include "Checker.hpp"
-#define RED "\e[1;31m"
-#define RST  "\e[0m"
+#include "Format.hpp"
 Checker::Checker(sc_module_name name,  sc_event *e_fin, 
                  double &res, int &number, double &max_acc): e_fin(e_fin),
                                                              res(res),
@@ -45,7 +44,7 @@ void Checker::verify()
             if(true_number==number)
             {
                correct_cl++;
-               cout<<" classified number: "<<number<<"["<<true_number<<"] :true_number";
+               cout<<GREEN<<" classified number: "<<number<<"["<<true_number<<"] :true_number"<<RST;
                cout<<"         @"<<sc_time_stamp()<<"   #"<<name()<<endl;
             }
             else
@@ -64,7 +63,7 @@ void Checker::verify()
             num=0;
          if(abs(true_res-res)>0.00001)
          {
-            cout<<BLUE<<" WARNING: NUMBERS DON'T MATCH: "<<RS;
+            cout<<RED<<" WARNING: NUMBERS DON'T MATCH: "<<RST;
             printf("core_res: %4f [%4f] :true_res",res,true_res);
             //cout<<"core_res: "<<res<<" ["<<true_res<<"] :true_res"; 
             cout<<"         @"<<sc_time_stamp()<<"   #"<<name()<<endl;
