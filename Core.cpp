@@ -17,6 +17,8 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
    SC_THREAD(proc);
 }
 
+double Core::maxAcc=0;
+
 void Core::proc()
 {
    int k;
@@ -75,6 +77,11 @@ void Core::proc()
             k--;
          }
       acc+=b;
+      if (maxAcc<acc)
+      {
+         maxAcc=acc;
+         cout<<"new maxAcc = "<<maxAcc<<endl;
+      }
       res=acc;
       //cout<<"single core classification finished:\tres= "<<acc<<"\t["<<res<<"]"<<endl;
       e_fin->notify(SC_ZERO_TIME);

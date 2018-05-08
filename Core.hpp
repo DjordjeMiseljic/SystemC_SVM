@@ -30,6 +30,7 @@ SC_MODULE(Core)
 
       deque <double> y;
       double acc;
+      static double maxAcc;
    };
 
 #endif
