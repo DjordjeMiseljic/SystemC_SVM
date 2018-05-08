@@ -8,6 +8,7 @@
 #include <vector>
 #include <array>
 #include <algorithm>
+#include "Types.hpp"
 using namespace std;
 using namespace sc_core;
 
@@ -16,8 +17,8 @@ SC_MODULE(MemCtrl)
  public:
    SC_HAS_PROCESS(MemCtrl);
    MemCtrl(sc_module_name name, int& sv_num, int sv_len,
-           sc_event* e_ready, sc_event* e_next, double& lambda, 
-           int& target, deque<double>& data, double& res);
+           sc_event* e_ready, sc_event* e_next, din_t& lambda, 
+           din_t& target, deque<din_t>& data, double& res);
    int num_of_lines(string str);
    int num_of_test_img();
  protected:
@@ -25,9 +26,9 @@ SC_MODULE(MemCtrl)
    int sv_len; 
    sc_event *e_ready;
    sc_event *e_next;
-   double &lambda;
-   int &target;
-   deque <double> &data;
+   din_t &lambda;
+   din_t &target;
+   deque <din_t> &data;
    double &res;
    
    array<deque<double>, 10> sv;

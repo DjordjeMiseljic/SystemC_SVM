@@ -4,8 +4,8 @@
 #include "MemCtrl.hpp"
 
 MemCtrl::MemCtrl(sc_module_name name, int& sv_num, int sv_len,
-		 sc_event *e_ready, sc_event *e_next, double& lambda,
-		 int& target, deque<double>& data, double& res):sc_module(name),
+		 sc_event *e_ready, sc_event *e_next, din_t& lambda,
+		 din_t& target, deque<din_t>& data, double& res):sc_module(name),
                                                                 sv_num(sv_num),
                                                                 sv_len(sv_len),
                                                                 e_ready(e_ready),
@@ -29,7 +29,7 @@ void MemCtrl::grab_from_mem()
    int num_of_img;
    int num = 0;
    int j,k = 0;
-   deque <double> y_deq;
+   deque <din_t> y_deq;
 
    file_extract();
    num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
