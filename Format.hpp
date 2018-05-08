@@ -7,7 +7,7 @@
  * RED - red font
  * B_RED - bold red font
  * RST - reset font
- * BCK_RST -reset background
+ * BCK_RST -reset background 
  */
 
 #define BOLD  "\e[1m"
