@@ -178,7 +178,7 @@ void MemCtrl::file_extract()
          {
             //extracting lambda
             getline(l_file,l_line);
-            lambdas[i].push_back(stod(l_line));
+            lambdas[i].push_back(1000*stod(l_line));
             //extracting target
             getline(t_file,t_line);
             targets[i].push_back(stod(t_line));
