@@ -1,7 +1,7 @@
 #include "Checker.hpp"
 #include "Format.hpp"
 Checker::Checker(sc_module_name name,  sc_event *e_fin, 
-                 din_t &res, num_t &number, double &max_acc): e_fin(e_fin),
+                 acc_t &res, num_t &number, double &max_acc): e_fin(e_fin),
                                                              res(res),
                                                              number(number),
                                                              max_acc(max_acc)

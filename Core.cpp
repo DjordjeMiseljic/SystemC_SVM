@@ -3,7 +3,7 @@
 
 Core::Core(sc_module_name name, int& sv_num, int sv_len, 
            sc_event *e_ready, sc_event *e_next, sc_event *e_fin, din_t& lambda,
-           din_t& target, deque<din_t> &data, din_t &res, double &max_acc):sv_num(sv_num),
+           din_t& target, deque<din_t> &data, acc_t &res, double &max_acc):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
                                                           e_next(e_next),
@@ -45,8 +45,7 @@ void Core::proc()
 
             if(p.to_double()>max_acc)
             {
-              max_acc=p.to_double(); 
-              //cout<<"P1"<<endl;
+               max_acc=p.to_double(); 
             }
 
             p*=0.1;
@@ -54,16 +53,15 @@ void Core::proc()
 
             if(p.to_double()>max_acc)
             {
-              max_acc=p.to_double(); 
-              //cout<<"P2"<<endl;
+               max_acc=p.to_double(); 
             }
 
             p=lambda*p;
 
             if(p.to_double()>max_acc)
             {
-              max_acc=p.to_double(); 
-              //cout<<"P3"<<endl;
+               max_acc=p.to_double(); 
+               cout<<"new maxAcc = "<<maxAcc<<endl;
             }
 
             p=target*p;

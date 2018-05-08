@@ -25,7 +25,7 @@ int sc_main(int argc, char* argv[])
 	deque <din_t> data;
 	din_t lambda;
 	din_t target;
-   din_t res;
+   acc_t res;
    double max_acc=0;
    
 	Cl = new Classificator("classificator",sv_num, sv_len, e_ready, e_next, &e_fin, lambda, target, data, res, number, max_acc);
