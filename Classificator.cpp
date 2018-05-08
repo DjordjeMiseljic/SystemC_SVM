@@ -1,7 +1,7 @@
 #include "Classificator.hpp"
 Classificator::Classificator(sc_module_name name, int& sv_num, int sv_len, 
            sc_event *e_ready, sc_event *e_next, sc_event *e_fin, din_t &lambda,
-           din_t &target, deque<din_t> &data, acc_t &res, num_t &number):sv_num(sv_num),
+           din_t &target, deque<din_t> &data, res_t &res, num_t &number):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
                                                           e_next(e_next),
@@ -27,7 +27,7 @@ Classificator::Classificator(sc_module_name name, int& sv_num, int sv_len,
 void Classificator::classify()
 {
    int k;
-   acc_t max;
+   res_t max;
    while(true)
    {  
       k=0;

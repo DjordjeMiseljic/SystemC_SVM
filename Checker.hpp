@@ -15,12 +15,12 @@ SC_MODULE(Checker)
 {
    public:
       SC_HAS_PROCESS(Checker);
-      Checker(sc_module_name name, sc_event *e_fin, acc_t &res, num_t &number);
+      Checker(sc_module_name name, sc_event *e_fin, res_t &res, num_t &number);
       void verify();
       int num_of_lines(string str);
 	protected:
       sc_event *e_fin;
-      acc_t &res;
+      res_t &res;
       num_t &number;
    };
 

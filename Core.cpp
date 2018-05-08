@@ -1,11 +1,12 @@
 #include "Core.hpp"
-#define P_CHECK_OVERFLOW if(p.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
-#define A_CHECK_OVERFLOW if(acc.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
+#define P_CHECK_OVERFLOW if(p.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST
+#define R_CHECK_OVERFLOW if(res.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST
+#define A_CHECK_OVERFLOW if(acc.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST
 
 
 Core::Core(sc_module_name name, int& sv_num, int sv_len, 
            sc_event *e_ready, sc_event *e_next, sc_event *e_fin, din_t& lambda,
-           din_t& target, deque<din_t> &data, acc_t &res):sv_num(sv_num),
+           din_t& target, deque<din_t> &data, res_t &res):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
                                                           e_next(e_next),
@@ -30,7 +31,7 @@ void Core::proc()
       wait(*e_ready);
       k=sv_num;
       b=lambda;//b is sent trough lambda on first transaction
-      acc=0;
+      acc=0.0;
       y.clear();
       for(int i=0;i<sv_len;i++)
          y.push_back(data[i]);
@@ -43,18 +44,18 @@ void Core::proc()
             for(int i=0; i<sv_len; i++)
                p+=y[i]*data[i];
 
-            P_CHECK_OVERFLOW
 
             p*=0.1;
-            p=p*p*p;
+            P_CHECK_OVERFLOW<<" mult 0.1"<<endl;
 
-            P_CHECK_OVERFLOW
+            p=p*p*p;
+            P_CHECK_OVERFLOW<<" cube "<<endl;
 
             p=lambda*p;
-
-            P_CHECK_OVERFLOW
+            P_CHECK_OVERFLOW<<" lambda*p"<<endl;
 
             p=target*p;
+            P_CHECK_OVERFLOW<<" target*p"<<endl;
            
             wait(1,SC_NS);
             
@@ -62,17 +63,20 @@ void Core::proc()
             //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
             
             acc+=p;
+            A_CHECK_OVERFLOW<<" acc+=p"<<endl;
             k--;
          }
       acc+=b;
+      A_CHECK_OVERFLOW<<"acc+=b"<<endl;
       res=acc;
-      A_CHECK_OVERFLOW
+      R_CHECK_OVERFLOW<<"res=acc"<<endl;
+
       e_fin->notify(SC_ZERO_TIME);
    }
    return;	
 }
 
-acc_t Core::get_acc()
+res_t Core::get_acc()
 {
    return acc;
 }

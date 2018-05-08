@@ -1,6 +1,6 @@
 #include "Checker.hpp"
 Checker::Checker(sc_module_name name,  sc_event *e_fin, 
-                 acc_t &res, num_t &number): e_fin(e_fin),
+                 res_t &res, num_t &number): e_fin(e_fin),
                                              res(res),
                                              number(number)
 {
@@ -62,7 +62,7 @@ void Checker::verify()
          else
             num=0;
 
-         if(abs(true_res-res.to_double())>0.01)
+         if(abs(true_res-res.to_double())>1)
          {
             cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" res mismatch   :: ";
             cout<<"core_res: "<<fixed<<setprecision(4)<<res.to_double()<<"["<<fixed<<setprecision(4)<<true_res<<"] :true_res"<<RST;
