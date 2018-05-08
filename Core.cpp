@@ -1,9 +1,11 @@
 #include "Core.hpp"
+#define P_CHECK_OVERFLOW if(p.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
+#define A_CHECK_OVERFLOW if(acc.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
 
 
 Core::Core(sc_module_name name, int& sv_num, int sv_len, 
            sc_event *e_ready, sc_event *e_next, sc_event *e_fin, din_t& lambda,
-           din_t& target, deque<din_t> &data, acc_t &res, double &max_acc):sv_num(sv_num),
+           din_t& target, deque<din_t> &data, acc_t &res):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
                                                           e_next(e_next),
@@ -11,14 +13,12 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
                                                           lambda(lambda),
                                                           target(target),
                                                           data(data),
-                                                          res(res),
-                                                          max_acc(max_acc)
+                                                          res(res)
 {
    cout<<name<<" constucted"<<endl;
    SC_THREAD(proc);
 }
 
-double Core::maxAcc=0;
 
 void Core::proc()
 {
@@ -43,26 +43,16 @@ void Core::proc()
             for(int i=0; i<sv_len; i++)
                p+=y[i]*data[i];
 
-            if(p.to_double()>max_acc)
-            {
-               max_acc=p.to_double(); 
-            }
+            P_CHECK_OVERFLOW
 
             p*=0.1;
             p=p*p*p;
 
-            if(p.to_double()>max_acc)
-            {
-               max_acc=p.to_double(); 
-            }
+            P_CHECK_OVERFLOW
 
             p=lambda*p;
 
-            if(p.to_double()>max_acc)
-            {
-               max_acc=p.to_double(); 
-               cout<<"new maxAcc = "<<maxAcc<<endl;
-            }
+            P_CHECK_OVERFLOW
 
             p=target*p;
            
@@ -75,17 +65,9 @@ void Core::proc()
             k--;
          }
       acc+=b;
-      if (maxAcc<acc.to_double())
-      {
-         maxAcc=acc.to_double();
-         cout<<"new maxAcc = "<<maxAcc<<endl;
-      }
       res=acc;
-      if(res.overflow_flag())
-        cout<<"Overflow detected!"<<endl; 
-      //cout<<"single core classification finished:\tres= "<<acc<<"\t["<<res<<"]"<<endl;
+      A_CHECK_OVERFLOW
       e_fin->notify(SC_ZERO_TIME);
-      //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
    }
    return;	
 }

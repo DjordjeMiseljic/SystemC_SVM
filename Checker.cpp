@@ -1,10 +1,8 @@
 #include "Checker.hpp"
-#include "Format.hpp"
 Checker::Checker(sc_module_name name,  sc_event *e_fin, 
-                 acc_t &res, num_t &number, double &max_acc): e_fin(e_fin),
-                                                             res(res),
-                                                             number(number),
-                                                             max_acc(max_acc)
+                 acc_t &res, num_t &number): e_fin(e_fin),
+                                             res(res),
+                                             number(number)
 {
    cout<<"Checker constucted"<<endl;
    SC_THREAD(verify);
@@ -64,7 +62,7 @@ void Checker::verify()
          else
             num=0;
 
-         if(abs(true_res-res.to_double())>0.0001)
+         if(abs(true_res-res.to_double())>0.01)
          {
             cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" res mismatch   :: ";
             cout<<"core_res: "<<fixed<<setprecision(4)<<res.to_double()<<"["<<fixed<<setprecision(4)<<true_res<<"] :true_res"<<RST;
@@ -76,7 +74,6 @@ void Checker::verify()
 
    percentage=(double)correct_cl/(double)num_of_cl;
    cout<<"number of classifications : "<<num_of_cl<<D_MAGNETA<<"\tpercentage: "<<B_MAGNETA<<100*percentage<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
-   cout<<"maximum accumulated number : "<<max_acc<<endl;
    r_file.close();
    l_file.close();
    return;	

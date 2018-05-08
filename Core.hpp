@@ -4,6 +4,7 @@
 #include <deque>
 #include <cstdlib>
 #include <ctime>
+#include "Format.hpp"
 #include "Types.hpp"
 
 using namespace std;
@@ -15,7 +16,7 @@ SC_MODULE(Core)
       SC_HAS_PROCESS(Core);
       Core(sc_module_name name, int& sv_num, int sv_len,
          sc_event *e_ready, sc_event *e_next, sc_event *e_fin, din_t& lambda,
-         din_t& target, deque<din_t> &data, acc_t &res, double &max_acc);
+         din_t& target, deque<din_t> &data, acc_t &res);
       void proc();
       acc_t get_acc();
 	protected:
@@ -28,11 +29,9 @@ SC_MODULE(Core)
       din_t &target;
       deque <din_t> &data;
       acc_t &res;
-      double &max_acc;
 
       deque <din_t> y;
       acc_t acc;
-      static double maxAcc;
    };
 
 #endif
