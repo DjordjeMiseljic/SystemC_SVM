@@ -29,6 +29,8 @@ void MemCtrl::grab_from_mem()
    int num = 0;
    int j,k = 0;
    deque <din_t> y_deq;
+   din_t y;
+   din_t d;
 
    file_extract();
    num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
@@ -43,12 +45,17 @@ void MemCtrl::grab_from_mem()
          y_deq.clear();
          for(int i=0; i<sv_len; i++)
          {
-            y_deq.push_back(images[j]);
+            y = images[j];
+            if(y.overflow_flag())
+               cout<<"Overflow detected on images!"<<endl; 
+            y_deq.push_back(y);
             j++;
          }
       }
       data=y_deq;
       lambda = biases[num];
+      if(lambda.overflow_flag())
+         cout<<"Overflow detected on bias!"<<endl; 
 
       e_ready[num].notify(SC_ZERO_TIME);
       sv_count=0;
@@ -59,13 +66,19 @@ void MemCtrl::grab_from_mem()
          data.clear();
          for(int i = 0; i<sv_len; i++)
          {
-            data.push_back(sv[num][k]);
+            d = sv[num][k];
+            if(d.overflow_flag())
+               cout<<"Overflow detected on support vectors!"<<endl; 
+            data.push_back(d);
             k++;
          }
          
          lambda = lambdas[num][sv_count];
-         
+         if(lambda.overflow_flag())
+            cout<<"Overflow detected on lambda!"<<endl; 
          target = targets[num][sv_count];
+         if(target.overflow_flag())
+            cout<<"Overflow detected on target!"<<endl; 
          sv_count++;
          e_ready[num].notify(SC_ZERO_TIME);
       }
@@ -95,7 +108,6 @@ void MemCtrl::file_extract()
    string str;
    int lines;
    int j, k=0;
-   
    lines=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
 
