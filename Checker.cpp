@@ -1,7 +1,7 @@
 #include "Checker.hpp"
 #include "Format.hpp"
 Checker::Checker(sc_module_name name,  sc_event *e_fin, 
-                 double &res, int &number, double &max_acc): e_fin(e_fin),
+                 din_t &res, num_t &number, double &max_acc): e_fin(e_fin),
                                                              res(res),
                                                              number(number),
                                                              max_acc(max_acc)
@@ -41,15 +41,17 @@ void Checker::verify()
             wait(1,SC_NS);
             getline(l_file, l_line);
             true_number = stoi(l_line);
-            if(true_number==number)
+            if(true_number==number.to_int())
             {
                correct_cl++;
-               cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<RST<<D_GREEN<<" :: classified number: "<<number<<"["<<true_number<<"] :true_number"<<RST;
+               cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<RST<<D_GREEN<<" :: classified number: "
+                  <<number.to_int()<<"["<<true_number<<"] :true_number"<<RST;
                cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
             }
             else
             {
-               cout<<B_RED<<"     MISCLASSIFICATION"<<RST<<D_RED<<" :: classified number: "<<number<<"["<<true_number<<"] :true_number"<<RST;
+               cout<<B_RED<<"     MISCLASSIFICATION"<<RST<<D_RED<<" :: classified number: "
+                  <<number.to_int()<<"["<<true_number<<"] :true_number"<<RST;
                cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
             }
             
@@ -62,10 +64,10 @@ void Checker::verify()
          else
             num=0;
 
-         if(abs(true_res-res)>0.00001)
+         if(abs(true_res-res.to_double())>0.0001)
          {
             cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" res mismatch   :: ";
-            cout<<"core_res: "<<fixed<<setprecision(4)<<res<<"["<<fixed<<setprecision(4)<<true_res<<"] :true_res"<<RST;
+            cout<<"core_res: "<<fixed<<setprecision(4)<<res.to_double()<<"["<<fixed<<setprecision(4)<<true_res<<"] :true_res"<<RST;
             cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
          }   
       }

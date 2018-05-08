@@ -1,8 +1,9 @@
 #include "Core.hpp"
 
+
 Core::Core(sc_module_name name, int& sv_num, int sv_len, 
-           sc_event *e_ready, sc_event *e_next, sc_event *e_fin, double& lambda,
-           int& target, deque<double> &data, double &res, double &max_acc):sv_num(sv_num),
+           sc_event *e_ready, sc_event *e_next, sc_event *e_fin, din_t& lambda,
+           din_t& target, deque<din_t> &data, din_t &res, double &max_acc):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
                                                           e_next(e_next),
@@ -22,13 +23,13 @@ double Core::maxAcc=0;
 void Core::proc()
 {
    int k;
-   double p;
-   double b;
+   p_t p;
+   din_t b;
    while(true)
    {
       wait(*e_ready);
       k=sv_num;
-      b=lambda;
+      b=lambda;//b is sent trough lambda on first transaction
       acc=0;
       y.clear();
       for(int i=0;i<sv_len;i++)
@@ -38,31 +39,30 @@ void Core::proc()
          {
             e_next->notify(SC_ZERO_TIME);
             wait(*e_ready);
-            p=1;
+            p=1.0;
             for(int i=0; i<sv_len; i++)
                p+=y[i]*data[i];
 
-            if(p>max_acc)
+            if(p.to_double()>max_acc)
             {
-              max_acc=p; 
+              max_acc=p.to_double(); 
               //cout<<"P1"<<endl;
             }
 
             p*=0.1;
             p=p*p*p;
 
-            if(p>max_acc)
+            if(p.to_double()>max_acc)
             {
-              max_acc=p; 
+              max_acc=p.to_double(); 
               //cout<<"P2"<<endl;
             }
 
             p=lambda*p;
-            p*=1000;
 
-            if(p>max_acc)
+            if(p.to_double()>max_acc)
             {
-              max_acc=p; 
+              max_acc=p.to_double(); 
               //cout<<"P3"<<endl;
             }
 
@@ -77,12 +77,14 @@ void Core::proc()
             k--;
          }
       acc+=b;
-      if (maxAcc<acc)
+      if (maxAcc<acc.to_double())
       {
-         maxAcc=acc;
+         maxAcc=acc.to_double();
          cout<<"new maxAcc = "<<maxAcc<<endl;
       }
       res=acc;
+      if(res.overflow_flag())
+        cout<<"Overflow detected!"<<endl; 
       //cout<<"single core classification finished:\tres= "<<acc<<"\t["<<res<<"]"<<endl;
       e_fin->notify(SC_ZERO_TIME);
       //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
@@ -90,7 +92,7 @@ void Core::proc()
    return;	
 }
 
-double Core::get_acc()
+acc_t Core::get_acc()
 {
    return acc;
 }
