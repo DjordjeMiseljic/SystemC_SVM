@@ -17,6 +17,8 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
    SC_THREAD(proc);
 }
 
+double Core::max_res=0;
+
 void Core::proc()
 {
    int k;
@@ -40,28 +42,28 @@ void Core::proc()
             for(int i=0; i<sv_len; i++)
                p+=y[i]*data[i];
 
-            if(p>max_acc)
+            if(abs(p)>max_acc)
             {
-              max_acc=p; 
-              //cout<<"P1"<<endl;
+               max_acc=p; 
+               //cout<<"new maximum p="<<max_acc<<endl; 
             }
 
             p*=0.1;
             p=p*p*p;
 
-            if(p>max_acc)
+            if(abs(p)>max_acc)
             {
-              max_acc=p; 
-              //cout<<"P2"<<endl;
+               max_acc=abs(p);
+               //cout<<"new maximum p="<<max_acc<<endl; 
             }
 
             p=lambda*p;
             p*=1000;
 
-            if(p>max_acc)
+            if(abs(p)>max_acc)
             {
-              max_acc=p; 
-              //cout<<"P3"<<endl;
+               max_acc=abs(p); 
+               //cout<<"new maximum p="<<max_acc<<endl; 
             }
 
             p=target*p;
@@ -76,6 +78,12 @@ void Core::proc()
          }
       acc+=b;
       res=acc;
+      /*if(max_res<abs(res))
+      {
+         max_res=abs(res);
+         cout<<"#### New MAX RES:"<<max_res<<endl; 
+      }
+      */
       //cout<<"single core classification finished:\tres= "<<acc<<"\t["<<res<<"]"<<endl;
       e_fin->notify(SC_ZERO_TIME);
       //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;

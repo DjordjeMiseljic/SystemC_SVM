@@ -30,6 +30,8 @@ SC_MODULE(Core)
 
       deque <double> y;
       double acc;
+      
+      static double max_res;
    };
 
 #endif
