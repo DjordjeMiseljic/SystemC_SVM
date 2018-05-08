@@ -7,6 +7,7 @@
 #include <deque>
 #include <vector>
 #include <array>
+#include <algorithm>
 using namespace std;
 using namespace sc_core;
 

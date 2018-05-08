@@ -191,7 +191,32 @@ void MemCtrl::file_extract()
       t_file.close();
       b_file.close();
    }
-
+   //double max = *std::max_element((sv[0].begin()),(sv[0].end()));
+   //cout<<"max element of sv[0] is: "<<max<<endl;
+   deque<double> elements_max;
+   deque<double> elements_min;
+   for(int i=0; i<10; i++)
+   {
+      double max = *std::max_element((lambdas[i].begin()),(lambdas[i].end()));
+      elements_max.push_back(max);
+      double min = *std::min_element((lambdas[i].begin()),(lambdas[i].end()));
+      elements_min.push_back(min);
+      cout<<"max element of deque "<<i<<"is: "<<max;
+      cout<<"\tmin element of deque "<<i<<"is: "<<min<<endl;
+   }
+   double max = *std::max_element((elements_max.begin()),(elements_max.end()));
+   cout<<"max element overall is: "<<max;
+   double min = *std::min_element((elements_min.begin()),(elements_min.end()));
+   cout<<"\tmin element overall is: "<<min<<endl;
+   double min_bias = *std::min_element((biases.begin()),(biases.end()));
+   double max_bias = *std::max_element((biases.begin()),(biases.end()));
+   for(int i=0;i<10;i++)
+      cout<<biases[i]<<endl;
+   cout<<"minimal bias is: "<<min_bias<<endl;
+   cout<<"maximal bias is: "<<max_bias<<endl;
+   
+   
+   
 }
 
 int MemCtrl::num_of_lines(string str)
