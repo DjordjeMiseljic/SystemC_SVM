@@ -46,16 +46,16 @@ void MemCtrl::grab_from_mem()
          for(int i=0; i<sv_len; i++)
          {
             y = images[j];
-            if(y.overflow_flag())
-               cout<<"Overflow detected on images!"<<endl; 
+            //if(y.overflow_flag())
+             //  cout<<"Overflow detected on images!"<<endl; 
             y_deq.push_back(y);
             j++;
          }
       }
       data=y_deq;
       lambda = biases[num];
-      if(lambda.overflow_flag())
-         cout<<"Overflow detected on bias!"<<endl; 
+      //if(lambda.overflow_flag())
+        // cout<<"Overflow detected on bias!"<<endl; 
 
       e_ready[num].notify(SC_ZERO_TIME);
       sv_count=0;
@@ -67,18 +67,18 @@ void MemCtrl::grab_from_mem()
          for(int i = 0; i<sv_len; i++)
          {
             d = sv[num][k];
-            if(d.overflow_flag())
-               cout<<"Overflow detected on support vectors!"<<endl; 
+            //if(d.overflow_flag())
+              // cout<<"Overflow detected on support vectors!"<<endl; 
             data.push_back(d);
             k++;
          }
          
          lambda = lambdas[num][sv_count];
-         if(lambda.overflow_flag())
-            cout<<"Overflow detected on lambda!"<<endl; 
+         //if(lambda.overflow_flag())
+           // cout<<"Overflow detected on lambda!"<<endl; 
          target = targets[num][sv_count];
-         if(target.overflow_flag())
-            cout<<"Overflow detected on target!"<<endl; 
+         //if(target.overflow_flag())
+           // cout<<"Overflow detected on target!"<<endl; 
          sv_count++;
          e_ready[num].notify(SC_ZERO_TIME);
       }
