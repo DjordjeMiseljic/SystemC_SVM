@@ -53,7 +53,7 @@ void MemCtrl::grab_from_mem()
          }
       }
       data=y_deq;
-      lambda = biases[num];
+      bias = biases[num];
       //if(lambda.overflow_flag())
         // cout<<"Overflow detected on bias!"<<endl; 
 
@@ -76,7 +76,7 @@ void MemCtrl::grab_from_mem()
          lambda = lambdas[num][sv_count];
          //if(lambda.overflow_flag())
            // cout<<"Overflow detected on lambda!"<<endl; 
-         target = targets[num][sv_count];
+         //target = targets[num][sv_count];
          //if(target.overflow_flag())
            // cout<<"Overflow detected on target!"<<endl; 
          sv_count++;
@@ -189,10 +189,9 @@ void MemCtrl::file_extract()
          {
             //extracting lambda
             getline(l_file,l_line);
-            lambdas[i].push_back(1000*stod(l_line));
             //extracting target
             getline(t_file,t_line);
-            targets[i].push_back(stod(t_line));
+            lambdas[i].push_back(stod(t_line)*1000*stod(l_line));
             j++;
          }
       else
