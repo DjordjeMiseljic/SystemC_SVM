@@ -1,13 +1,13 @@
 #include "Classificator.hpp"
 Classificator::Classificator(sc_module_name name, int& sv_num, int sv_len, 
            sc_event *e_ready, sc_event *e_next, sc_event *e_fin, lin_t &lambda,
-           din_t &target, deque<din_t> &data, res_t &res, num_t &number):sv_num(sv_num),
+           bin_t &bias, deque<din_t> &data, res_t &res, num_t &number):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
                                                           e_next(e_next),
                                                           e_fin(e_fin),
                                                           lambda(lambda),
-                                                          target(target),
+                                                          bias(bias),
                                                           data(data),
                                                           res(res),
                                                           number(number)
@@ -19,7 +19,7 @@ Classificator::Classificator(sc_module_name name, int& sv_num, int sv_len,
       string str("Core_no_");
       string num=to_string(i);
       str=str+num;
-      cores[i]=new Core(str.c_str(),sv_num, sv_len, &e_ready[i], &e_next[i], e_fin, lambda, target, data, res);
+      cores[i]=new Core(str.c_str(),sv_num, sv_len, &e_ready[i], &e_next[i], e_fin, lambda, bias, data, res);
    }
    SC_THREAD(classify);
 }

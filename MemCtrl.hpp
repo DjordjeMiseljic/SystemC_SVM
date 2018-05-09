@@ -18,7 +18,7 @@ SC_MODULE(MemCtrl)
    SC_HAS_PROCESS(MemCtrl);
    MemCtrl(sc_module_name name, int& sv_num, int sv_len,
            sc_event* e_ready, sc_event* e_next, lin_t& lambda, 
-           din_t& target, deque<din_t>& data);
+           bin_t& bias, deque<din_t>& data);
    int num_of_lines(string str);
    int num_of_test_img();
  protected:
@@ -27,11 +27,11 @@ SC_MODULE(MemCtrl)
    sc_event *e_ready;
    sc_event *e_next;
    lin_t &lambda;
-   din_t &target;
+   bin_t &bias;
    deque <din_t> &data;
    
    array<deque<double>, 10> sv;
-   array<deque<double>, 10> targets;
+   //array<deque<double>, 10> targets;
    array<deque<double>, 10> lambdas;
    deque<double> images;
    array<double, 10> biases;

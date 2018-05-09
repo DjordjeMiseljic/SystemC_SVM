@@ -16,7 +16,7 @@ SC_MODULE(Core)
       SC_HAS_PROCESS(Core);
       Core(sc_module_name name, int& sv_num, int sv_len,
          sc_event *e_ready, sc_event *e_next, sc_event *e_fin, lin_t& lambda,
-         din_t& target, deque<din_t> &data, res_t &res);
+         bin_t& bias, deque<din_t> &data, res_t &res);
       void proc();
       acc_t get_acc();
 	protected:
@@ -26,7 +26,7 @@ SC_MODULE(Core)
 		sc_event *e_next;
       sc_event *e_fin;
       lin_t &lambda;
-      din_t &target;
+      bin_t &bias;
       deque <din_t> &data;
       res_t &res;
 

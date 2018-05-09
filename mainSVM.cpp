@@ -24,11 +24,11 @@ int sc_main(int argc, char* argv[])
    sc_event e_fin;
 	deque <din_t> data;
 	lin_t lambda;
-	din_t target;
+	bin_t bias;
    res_t res;
    
-	Cl = new Classificator("classificator",sv_num, sv_len, e_ready, e_next, &e_fin, lambda, target, data, res, number);
-	Mem_Ctrl = new MemCtrl("mem_ctrl",sv_num, sv_len, e_ready, e_next, lambda, target, data);
+	Cl = new Classificator("classificator",sv_num, sv_len, e_ready, e_next, &e_fin, lambda, bias, data, res, number);
+	Mem_Ctrl = new MemCtrl("mem_ctrl",sv_num, sv_len, e_ready, e_next, lambda, bias, data);
    Check = new Checker("checker", &e_fin, res, number);
 
 	sc_start(20, sc_core::SC_SEC);

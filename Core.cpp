@@ -6,13 +6,13 @@
 
 Core::Core(sc_module_name name, int& sv_num, int sv_len, 
            sc_event *e_ready, sc_event *e_next, sc_event *e_fin, lin_t& lambda,
-           din_t& target, deque<din_t> &data, res_t &res):sv_num(sv_num),
+           bin_t& bias, deque<din_t> &data, res_t &res):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
                                                           e_next(e_next),
                                                           e_fin(e_fin),
                                                           lambda(lambda),
-                                                          target(target),
+                                                          bias(bias),
                                                           data(data),
                                                           res(res)
 {
@@ -25,12 +25,12 @@ void Core::proc()
 {
    int k;
    p_t p;
-   din_t b;
+   bin_t b;
    while(true)
    {
       wait(*e_ready);
       k=sv_num;
-      b=lambda;//b is sent trough lambda on first transaction
+      b=bias;
       acc=0.0;
       y.clear();
       for(int i=0;i<sv_len;i++)
@@ -42,7 +42,7 @@ void Core::proc()
             wait(*e_ready);
             p=1.0;
             for(int i=0; i<sv_len; i++)
-               p+=y[i]*data[i];
+               p+=y[i].to_double()*data[i].to_double();
 
 
             p*=0.1;
@@ -51,22 +51,19 @@ void Core::proc()
             p=p*p*p;
             P_CHECK_OVERFLOW<<" cube "<<endl;
 
-            p=lambda*p;
+            p=p*lambda.to_double();
             P_CHECK_OVERFLOW<<" lambda*p"<<endl;
 
-            p=target*p;
-            P_CHECK_OVERFLOW<<" target*p"<<endl;
-           
             wait(1,SC_NS);
             
             //cout<<"\tcurrent acc="<<acc<<"\tp="<<p<<"\tnew acc="<<(acc+p);
             //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
             
-            acc+=p;
+            acc+=p.to_double();
             A_CHECK_OVERFLOW<<" acc+=p"<<endl;
             k--;
          }
-      acc+=b;
+      acc+=b.to_double();
       A_CHECK_OVERFLOW<<"acc+=b"<<endl;
       res=acc;
       R_CHECK_OVERFLOW<<"res=acc"<<endl;
