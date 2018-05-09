@@ -4,15 +4,15 @@
 #include "MemCtrl.hpp"
 
 MemCtrl::MemCtrl(sc_module_name name, int& sv_num, int sv_len,
-		 sc_event *e_ready, sc_event *e_next, din_t& lambda,
+		 sc_event *e_ready, sc_event *e_next, lin_t& lambda,
 		 din_t& target, deque<din_t>& data):sc_module(name),
-                                                                sv_num(sv_num),
-                                                                sv_len(sv_len),
-                                                                e_ready(e_ready),
-                                                                e_next(e_next),
-                                                                lambda(lambda),
-                                                                target(target),
-                                                                data(data)
+                                          sv_num(sv_num),
+                                          sv_len(sv_len),
+                                          e_ready(e_ready),
+                                          e_next(e_next),
+                                          lambda(lambda),
+                                          target(target),
+                                          data(data)
                                                                
 {
 

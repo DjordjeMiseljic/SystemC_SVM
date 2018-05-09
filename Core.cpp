@@ -5,7 +5,7 @@
 
 
 Core::Core(sc_module_name name, int& sv_num, int sv_len, 
-           sc_event *e_ready, sc_event *e_next, sc_event *e_fin, din_t& lambda,
+           sc_event *e_ready, sc_event *e_next, sc_event *e_fin, lin_t& lambda,
            din_t& target, deque<din_t> &data, res_t &res):sv_num(sv_num),
                                                           sv_len(sv_len),
                                                           e_ready(e_ready),
@@ -76,7 +76,7 @@ void Core::proc()
    return;	
 }
 
-res_t Core::get_acc()
+acc_t Core::get_acc()
 {
    return acc;
 }

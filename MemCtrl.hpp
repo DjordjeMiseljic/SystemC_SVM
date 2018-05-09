@@ -17,7 +17,7 @@ SC_MODULE(MemCtrl)
  public:
    SC_HAS_PROCESS(MemCtrl);
    MemCtrl(sc_module_name name, int& sv_num, int sv_len,
-           sc_event* e_ready, sc_event* e_next, din_t& lambda, 
+           sc_event* e_ready, sc_event* e_next, lin_t& lambda, 
            din_t& target, deque<din_t>& data);
    int num_of_lines(string str);
    int num_of_test_img();
@@ -26,7 +26,7 @@ SC_MODULE(MemCtrl)
    int sv_len; 
    sc_event *e_ready;
    sc_event *e_next;
-   din_t &lambda;
+   lin_t &lambda;
    din_t &target;
    deque <din_t> &data;
    

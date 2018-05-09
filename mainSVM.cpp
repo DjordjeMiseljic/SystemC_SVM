@@ -23,7 +23,7 @@ int sc_main(int argc, char* argv[])
    sc_event e_next[10];
    sc_event e_fin;
 	deque <din_t> data;
-	din_t lambda;
+	lin_t lambda;
 	din_t target;
    res_t res;
    

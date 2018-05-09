@@ -14,7 +14,7 @@ SC_MODULE(Classificator)
    public:
       SC_HAS_PROCESS(Classificator);
       Classificator(sc_module_name name, int& sv_num, int sv_len,
-         sc_event *e_ready, sc_event *e_next, sc_event *e_fin, din_t& lambda,
+         sc_event *e_ready, sc_event *e_next, sc_event *e_fin, lin_t& lambda,
          din_t &target, deque<din_t> &data, res_t &res, num_t &number);
       void classify();
 	protected:
@@ -23,14 +23,14 @@ SC_MODULE(Classificator)
 		sc_event *e_ready;
 		sc_event *e_next;
       sc_event *e_fin;
-		din_t &lambda;
+		lin_t &lambda;
 		din_t &target;
 		deque <din_t> &data;
       res_t &res;
       num_t &number;
 
 		deque <din_t> y;
-		res_t acc;
+		acc_t acc;
       Core *cores[10];
 };
 
