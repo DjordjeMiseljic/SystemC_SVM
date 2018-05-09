@@ -30,12 +30,12 @@ SC_MODULE(MemCtrl)
    bin_t &bias;
    deque <din_t> &data;
    
-   array<deque<double>, 10> sv;
+   array<deque<din_t>, 10> sv;
    //array<deque<double>, 10> targets;
-   array<deque<double>, 10> lambdas;
-   deque<double> images;
-   array<double, 10> biases;
-   array<double, 10> sv_lines;
+   array<deque<lin_t>, 10> lambdas;
+   deque<din_t> images;
+   array<bin_t, 10> biases;
+   array<int, 10> sv_lines;
 
 
    //METHODS
