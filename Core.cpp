@@ -18,6 +18,7 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
 }
 
 double Core::max_res=0;
+double Core::maxAcc=0;
 
 void Core::proc()
 {
@@ -74,6 +75,11 @@ void Core::proc()
             //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
             
             acc+=p;
+           /* if(maxAcc<abs(acc))
+            {
+               maxAcc=abs(acc);
+               cout<<"#### New MAX ACC: "<<maxAcc<<endl; 
+            }*/
             k--;
          }
       acc+=b;
@@ -81,9 +87,8 @@ void Core::proc()
       /*if(max_res<abs(res))
       {
          max_res=abs(res);
-         cout<<"#### New MAX RES:"<<max_res<<endl; 
-      }
-      */
+         cout<<"#### New MAX RES: "<<max_res<<endl; 
+      }*/
       //cout<<"single core classification finished:\tres= "<<acc<<"\t["<<res<<"]"<<endl;
       e_fin->notify(SC_ZERO_TIME);
       //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;

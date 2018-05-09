@@ -32,6 +32,7 @@ SC_MODULE(Core)
       double acc;
       
       static double max_res;
+      static double maxAcc;
    };
 
 #endif
