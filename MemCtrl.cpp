@@ -109,6 +109,7 @@ void MemCtrl::file_extract()
    int lines;
    int j, k=0;
    lines=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   cout<<"num of images: "<<lines<<endl;
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
 
    
@@ -203,27 +204,27 @@ void MemCtrl::file_extract()
    }
    //double max = *std::max_element((sv[0].begin()),(sv[0].end()));
    //cout<<"max element of sv[0] is: "<<max<<endl;
-   deque<double> elements_max;
-   deque<double> elements_min;
-   for(int i=0; i<10; i++)
-   {
-      double max = *std::max_element((lambdas[i].begin()),(lambdas[i].end()));
-      elements_max.push_back(max);
-      double min = *std::min_element((lambdas[i].begin()),(lambdas[i].end()));
-      elements_min.push_back(min);
-      cout<<"max element of deque "<<i<<"is: "<<max;
-      cout<<"\tmin element of deque "<<i<<"is: "<<min<<endl;
-   }
-   double max = *std::max_element((elements_max.begin()),(elements_max.end()));
-   cout<<"max element overall is: "<<max;
-   double min = *std::min_element((elements_min.begin()),(elements_min.end()));
-   cout<<"\tmin element overall is: "<<min<<endl;
-   double min_bias = *std::min_element((biases.begin()),(biases.end()));
-   double max_bias = *std::max_element((biases.begin()),(biases.end()));
-   for(int i=0;i<10;i++)
-      cout<<biases[i]<<endl;
-   cout<<"minimal bias is: "<<min_bias<<endl;
-   cout<<"maximal bias is: "<<max_bias<<endl;
+   // deque<double> elements_max;
+   // deque<double> elements_min;
+   // for(int i=0; i<10; i++)
+   // {
+   //    double max = *std::max_element((lambdas[i].begin()),(lambdas[i].end()));
+   //    elements_max.push_back(max);
+   //    double min = *std::min_element((lambdas[i].begin()),(lambdas[i].end()));
+   //    elements_min.push_back(min);
+   //    cout<<"max element of deque "<<i<<"is: "<<max;
+   //    cout<<"\tmin element of deque "<<i<<"is: "<<min<<endl;
+   // }
+   // double max = *std::max_element((elements_max.begin()),(elements_max.end()));
+   // cout<<"max element overall is: "<<max;
+   // double min = *std::min_element((elements_min.begin()),(elements_min.end()));
+   // cout<<"\tmin element overall is: "<<min<<endl;
+   // double min_bias = *std::min_element((biases.begin()),(biases.end()));
+   // double max_bias = *std::max_element((biases.begin()),(biases.end()));
+   // for(int i=0;i<10;i++)
+   //    cout<<biases[i]<<endl;
+   // cout<<"minimal bias is: "<<min_bias<<endl;
+   // cout<<"maximal bias is: "<<max_bias<<endl;
    
    
    
@@ -233,16 +234,16 @@ int MemCtrl::num_of_lines(string str)
 {
    int count = 0;
    string line;
-   ifstream sv_file(str);
-   if(sv_file.is_open())
+   ifstream str_file(str);
+   if(str_file.is_open())
 
    {
-      while(getline(sv_file,line))
+      while(getline(str_file,line))
          count++;
-      sv_file.close();
+      str_file.close();
    }
    else
-      cout<<"error opening support vector file"<<endl;
+      cout<<"error opening str file in method num of lines"<<endl;
    return count;
 }
 #endif
