@@ -31,9 +31,9 @@ void MemCtrl::grab_from_mem()
    deque <din_t> y_deq;
    din_t y;
    din_t d;
-
    file_extract();
    num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   
    while(image_num<num_of_img)
    {
       wait(e_next[num]);
@@ -245,5 +245,6 @@ int MemCtrl::num_of_lines(string str)
    else
       cout<<"error opening str file in method num of lines"<<endl;
    return count;
+   
 }
 #endif
