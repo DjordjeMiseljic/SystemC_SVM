@@ -20,7 +20,6 @@ Core::Core(sc_module_name name, int& sv_num, int sv_len,
    SC_THREAD(proc);
 }
 
-
 void Core::proc()
 {
    int k;
@@ -51,14 +50,17 @@ void Core::proc()
             p=p*p*p;
             P_CHECK_OVERFLOW<<" cube "<<endl;
 
+
             p=p*lambda.to_double();
             P_CHECK_OVERFLOW<<" lambda*p"<<endl;
+
 
             wait(1,SC_NS);
             
             //cout<<"\tcurrent acc="<<acc<<"\tp="<<p<<"\tnew acc="<<(acc+p);
             //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
             
+
             acc+=p.to_double();
             A_CHECK_OVERFLOW<<" acc+=p"<<endl;
             k--;
@@ -66,8 +68,8 @@ void Core::proc()
       acc+=b.to_double();
       A_CHECK_OVERFLOW<<"acc+=b"<<endl;
       res=acc;
-      R_CHECK_OVERFLOW<<"res=acc"<<endl;
 
+      R_CHECK_OVERFLOW<<"res=acc"<<endl;
       e_fin->notify(SC_ZERO_TIME);
    }
    return;	
