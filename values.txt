@@ -1,0 +1,26 @@
+Lambdas
+max element of deque 0is: 2.78812e-05	min element of deque 0is: 1.00043e-07
+max element of deque 1is: 0.000289675	min element of deque 1is: 1.04065e-07
+max element of deque 2is: 5.38201e-05	min element of deque 2is: 1.03159e-07
+max element of deque 3is: 0.000112427	min element of deque 3is: 1.03746e-07
+max element of deque 4is: 0.000145586	min element of deque 4is: 1.00269e-07
+max element of deque 5is: 0.000104131	min element of deque 5is: 1.00356e-07
+max element of deque 6is: 7.38193e-05	min element of deque 6is: 1.10093e-07
+max element of deque 7is: 0.000107424	min element of deque 7is: 1.01264e-07
+max element of deque 8is: 6.37125e-05	min element of deque 8is: 1.01908e-07
+max element of deque 9is: 0.000138351	min element of deque 9is: 1.01791e-07
+max element overall is: 0.000289675	min element overall is: 1.00043e-07
+biases:
+-0.970001
+-0.127884
+-0.816857
+-0.755968
+-0.762346
+-0.505493
+-0.701101
+-0.575336
+-1.00288
+-0.750942
+minimal bias is: -1.00288
+maximal bias is: -0.127884
+

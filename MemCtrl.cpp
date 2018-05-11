@@ -4,16 +4,15 @@
 #include "MemCtrl.hpp"
 
 MemCtrl::MemCtrl(sc_module_name name, int& sv_num, int sv_len,
-		 sc_event *e_ready, sc_event *e_next, double& lambda,
-		 int& target, deque<double>& data, double& res):sc_module(name),
-                                                                sv_num(sv_num),
-                                                                sv_len(sv_len),
-                                                                e_ready(e_ready),
-                                                                e_next(e_next),
-                                                                lambda(lambda),
-                                                                target(target),
-                                                                data(data),
-                                                                res(res)
+		 sc_event *e_ready, sc_event *e_next, lin_t& lambda,
+		 bin_t& bias, deque<din_t>& data):sc_module(name),
+                                          sv_num(sv_num),
+                                          sv_len(sv_len),
+                                          e_ready(e_ready),
+                                          e_next(e_next),
+                                          lambda(lambda),
+                                          bias(bias),
+                                          data(data)
                                                                
 {
 
@@ -29,10 +28,12 @@ void MemCtrl::grab_from_mem()
    int num_of_img;
    int num = 0;
    int j,k = 0;
-   deque <double> y_deq;
-
+   deque <din_t> y_deq;
+   din_t y;
+   din_t d;
    file_extract();
    num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   
    while(image_num<num_of_img)
    {
       wait(e_next[num]);
@@ -44,12 +45,17 @@ void MemCtrl::grab_from_mem()
          y_deq.clear();
          for(int i=0; i<sv_len; i++)
          {
-            y_deq.push_back(images[j]);
+            y = images[j];
+            //if(y.overflow_flag())
+             //  cout<<"Overflow detected on images!"<<endl; 
+            y_deq.push_back(y);
             j++;
          }
       }
       data=y_deq;
-      lambda = biases[num];
+      bias = biases[num];
+      //if(lambda.overflow_flag())
+        // cout<<"Overflow detected on bias!"<<endl; 
 
       e_ready[num].notify(SC_ZERO_TIME);
       sv_count=0;
@@ -60,13 +66,19 @@ void MemCtrl::grab_from_mem()
          data.clear();
          for(int i = 0; i<sv_len; i++)
          {
-            data.push_back(sv[num][k]);
+            d = sv[num][k];
+            //if(d.overflow_flag())
+              // cout<<"Overflow detected on support vectors!"<<endl; 
+            data.push_back(d);
             k++;
          }
          
          lambda = lambdas[num][sv_count];
-         
-         target = targets[num][sv_count];
+         //if(lambda.overflow_flag())
+           // cout<<"Overflow detected on lambda!"<<endl; 
+         //target = targets[num][sv_count];
+         //if(target.overflow_flag())
+           // cout<<"Overflow detected on target!"<<endl; 
          sv_count++;
          e_ready[num].notify(SC_ZERO_TIME);
       }
@@ -96,8 +108,8 @@ void MemCtrl::file_extract()
    string str;
    int lines;
    int j, k=0;
-   
    lines=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   cout<<"num of images: "<<lines<<endl;
    ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
 
    
@@ -178,10 +190,9 @@ void MemCtrl::file_extract()
          {
             //extracting lambda
             getline(l_file,l_line);
-            lambdas[i].push_back(stod(l_line));
             //extracting target
             getline(t_file,t_line);
-            targets[i].push_back(stod(t_line));
+            lambdas[i].push_back(stod(t_line)*1000*stod(l_line));
             j++;
          }
       else
@@ -191,23 +202,49 @@ void MemCtrl::file_extract()
       t_file.close();
       b_file.close();
    }
-
+   //double max = *std::max_element((sv[0].begin()),(sv[0].end()));
+   //cout<<"max element of sv[0] is: "<<max<<endl;
+   // deque<double> elements_max;
+   // deque<double> elements_min;
+   // for(int i=0; i<10; i++)
+   // {
+   //    double max = *std::max_element((lambdas[i].begin()),(lambdas[i].end()));
+   //    elements_max.push_back(max);
+   //    double min = *std::min_element((lambdas[i].begin()),(lambdas[i].end()));
+   //    elements_min.push_back(min);
+   //    cout<<"max element of deque "<<i<<"is: "<<max;
+   //    cout<<"\tmin element of deque "<<i<<"is: "<<min<<endl;
+   // }
+   // double max = *std::max_element((elements_max.begin()),(elements_max.end()));
+   // cout<<"max element overall is: "<<max;
+   // double min = *std::min_element((elements_min.begin()),(elements_min.end()));
+   // cout<<"\tmin element overall is: "<<min<<endl;
+   // double min_bias = *std::min_element((biases.begin()),(biases.end()));
+   // double max_bias = *std::max_element((biases.begin()),(biases.end()));
+   // for(int i=0;i<10;i++)
+   //    cout<<biases[i]<<endl;
+   // cout<<"minimal bias is: "<<min_bias<<endl;
+   // cout<<"maximal bias is: "<<max_bias<<endl;
+   
+   
+   
 }
 
 int MemCtrl::num_of_lines(string str)
 {
    int count = 0;
    string line;
-   ifstream sv_file(str);
-   if(sv_file.is_open())
+   ifstream str_file(str);
+   if(str_file.is_open())
 
    {
-      while(getline(sv_file,line))
+      while(getline(str_file,line))
          count++;
-      sv_file.close();
+      str_file.close();
    }
    else
-      cout<<"error opening support vector file"<<endl;
+      cout<<"error opening str file in method num of lines"<<endl;
    return count;
+   
 }
 #endif

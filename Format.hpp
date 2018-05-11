@@ -1,3 +1,5 @@
+#ifndef FORMAT_H
+#define FORMAT_H
 /* BOLD - bold default
  * DIM - dimmed default
  * UL - underlined default
@@ -7,7 +9,7 @@
  * RED - red font
  * B_RED - bold red font
  * RST - reset font
- * BCK_RST -reset background
+ * BCK_RST -reset background 
  */
 
 #define BOLD  "\e[1m"
@@ -53,3 +55,5 @@
 
 #define RST  "\e[0m"
 #define BKG_RST  "\e[49m"
+
+#endif
