@@ -33,6 +33,7 @@ SC_MODULE(Core)
    deque <din_t> y;
    acc_t acc;
 
+
 };
 
 #endif

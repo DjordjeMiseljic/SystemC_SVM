@@ -60,6 +60,7 @@ void Core::proc()
             //cout<<"\tcurrent acc="<<acc<<"\tp="<<p<<"\tnew acc="<<(acc+p);
             //cout<<"\t@"<<sc_time_stamp()<<"\t#"<<name()<<endl;
             
+
             acc+=p.to_double();
             A_CHECK_OVERFLOW<<" acc+=p"<<endl;
             k--;
@@ -67,9 +68,8 @@ void Core::proc()
       acc+=b.to_double();
       A_CHECK_OVERFLOW<<"acc+=b"<<endl;
       res=acc;
+
       R_CHECK_OVERFLOW<<"res=acc"<<endl;
-
-
       e_fin->notify(SC_ZERO_TIME);
    }
    return;	
