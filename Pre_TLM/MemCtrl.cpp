@@ -32,7 +32,7 @@ void MemCtrl::grab_from_mem()
    din_t y;
    din_t d;
    file_extract();
-   num_of_img=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   num_of_img=num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    
    while(image_num<num_of_img)
    {
@@ -108,9 +108,9 @@ void MemCtrl::file_extract()
    string str;
    int lines;
    int j, k=0;
-   lines=num_of_lines("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   lines=num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    cout<<"num of images: "<<lines<<endl;
-   ifstream y_file("../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   ifstream y_file("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
 
    
    //extracting test images
@@ -139,14 +139,14 @@ void MemCtrl::file_extract()
    {
       
       //extracting biases
-      str = "../ML_number_recognition_SVM/saved_data/bias/bias";
+      str = "../../ML_number_recognition_SVM/saved_data/bias/bias";
       str = str + to_string(i);
       str = str+".txt";
       ifstream b_file(str);
       getline(b_file,b_line);
       biases[i] = stod(b_line);
       //extracting support vectors
-      str = "../ML_number_recognition_SVM/saved_data/support_vectors/sv";
+      str = "../../ML_number_recognition_SVM/saved_data/support_vectors/sv";
       str = str + to_string(i);
       str = str+".txt";
       lines = num_of_lines(str);
@@ -176,12 +176,12 @@ void MemCtrl::file_extract()
       k = 0;
       //extracting lambdas and targets
       lines = num_of_lines(str);
-      str = "../ML_number_recognition_SVM/saved_data/lambdas/lambdas";
+      str = "../../ML_number_recognition_SVM/saved_data/lambdas/lambdas";
       str = str + to_string(i);
       str = str+".txt";
       ifstream l_file(str);
 
-      str = "../ML_number_recognition_SVM/saved_data/targets/targets";
+      str = "../../ML_number_recognition_SVM/saved_data/targets/targets";
       str = str + to_string(i);
       str = str+".txt";
       ifstream t_file(str);
