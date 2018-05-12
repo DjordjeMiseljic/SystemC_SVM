@@ -15,13 +15,13 @@ void Checker::verify()
    int num_of_cl=0;
    int correct_cl=0;
    double percentage;
-   int num_of_images=num_of_lines("../ML_number_recognition_SVM/saved_data/labels/labels.txt");
+   int num_of_images=num_of_lines("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
    double true_res;
    
    string r_line;
    string l_line;
-   ifstream r_file("../ML_number_recognition_SVM/saved_data/results/res.txt");
-   ifstream l_file("../ML_number_recognition_SVM/saved_data/labels/labels.txt");
+   ifstream r_file("../../ML_number_recognition_SVM/saved_data/results/res.txt");
+   ifstream l_file("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
    if(r_file.is_open() && l_file.is_open())
       while(num_of_images)
       {
