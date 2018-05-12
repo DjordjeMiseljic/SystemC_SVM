@@ -13,30 +13,22 @@ using namespace sc_core;
 int sc_main(int argc, char* argv[])
 {
 	Classificator *Cl;
-	MemCtrl *Mem_Ctrl;
-   Checker *Check;
+	MemCtrl *Mc;
+   Checker *Ch;
    
-   num_t number; 
-	int sv_num = 500;
-	const int sv_len = 784;
-   sc_event e_ready[10];
-   sc_event e_next[10];
-   sc_event e_fin;
-	deque <din_t> data;
-	lin_t lambda;
-	bin_t bias;
-   res_t res;
+	Cl = new Classificator("Classificator");
+	Mc = new MemCtrl("Memory Controller");
+   Ch = new Checker("Checker");
    
-	Cl = new Classificator("classificator",sv_num, sv_len, e_ready, e_next, &e_fin, lambda, bias, data, res, number);
-	Mem_Ctrl = new MemCtrl("mem_ctrl",sv_num, sv_len, e_ready, e_next, lambda, bias, data);
-   Check = new Checker("checker", &e_fin, res, number);
+   Ch->isoc(Cl->tsoc);
+   Cl->isoc(Mc->tsoc);
 
-	sc_start(20, sc_core::SC_SEC);
+	sc_start(20,SC_SEC);
 	cout << "Simulation finished at " << sc_time_stamp() << std::endl;
    
 	delete Cl;
-	delete Mem_Ctrl;	
-   delete Check;
+	delete Mc;	
+   delete Ch;
 
 	return 0;
 }
