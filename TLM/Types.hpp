@@ -10,7 +10,7 @@ using namespace sc_dt;
 using namespace tlm;
 using namespace std;
 //sc_dt
-const array<int, 10> sv_array = {466, 408, 827, 948, 683, 756, 533, 659, 1078, 974};
+const array<int, 10> sv_array = {466, 408, 827, 948, 683, 756, 533, 659, 1078, 924};
 typedef sc_ufixed_fast <W,0,Q,O> din_t;
 typedef sc_fixed_fast <W,1,Q,O> bin_t;
 typedef sc_fixed_fast <W,0,Q,O> lin_t;

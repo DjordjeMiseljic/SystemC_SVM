@@ -3,18 +3,36 @@
 #include "MemCtrl.hpp"
 
 MemCtrl::MemCtrl(sc_module_name name): sc_module(name),
-                                       tsoc("mem_ctrl_tsoc") 
+                                       tsoc("mem_ctrl_tsoc"),
+                                       buffer(NULL)
 {
+   
    tsoc(*this);
    SC_THREAD(memory_init);
    for(int i=0; i!=RAM_SIZE; i++)
       ram[i]=0;
-   cout<<name<<" controller constructed"<<endl;
+   cout<<name<<"controller constructed"<<endl;
 }
 
 void MemCtrl::memory_init()
 {
    file_extract();
+   // cout<<2*sum_of_sv(1)<<endl;
+   // uint64 address = 2*sum_of_sv(9)+9 ;
+   // cout<<"sum of sv is"<<sum_of_sv(9)<<endl;
+   // buffer = read_from_mem(address);
+   // //cout<<"value in lambda0 is: "<<lambdas[4][3]<<endl;
+   // bin_t* test = (bin_t*)buffer;
+   // // for (int i = 0; i < 784; ++i)
+   // // {
+   // //    if(test[i]!=sv[9][532*784+i])
+   // //    {
+   // //       cout<<RED<<"ERROR MISMATCH"<<RST<<endl;
+   // //       return ;
+   // //    }
+   // // }
+   // cout<<"bias in vector: "<<biases[9]<<endl;
+   // cout<<"bias in memory: "<<*test<<endl;
    return;
 }
 void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
@@ -22,23 +40,17 @@ void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
    tlm_command cmd    = pl.get_command();
    uint64 adr         = pl.get_address();
    unsigned char *buf = pl.get_data_ptr();
-   unsigned int len   = pl.get_data_length();
-   //unsigned char *s_vector = sv[0];
+   //unsigned int len   = pl.get_data_length();
+
    switch(cmd)
    {
    case TLM_WRITE_COMMAND:
-      // for (unsigned int i = 0; i != len; ++i)
-      //    ram[adr++] = buf[i];
-      // pl.set_response_status( TLM_OK_RESPONSE );
-      for (unsigned int i = 0; i < len; ++i)
-      {
-         cout<<"data is: "<<(int)buf[i]<<endl;
-      }
+      assert(cmd != TLM_WRITE_COMMAND);
       break;
    case TLM_READ_COMMAND:
-      for (unsigned int i = 0; i != len; ++i)
-         buf[i] = ram[adr++];
-      pl.set_response_status( TLM_OK_RESPONSE );
+      buf = read_from_mem(adr);
+      cout<<*((lin_t*)buf)<<endl;
+      pl.set_response_status(TLM_OK_RESPONSE);
       break;
    default:
       pl.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
@@ -89,6 +101,11 @@ void MemCtrl::file_extract()
    int sv_len = 784;
    int sum = 0;
    
+   for (int i = 0; i < 10; ++i)
+   {
+      sv[i].reserve(sv_array[i]*784);
+      lambdas[i].reserve(sv_array[i]);
+   }
 
    for(int i=0; i<10; i++)
    {
@@ -181,4 +198,82 @@ int MemCtrl::num_of_lines(string str)
    
 }
 
+unsigned char* MemCtrl::read_from_mem(uint64 address)
+{
+   unsigned char *buf;
+   
+   
+   if(address<(uint64)2*sum_of_sv(0))
+      if(address<(uint64)sv_array[0])
+         buf = (unsigned char*)&sv[0][address*784];
+      else
+         buf = (unsigned char*)&lambdas[0][address-sum_of_sv(0)];
+   
+   else if(address<(uint64)2*sum_of_sv(1))
+      if(address<((uint64)2*sum_of_sv(1)-sv_array[1]))
+         buf = (unsigned char*)&sv[1][(address-2*sum_of_sv(0))*784];
+      else
+         buf = (unsigned char*)&lambdas[1][address-(2*sum_of_sv(1)-sv_array[1])];
+   
+   else if(address<(uint64)2*sum_of_sv(2))
+      if(address<((uint64)2*sum_of_sv(2)-sv_array[2]))
+         buf = (unsigned char*)&sv[2][(address-2*sum_of_sv(1))*784];
+      else
+         buf = (unsigned char*)&lambdas[2][address-(2*sum_of_sv(2)-sv_array[2])];
+
+   else if(address<(uint64)2*sum_of_sv(3))
+      if(address<((uint64)2*sum_of_sv(3)-sv_array[3]))
+         buf = (unsigned char*)&sv[3][(address-2*sum_of_sv(2))*784];
+      else
+         buf = (unsigned char*)&lambdas[3][address-(2*sum_of_sv(3)-sv_array[3])];
+   
+   else if(address<(uint64)2*sum_of_sv(4))
+      if(address<((uint64)2*sum_of_sv(4)-sv_array[4]))
+         buf = (unsigned char*)&sv[4][(address-2*sum_of_sv(3))*784];
+      else
+         buf = (unsigned char*)&lambdas[4][address-(2*sum_of_sv(4)-sv_array[4])];
+   
+   else if(address<(uint64)2*sum_of_sv(5))
+      if(address<((uint64)2*sum_of_sv(5)-sv_array[5]))
+         buf = (unsigned char*)&sv[5][(address-2*sum_of_sv(4))*784];
+      else
+         buf = (unsigned char*)&lambdas[5][address-(2*sum_of_sv(5)-sv_array[5])];
+
+   else if(address<(uint64)2*sum_of_sv(6))
+      if(address<((uint64)2*sum_of_sv(6)-sv_array[6]))
+         buf = (unsigned char*)&sv[6][(address-2*sum_of_sv(5))*784];
+      else
+         buf = (unsigned char*)&lambdas[6][address-(2*sum_of_sv(6)-sv_array[6])];   
+
+   else if(address<(uint64)2*sum_of_sv(7))
+      if(address<((uint64)2*sum_of_sv(7)-sv_array[7]))
+         buf = (unsigned char*)&sv[7][(address-2*sum_of_sv(6))*784];
+      else
+         buf = (unsigned char*)&lambdas[7][address-(2*sum_of_sv(7)-sv_array[7])];
+
+   else if(address<(uint64)2*sum_of_sv(8))
+      if(address<((uint64)2*sum_of_sv(8)-sv_array[8]))
+         buf = (unsigned char*)&sv[8][(address-2*sum_of_sv(7))*784];
+      else
+         buf = (unsigned char*)&lambdas[8][address-(2*sum_of_sv(8)-sv_array[8])];   
+
+   else if(address<(uint64)2*sum_of_sv(9))
+      if(address<((uint64)2*sum_of_sv(9)-sv_array[9]))
+         buf = (unsigned char*)&sv[9][(address-2*sum_of_sv(8))*784];
+      else
+         buf = (unsigned char*)&lambdas[9][address-(2*sum_of_sv(9)-sv_array[9])];
+   else
+      buf = (unsigned char*)&biases[address - 2*sum_of_sv(9)];
+
+   return buf;
+
+}
+int MemCtrl::sum_of_sv(int to_element)
+{
+   int sum = 0;
+   for(int i=0;i<=to_element;i++ )
+      sum += sv_array[i];
+   
+   return sum;
+}
 #endif

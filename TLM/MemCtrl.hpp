@@ -32,18 +32,23 @@ class MemCtrl :
       bool get_direct_mem_ptr(pl_t&, tlm_dmi&);
       unsigned int transport_dbg(pl_t&);
 
+      unsigned char *buffer = NULL;
    protected:
       static const int RAM_SIZE = 1024;
       unsigned char ram[RAM_SIZE];
       //global variables
-      array<deque<din_t>, 10> sv;
-      array<deque<lin_t>, 10> lambdas;
+      array<vector<din_t>, 10> sv;
+      array<vector<lin_t>, 10> lambdas;
       array<bin_t, 10> biases;
       array<int, 10> sv_lines;
       //methods
       void file_extract();
       int num_of_lines(string str);
+      unsigned char* read_from_mem(uint64 address);
+      int sum_of_sv(int to_element);
+
 };
+
 
 
 #endif
