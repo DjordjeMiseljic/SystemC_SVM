@@ -57,6 +57,8 @@ void Checker::verify()
    assert(pl.get_response_status() == TLM_OK_RESPONSE);
    
    pl.set_command(TLM_READ_COMMAND);
+   pl.set_address(1);
+   pl.set_data_length(784);
    isoc->b_transport(pl, offset);
    assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
