@@ -62,7 +62,7 @@ void Checker::verify()
    isoc->b_transport(pl, offset);
    assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
-   cout<<"classified number is: "<<(int)(*(pl.get_data_ptr()))<<endl;
+   cout<<"classified number is: "<<(num_t)(*(pl.get_data_ptr()))<<endl;
    
    ifstream l_file("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
    if(l_file.is_open())

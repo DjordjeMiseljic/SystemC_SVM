@@ -172,10 +172,13 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          //get classified number from res
          max_res=res_v[0];
          cl_num=0;
-         for(int i=0; i<10; i++)
+         for(int i=1; i<10; i++)
          {  
-            max_res=res_v[i];
-            cl_num=i;
+            if(max_res<res_v[i])
+            {
+               max_res=res_v[i];
+               cl_num=i;
+            }
          }
 
          pl.set_response_status( TLM_OK_RESPONSE );
@@ -183,7 +186,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
       case TLM_READ_COMMAND://--------------------------------------------------------RETURN RESULTS
          
-         buf=(unsigned char *)&max_res;
+         buf=(unsigned char *)&cl_num;
          pl.set_data_ptr        ( buf );
          pl.set_response_status( TLM_OK_RESPONSE );
          break;
