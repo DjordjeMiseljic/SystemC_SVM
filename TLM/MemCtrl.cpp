@@ -54,6 +54,7 @@ void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
    case TLM_READ_COMMAND:
       buf = read_from_mem(adr);
       //cout<<*((lin_t*)buf)<<endl;
+      pl.set_data_ptr(buf);
       pl.set_response_status(TLM_OK_RESPONSE);
       break;
    default:
