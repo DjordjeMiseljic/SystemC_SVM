@@ -1,4 +1,4 @@
-#ifndef CHECKER_C
+#ifndef CHECKER_Cp
 #define CHECKER_C
 #include "Checker.hpp"
 #include "tlm_utils/tlm_quantumkeeper.h"
@@ -23,7 +23,7 @@ void Checker::verify()
    sc_time offset = SC_ZERO_TIME;
    
    ifstream y_file("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   lines = 1;
+   lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    int k =0;
 
    //extracting test images
@@ -44,13 +44,22 @@ void Checker::verify()
          }
    else
       cout<<RED<<"ERROR OPENING Y_FILE"<<RST<<endl;
-   y_file.close();
+   y_file.close();   
+   
+   // unsigned char *data =(unsigned char*)&images[0];
+   // din_t *i_data = (din_t*)data;
+
    pl.set_address(1);
    pl.set_data_ptr((unsigned char*)&images[0]);
    pl.set_command(TLM_WRITE_COMMAND);
+   pl.set_data_length(784);
    isoc->b_transport(pl, offset);
+   assert(pl.get_response_status() == TLM_OK_RESPONSE);
+   
    pl.set_command(TLM_READ_COMMAND);
    isoc->b_transport(pl, offset);
+   assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
    cout<<"classified number is: "<<(int)(*(pl.get_data_ptr()))<<endl;
    
    ifstream l_file("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
@@ -59,7 +68,7 @@ void Checker::verify()
    else
       cout<<RED<<"couldnt open label file"<<RST<<endl;
    l_file.close();
-   cout<<"label is: "<<l_line<<endl;
+   cout<<"label is: "<<stoi(l_line)<<endl;
 
    return;
 }
@@ -73,5 +82,23 @@ tlm_sync_enum Checker::nb_transport_bw(pl_t& pl, phase_t& phase, sc_time& offset
 void Checker::invalidate_direct_mem_ptr(uint64 start, uint64 end)
 {
 	dmi_valid = false;
+}
+
+int Checker::num_of_lines(string str)
+{
+   int count = 0;
+   string line;
+   ifstream str_file(str);
+   if(str_file.is_open())
+
+   {
+      while(getline(str_file,line))
+         count++;
+      str_file.close();
+   }
+   else
+      cout<<"error opening str file in method num of lines"<<endl;
+   return count;
+
 }
 #endif

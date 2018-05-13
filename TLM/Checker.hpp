@@ -25,11 +25,12 @@ class Checker :
       tlm_initiator_socket<> isoc;
       tlm_sync_enum nb_transport_bw(pl_t&, phase_t&, sc_time&);
       void invalidate_direct_mem_ptr(uint64, uint64);
-
+   
    protected:
       void verify();
       bool dmi_valid;
       unsigned char* dmi_mem;
+      int num_of_lines(string str);
 
 };
 
