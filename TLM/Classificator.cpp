@@ -51,14 +51,18 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
       return;
    }
 
-
 	switch(cmd)
    {
 
       case TLM_WRITE_COMMAND://--------------------------------------------------------CLASSIFY IMAGE
+         
          image_v.clear();
          for(unsigned int i=0; i<len; i++)
+         {
             image_v.push_back(((din_t *)buf)[i]);
+            cout<<((din_t *)buf)[i]<<endl;
+         }
+
          offset = SC_ZERO_TIME;
          
          //This is used only for debugging
@@ -68,7 +72,6 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          dbg_pl.set_data_ptr(dbg_buf);
          dbg_pl.set_command(TLM_READ_COMMAND);
          */
-         
          #ifdef QUANTUM
          tlm_utils::tlm_quantumkeeper qk;
          qk.reset();
@@ -80,9 +83,9 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
          for(unsigned int core=0; core<10; core++)
          {
-            acc=1.0;
+            acc=0;
 
-            for(int sv=0; sv<sv_array[core]; sv++)
+            for( int sv=0; sv<sv_array[core]; sv++)
             {
                
                //REQUEST SV
@@ -109,7 +112,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
 
                p=1.0;
-               for(unsigned int i=0; i<SV_LEN; i++)
+               for( int i=0; i<SV_LEN; i++)
                {
                   p+=image_v[i]*((din_t*)buf)[i];
                   P_CHECK_OVERFLOW

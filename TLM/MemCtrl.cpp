@@ -11,7 +11,7 @@ MemCtrl::MemCtrl(sc_module_name name): sc_module(name),
    SC_THREAD(memory_init);
    for(int i=0; i!=RAM_SIZE; i++)
       ram[i]=0;
-   cout<<name<<"controller constructed"<<endl;
+   cout<<name<<" constructed"<<endl;
 }
 
 void MemCtrl::memory_init()

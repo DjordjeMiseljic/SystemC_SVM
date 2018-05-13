@@ -17,7 +17,7 @@ int sc_main(int argc, char* argv[])
    Checker *Ch;
    
 	Cl = new Classificator("Classificator");
-	Mc = new MemCtrl("Memory Controller");
+	Mc = new MemCtrl("Memory_Controller");
    Ch = new Checker("Checker");
    
    Ch->isoc(Cl->tsoc);
