@@ -42,6 +42,8 @@ void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
    unsigned char *buf = pl.get_data_ptr();
    //unsigned int len   = pl.get_data_length();
 
+   buf=buf;
+
    switch(cmd)
    {
    case TLM_WRITE_COMMAND:

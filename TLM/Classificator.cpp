@@ -58,10 +58,11 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          
          image_v.clear();
          for(unsigned int i=0; i<len; i++)
-         {
             image_v.push_back(((din_t *)buf)[i]);
-            cout<<((din_t *)buf)[i]<<endl;
-         }
+
+         for(unsigned int i=0; i<len; i++)
+            cout<< image_v[i]<<"\t";
+            cout<<endl;
 
          offset = SC_ZERO_TIME;
          
