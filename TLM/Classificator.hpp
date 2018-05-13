@@ -7,6 +7,7 @@
 #include <array>
 #include <tlm>
 #include "Types.hpp"
+#include "Format.hpp"
 
 using namespace std;
 using namespace sc_core;

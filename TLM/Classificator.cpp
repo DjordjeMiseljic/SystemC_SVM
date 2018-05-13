@@ -6,18 +6,18 @@
 #define R_CHECK_OVERFLOW if(res_v[core].overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
 #define A_CHECK_OVERFLOW if(acc.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
 
-#define SV_LEN 784;
+#define SV_LEN 784
 
-#define SV0 (0)
-#define SV1 ((sc_array(0)*(SV_LEN+1))+1)
-#define SV2 (SV1+(sc_array(1)*(SV_LEN+1))+1)
-#define SV3 (SV2+(sc_array(2)*(SV_LEN+1))+1)
-#define SV4 (SV3+(sc_array(3)*(SV_LEN+1))+1)
-#define SV5 (SV4+(sc_array(4)*(SV_LEN+1))+1)
-#define SV6 (SV5+(sc_array(5)*(SV_LEN+1))+1)
-#define SV7 (SV6+(sc_array(6)*(SV_LEN+1))+1)
-#define SV8 (SV7+(sc_array(7)*(SV_LEN+1))+1)
-#define SV9 (SV8+(sc_array(8)*(SV_LEN+1))+1)
+#define SV0 0
+#define SV1 (466*(SV_LEN+1))+1
+#define SV2 SV1+(408*(SV_LEN+1))+1
+#define SV3 SV2+(827*(SV_LEN+1))+1
+#define SV4 SV3+(948*(SV_LEN+1))+1
+#define SV5 SV4+(683*(SV_LEN+1))+1
+#define SV6 SV5+(756*(SV_LEN+1))+1
+#define SV7 SV6+(533*(SV_LEN+1))+1
+#define SV8 SV7+(659*(SV_LEN+1))+1
+#define SV9 SV8+(1078*(SV_LEN+1))+1
 
 const array<int, 10> sv_start_addr = {SV0, SV1, SV2, SV3, SV4, SV5, SV6, SV7, SV8, SV9};
 
@@ -31,7 +31,7 @@ Classificator::Classificator(sc_module_name name): sc_module(name),
    
    cout<<name<<" constucted"<<endl;
    image_v.reserve(SV_LEN);
-   res.reserve(10);
+   res_v.reserve(10);
 
 }
 
@@ -47,7 +47,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
    if(adr!=1)
    {
-      SC_REPORT_ERROR("Classificator"," Not my payload ")
+      SC_REPORT_ERROR("Classificator"," Not my payload ");
       return;
    }
 
@@ -57,9 +57,9 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
       case TLM_WRITE_COMMAND://--------------------------------------------------------CLASSIFY IMAGE
          image_v.clear();
-         for(int i=0; i<len; i++)
-            image_v.push_back(((din_t *)buff)[i]);
-         sc_time offset = SC_ZERO_TIME;
+         for(unsigned int i=0; i<len; i++)
+            image_v.push_back(((din_t *)buf)[i]);
+         offset = SC_ZERO_TIME;
          
          //This is used only for debugging
          /*
@@ -78,15 +78,15 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          pl.set_command         ( cmd );
          pl.set_data_ptr        ( buf );
 
-         for(int core=0; core<10; core++)
+         for(unsigned int core=0; core<10; core++)
          {
             acc=1.0;
 
-            for(int sv=0; sv<sv_array(core); sv++)
+            for(int sv=0; sv<sv_array[core]; sv++)
             {
                
                //REQUEST SV
-               adr=sv_start_addr(core)+sv*SV_LEN;
+               adr=sv_start_addr[core]+sv*SV_LEN;
                /*
                 address where support vectors for current core start +
                 current sv * number of pixels 
@@ -98,19 +98,20 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
                   offset += sc_time(4, SC_NS);
                #endif
 
-               pl.set_adress (adr)
-               data_length=SV_LEN;
+               pl.set_address (adr);
+               len=SV_LEN;
+               pl.set_data_length (len);
                pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
                isoc->b_transport(pl,offset);
                
-               if (pl.get_response_status != TLM_OK_RESPONSE)
+               if (pl.get_response_status() != TLM_OK_RESPONSE)
                   SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
 
 
                p=1.0;
-               for(int i=0; i<SV_LEN; i++)
+               for(unsigned int i=0; i<SV_LEN; i++)
                {
-                  p+=y[i]*((din_t*)buf)[i];
+                  p+=image_v[i]*((din_t*)buf)[i];
                   P_CHECK_OVERFLOW
                }
                p*=0.1;
@@ -120,51 +121,53 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
                P_CHECK_OVERFLOW
                
                //REQUEST LAMBDA
-               adr=sv_start_addr(core)+sv_array[core]*SV_LEN+sv;
+               adr=sv_start_addr[core]+sv_array[core]*SV_LEN+sv;
                /*
                 address where support vectors for current core start + 
                 num of sv for current core * num of pixels +
                 offset for current sv 
                */
-               pl.set_adress (adr)
-               data_length=1;
+               pl.set_address (adr);
+               len=1;
+               pl.set_data_length (len);
                pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
                isoc->b_transport(pl,offset);
-               if (pl.get_response_status != TLM_OK_RESPONSE)
+               if (pl.get_response_status() != TLM_OK_RESPONSE)
                   SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
                
-               p*= *(lin_t*)buff;
-               P_CHECK_OVEFLOW
+               p*= *(lin_t*)buf;
+               P_CHECK_OVERFLOW
                
                acc+=p;
-               A_CHECK_OVEFLOW
+               A_CHECK_OVERFLOW
             }
 
             //REQUEST BIAS 
-            adr=sv_start_addr(core)+sv_array[core]*(SV_LEN+1);
+            adr=sv_start_addr[core]+sv_array[core]*(SV_LEN+1);
             /*
              address where support vectors for current core start + 
              number of support vectors for current core * 
              (num of pixels + 1 for lambdas)
             */
-            pl.set_adress (adr)
-            data_length=1;
+            pl.set_address (adr);
+            len=1;
+            pl.set_data_length (len);
             pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
             isoc->b_transport(pl,offset);
-            if (pl.get_response_status != TLM_OK_RESPONSE)
+            if (pl.get_response_status() != TLM_OK_RESPONSE)
                SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
 
-            acc+=*(bin_t*)buff;
-            A_CHECK_OVEFLOW
+            acc+=*(bin_t*)buf;
+            A_CHECK_OVERFLOW
 
             res_v[0]=acc;
-            R_CHECK_OVEFLOW
+            R_CHECK_OVERFLOW
          
          }
 
          //get classified number from res
          max_res=res_v[0];
-            sc_num=0;
+         cl_num=0;
          for(int i=0; i<10; i++)
          {  
             max_res=res_v[i];
@@ -176,7 +179,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
       case TLM_READ_COMMAND://--------------------------------------------------------RETURN RESULTS
          
-         buf=(char *)&max_res;
+         buf=(unsigned char *)&max_res;
          pl.set_data_ptr        ( buf );
          pl.set_response_status( TLM_OK_RESPONSE );
          break;
