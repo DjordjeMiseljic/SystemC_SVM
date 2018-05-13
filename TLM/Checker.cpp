@@ -16,7 +16,7 @@ Checker::Checker(sc_module_name name) : sc_module(name),
 
 void Checker::verify()
 {
-   return;	
+   return;
 }
 
 
