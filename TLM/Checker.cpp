@@ -33,17 +33,17 @@ void Checker::verify()
    {
       for(int i=0; i<lines; i++)
       {
-         image = (unsigned char*)&images[i*784];
-         pl.set_address(1);
+         image = (unsigned char*)&images[i*SV_LEN];
          pl.set_data_ptr(image);
+         pl.set_address(1);
+         pl.set_data_length(SV_LEN);
          pl.set_command(TLM_WRITE_COMMAND);
-         pl.set_data_length(784);
          isoc->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
          pl.set_command(TLM_READ_COMMAND);
          pl.set_address(1);
-         pl.set_data_length(784);
+         pl.set_data_length(SV_LEN);
          isoc->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
          num = (num_t*)pl.get_data_ptr();
@@ -52,23 +52,29 @@ void Checker::verify()
          label = (num_t)stoi(l_line);
          if(label == *num)
          {
-            cout<<B_GREEN<<"CLASSIFICATION MATCH\t";
-            cout<<"PREDICTED_NUMBER: "<<*num<<RST<<GREEN" REAL_NUMBER ["<<label<<"]"<<RST<<endl;
+               cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<RST<<D_GREEN<<" :: classified number: "
+                  <<*num<<"["<<label<<"] :true_number"<<RST;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
             match++;
          }
          else
          {
-            cout<<B_RED<<"CLASSIFICATION ERROR\t";
-            cout<<"PREDICTED_NUMBER: "<<*num<<RST<<RED" REAL_NUMBER ["<<label<<"]"<<RST<<endl;
+               cout<<B_RED<<"     MISCLASSIFICATION"<<RST<<D_RED<<" :: classified number: "
+                  <<*num<<"["<<label<<"] :true_number"<<RST;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
          }
          
       }
-      cout<<B_BLUE<<"Clasification percentage: "<<(float)match/lines*100<<"%"<<" on "<<lines<<" images"<<RST<<endl;
+      cout<<"Number of classifications : "<<lines<<D_MAGNETA<<"\nPercentage: "<<B_MAGNETA
+         <<(float)match/lines*100<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
    }
    else
-      cout<<RED<<"ERROR OPENING LABEL FILE"<<RST<<endl;
+   {
+      cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" OPENING LABEL FILE"<<endl;
+      cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+   }
+      
    l_file.close();
-
 
    return;
 }
@@ -109,9 +115,9 @@ void Checker::images_extraction()
    ifstream y_file("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
       if(y_file.is_open())
-         for(int i=0; i<784*lines;i++)
+         for(int i=0; i<SV_LEN*lines;i++)
          {
-            if(k == 784-1 )
+            if(k == SV_LEN-1 )
             {
                getline(y_file, y_line, '\n');
                k = 0;
