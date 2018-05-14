@@ -48,29 +48,39 @@ void Checker::verify()
    
    // unsigned char *data =(unsigned char*)&images[0];
    // din_t *i_data = (din_t*)data;
-
-   pl.set_address(1);
-   pl.set_data_ptr((unsigned char*)&images[0]);
-   pl.set_command(TLM_WRITE_COMMAND);
-   pl.set_data_length(784);
-   isoc->b_transport(pl, offset);
-   assert(pl.get_response_status() == TLM_OK_RESPONSE);
-   
-   pl.set_command(TLM_READ_COMMAND);
-   pl.set_address(1);
-   pl.set_data_length(784);
-   isoc->b_transport(pl, offset);
-   assert(pl.get_response_status() == TLM_OK_RESPONSE);
-
-   cout<<"classified number is: "<<(num_t)(*(pl.get_data_ptr()))<<endl;
-   
+   num_t *num;
+   unsigned char* image;
    ifstream l_file("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
    if(l_file.is_open())
-      getline(l_file,l_line);
+   {
+      for(int i=0; i<10; i++)
+      {
+         image = (unsigned char*)&images[2*784];
+         pl.set_address(1);
+         pl.set_data_ptr(image);
+         pl.set_command(TLM_WRITE_COMMAND);
+         pl.set_data_length(784);
+         isoc->b_transport(pl, offset);
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
+   
+         pl.set_command(TLM_READ_COMMAND);
+         pl.set_address(1);
+         pl.set_data_length(784);
+         isoc->b_transport(pl, offset);
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
+         num = (num_t*)pl.get_data_ptr();
+         cout<<"classified number is: "<<*num;
+   
+         getline(l_file,l_line);
+      
+      
+         cout<<" label is:["<<stoi(l_line)<<"]"<<endl;
+      }
+   }
    else
-      cout<<RED<<"couldnt open label file"<<RST<<endl;
+      cout<<RED<<"ERROR OPENING LABEL FILE"<<RST<<endl;
    l_file.close();
-   cout<<"label is: "<<stoi(l_line)<<endl;
+
 
    return;
 }

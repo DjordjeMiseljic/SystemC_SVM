@@ -43,7 +43,14 @@ protected:
    p_t p;
    num_t cl_num;
    res_t max_res;
-   
+   array<vector<din_t>, 10> sv_c;
+   array<vector<lin_t>, 10> lambdas;
+   array<bin_t, 10> biases;
+   array<int, 10> sv_lines;
+   void file_extract();
+   int num_of_lines(string str);
+   int SV_LEN;
+
 
 };
 
