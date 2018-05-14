@@ -6,7 +6,6 @@
 #include "Checker.hpp"
 #include "Types.hpp"
 
-#define QUANTUM
 
 using namespace std;
 using namespace sc_core;
