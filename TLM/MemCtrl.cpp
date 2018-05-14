@@ -43,7 +43,7 @@ void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
          pl.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
       }
 
-   offset += sc_time(3, SC_NS);
+   offset += sc_time(5, SC_NS);
 }
 
 

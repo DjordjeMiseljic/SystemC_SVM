@@ -25,6 +25,10 @@ void Checker::verify()
    num_t label = 0;
    int match = 0;
    
+   #ifdef QUANTUM
+   tlm_utils::tlm_quantumkeeper qk;
+   qk.reset();
+   #endif
    
    lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    images_extraction();
@@ -33,6 +37,14 @@ void Checker::verify()
    {
       for(int i=0; i<lines; i++)
       {
+
+         #ifdef QUANTUM
+         qk.inc(sc_time(4, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+               
          image = (unsigned char*)&images[i*SV_LEN];
          pl.set_data_ptr(image);
          pl.set_address(1);
@@ -41,6 +53,18 @@ void Checker::verify()
          isoc->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+
+
+         #ifdef QUANTUM
+         qk.inc(sc_time(4, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+
          pl.set_command(TLM_READ_COMMAND);
          pl.set_address(1);
          pl.set_data_length(SV_LEN);
@@ -48,6 +72,10 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
          num = (num_t*)pl.get_data_ptr();
    
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+
          getline(l_file,l_line);
          label = (num_t)stoi(l_line);
          if(label == *num)

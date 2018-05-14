@@ -57,13 +57,6 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
       for(unsigned int i=0; i<len; i++)
          image_v.push_back(((din_t *)buf)[i]);
 
-      offset = SC_ZERO_TIME;
-         
-      #ifdef QUANTUM
-      tlm_utils::tlm_quantumkeeper qk;
-      qk.reset();
-      #endif
-        
       cmd=TLM_READ_COMMAND;
       pl.set_command         ( cmd );
       pl.set_data_ptr        ( buf );
@@ -74,13 +67,6 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
          for( int sv=0; sv<sv_array[core]; sv++)
          {
-            #ifdef QUANTUM
-            qk.inc(sc_time(4, SC_NS));
-            offset = qk.get_local_time();
-            #else
-            offset += sc_time(4, SC_NS);
-            #endif
-               
             //REQUEST SV
             adr=sv_start_addr[core]+sv*SV_LEN;
             pl.set_address ((uint64)adr);
@@ -157,6 +143,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          }
       }
 
+      offset+=sc_time(100, SC_NS);
       pl.set_response_status( TLM_OK_RESPONSE );
       break;
 
@@ -165,7 +152,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
       buf=(unsigned char *)&cl_num;
       pl.set_data_ptr        ( buf );
       pl.set_response_status( TLM_OK_RESPONSE );
-
+      offset+=sc_time(5, SC_NS);
       break;
 
    default:

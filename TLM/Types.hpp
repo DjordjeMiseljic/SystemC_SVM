@@ -3,6 +3,7 @@
 #include <systemc>
 #include <array>
 #define SV_LEN 784
+#define QUANTUM
 
 #define W   12
 #define Q   SC_RND
