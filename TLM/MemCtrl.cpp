@@ -222,7 +222,7 @@ unsigned char* MemCtrl::read_from_mem(uint64 address)
    unsigned char *buf;
    //first sv,lambda and bias
    if(address <= ((uint64)sum_of_sv(0))*784+sum_of_sv(0))
-      if(address<=((uint64)sum_of_sv(0))*784)
+      if(address<((uint64)sum_of_sv(0))*784)
          buf = (unsigned char*)&sv[0][address];
       else if(address!=(uint64)(sum_of_sv(0))*784+sum_of_sv(0))
          buf = (unsigned char*)&lambdas[0][address - (sum_of_sv(0))*784];
@@ -233,71 +233,71 @@ unsigned char* MemCtrl::read_from_mem(uint64 address)
       if(address<=((uint64)sum_of_sv(1))*784+sum_of_sv(0))
          buf = (unsigned char*)&sv[1][address-sum_of_sv(0)*784-sum_of_sv(0)-1];
       else if(address!=(uint64)(sum_of_sv(1))*784+sum_of_sv(1)+1)
-         buf = (unsigned char*)&lambdas[1][address-(sum_of_sv(1))*784+sum_of_sv(0)];
+         buf = (unsigned char*)&lambdas[1][address-(sum_of_sv(1)*784+sum_of_sv(0)+1)];
       else
          buf = (unsigned char*)&biases[1]; 
 
-   else if(address <= ((uint)sum_of_sv(2))*784+sum_of_sv(2)+1)
+   else if(address <= ((uint)sum_of_sv(2))*784+sum_of_sv(2)+2)
       if(address<=((uint64)sum_of_sv(2))*784+sum_of_sv(1))
-         buf = (unsigned char*)&sv[2][address-sum_of_sv(1)*784-sum_of_sv(1)-1];
-      else if(address!=(uint64)(sum_of_sv(2))*784+sum_of_sv(2)+1)
-         buf = (unsigned char*)&lambdas[2][address - (sum_of_sv(2))*784+sum_of_sv(1)];
+         buf = (unsigned char*)&sv[2][address-sum_of_sv(1)*784-sum_of_sv(1)-2];
+      else if(address!=(uint64)(sum_of_sv(2))*784+sum_of_sv(2)+2)
+         buf = (unsigned char*)&lambdas[2][address - (sum_of_sv(2)*784+sum_of_sv(1)+2)];
       else
          buf = (unsigned char*)&biases[2];
    
-   else if(address <= ((uint)sum_of_sv(3))*784+sum_of_sv(3)+1)
+   else if(address <= ((uint)sum_of_sv(3))*784+sum_of_sv(3)+3)
       if(address<=((uint64)sum_of_sv(3))*784+sum_of_sv(2))
-         buf = (unsigned char*)&sv[3][address-sum_of_sv(2)*784-sum_of_sv(2)-1];
-      else if(address!=(uint64)(sum_of_sv(3))*784+sum_of_sv(3)+1)
-         buf = (unsigned char*)&lambdas[3][address - (sum_of_sv(3))*784+sum_of_sv(2)];
+         buf = (unsigned char*)&sv[3][address-sum_of_sv(2)*784-sum_of_sv(2)-3];
+      else if(address!=(uint64)(sum_of_sv(3))*784+sum_of_sv(3)+3)
+         buf = (unsigned char*)&lambdas[3][address - (sum_of_sv(3)*784+sum_of_sv(2)+3)];
       else
          buf = (unsigned char*)&biases[3];
 
-   else if(address <= ((uint)sum_of_sv(4))*784+sum_of_sv(4)+1)
+   else if(address <= ((uint)sum_of_sv(4))*784+sum_of_sv(4)+4)
       if(address<=((uint64)sum_of_sv(4))*784+sum_of_sv(3))
-         buf = (unsigned char*)&sv[4][address-sum_of_sv(3)*784-sum_of_sv(3)-1];
-      else if(address!=(uint64)(sum_of_sv(4))*784+sum_of_sv(4)+1)
-         buf = (unsigned char*)&lambdas[4][address - (sum_of_sv(4))*784+sum_of_sv(3)];
+         buf = (unsigned char*)&sv[4][address-sum_of_sv(3)*784-sum_of_sv(3)-4];
+      else if(address!=(uint64)(sum_of_sv(4))*784+sum_of_sv(4)+4)
+         buf = (unsigned char*)&lambdas[4][address - (sum_of_sv(4)*784+sum_of_sv(3)+4)];
       else
          buf = (unsigned char*)&biases[4];
 
-   else if(address <= ((uint)sum_of_sv(5))*784+sum_of_sv(5)+1)
+   else if(address <= ((uint)sum_of_sv(5))*784+sum_of_sv(5)+5)
       if(address<=((uint64)sum_of_sv(5))*784+sum_of_sv(4))
-         buf = (unsigned char*)&sv[5][address-sum_of_sv(4)*784-sum_of_sv(4)-1];
-      else if(address!=(uint64)(sum_of_sv(5))*784+sum_of_sv(5)+1)
-         buf = (unsigned char*)&lambdas[5][address - (sum_of_sv(5))*784+sum_of_sv(4)];
+         buf = (unsigned char*)&sv[5][address-sum_of_sv(4)*784-sum_of_sv(4)-5];
+      else if(address!=(uint64)(sum_of_sv(5))*784+sum_of_sv(5)+5)
+         buf = (unsigned char*)&lambdas[5][address - (sum_of_sv(5)*784+sum_of_sv(4)+5)];
       else
          buf = (unsigned char*)&biases[5];
    
-   else if(address <= ((uint)sum_of_sv(6))*784+sum_of_sv(6)+1)
+   else if(address <= ((uint)sum_of_sv(6))*784+sum_of_sv(6)+6)
       if(address<=((uint64)sum_of_sv(6))*784+sum_of_sv(5))
-         buf = (unsigned char*)&sv[6][address-sum_of_sv(5)*784-sum_of_sv(5)-1];
-      else if(address!=(uint64)(sum_of_sv(6))*784+sum_of_sv(6)+1)
-         buf = (unsigned char*)&lambdas[6][address - (sum_of_sv(6))*784+sum_of_sv(5)];
+         buf = (unsigned char*)&sv[6][address-sum_of_sv(5)*784-sum_of_sv(5)-6];
+      else if(address!=(uint64)(sum_of_sv(6))*784+sum_of_sv(6)+6)
+         buf = (unsigned char*)&lambdas[6][address - (sum_of_sv(6)*784+sum_of_sv(5)+6)];
       else
          buf = (unsigned char*)&biases[6];
 
-   else if(address <= ((uint)sum_of_sv(7))*784+sum_of_sv(7)+1)
+   else if(address <= ((uint)sum_of_sv(7))*784+sum_of_sv(7)+7)
       if(address<=((uint64)sum_of_sv(7))*784+sum_of_sv(6))
-         buf = (unsigned char*)&sv[7][address-sum_of_sv(6)*784-sum_of_sv(6)-1];
-      else if(address!=(uint64)(sum_of_sv(7))*784+sum_of_sv(7)+1)
-         buf = (unsigned char*)&lambdas[7][address - (sum_of_sv(7))*784+sum_of_sv(6)];
+         buf = (unsigned char*)&sv[7][address-sum_of_sv(6)*784-sum_of_sv(6)-7];
+      else if(address!=(uint64)(sum_of_sv(7))*784+sum_of_sv(7)+7)
+         buf = (unsigned char*)&lambdas[7][address - (sum_of_sv(7)*784+sum_of_sv(6)+7)];
       else
          buf = (unsigned char*)&biases[7];
    
-   else if(address <= ((uint)sum_of_sv(8))*784+sum_of_sv(8)+1)
+   else if(address <= ((uint)sum_of_sv(8))*784+sum_of_sv(8)+8)
       if(address<=((uint64)sum_of_sv(8))*784+sum_of_sv(7))
-         buf = (unsigned char*)&sv[8][address-sum_of_sv(7)*784-sum_of_sv(7)-1];
-      else if(address!=(uint64)(sum_of_sv(8))*784+sum_of_sv(8)+1)
-         buf = (unsigned char*)&lambdas[8][address - (sum_of_sv(8))*784+sum_of_sv(7)];
+         buf = (unsigned char*)&sv[8][address-sum_of_sv(7)*784-sum_of_sv(7)-8];
+      else if(address!=(uint64)(sum_of_sv(8))*784+sum_of_sv(8)+8)
+         buf = (unsigned char*)&lambdas[8][address - (sum_of_sv(8)*784+sum_of_sv(7)+8)];
       else
          buf = (unsigned char*)&biases[8];
    
-   else if(address <= ((uint)sum_of_sv(9))*784+sum_of_sv(9)+1)
+   else if(address <= ((uint)sum_of_sv(9))*784+sum_of_sv(9)+9)
       if(address<=((uint64)sum_of_sv(9))*784+sum_of_sv(8))
-         buf = (unsigned char*)&sv[9][address-sum_of_sv(8)*784-sum_of_sv(8)-1];
-      else if(address!=(uint64)(sum_of_sv(9))*784+sum_of_sv(9)+1)
-         buf = (unsigned char*)&lambdas[9][address - (sum_of_sv(9))*784+sum_of_sv(8)];
+         buf = (unsigned char*)&sv[9][address-sum_of_sv(8)*784-sum_of_sv(8)-9];
+      else if(address!=(uint64)(sum_of_sv(9))*784+sum_of_sv(9)+9)
+         buf = (unsigned char*)&lambdas[9][address - (sum_of_sv(9)*784+sum_of_sv(8)+9)];
       else
          buf = (unsigned char*)&biases[9];
    else

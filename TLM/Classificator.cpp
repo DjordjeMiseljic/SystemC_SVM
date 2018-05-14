@@ -126,7 +126,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
             for (int i = 0; i < 784; ++i)
                if(test[i]!=sv_c[core][sv*784+i])
                {
-                  cout<<RED<<"ERROR MISMATCH"<<RST<<endl;
+                  cout<<RED<<"ERROR MISMATCH ON SV"<<RST<<endl;
                   cout<<"core: "<<core<<", sv: "<<sv<<", adr: "<<adr<<endl;
                   return;
                }
