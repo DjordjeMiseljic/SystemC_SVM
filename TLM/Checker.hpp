@@ -27,11 +27,14 @@ class Checker :
       void invalidate_direct_mem_ptr(uint64, uint64);
    
    protected:
+      vector<din_t> images;
       void verify();
       bool dmi_valid;
       unsigned char* dmi_mem;
+      //METHODS
+   void images_extraction();
       int num_of_lines(string str);
-
+     
 };
 
 #endif

@@ -7,16 +7,7 @@
 #define A_CHECK_OVERFLOW if(acc.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
 
 #define SV_LEN 784
-int sum_of_sv(int to_element)
-{
-   if(to_element == -1)
-      return 0;
-   int sum = 0;
-   for(int i=0;i<=to_element;i++ )
-      sum += sv_array[i];
-   
-   return sum;
-}
+
 #define SV0 0
 #define SV1 (466*(SV_LEN+1))+1
 #define SV2 SV1+(408*(SV_LEN+1))+1
@@ -41,11 +32,6 @@ Classificator::Classificator(sc_module_name name): sc_module(name),
    cout<<name<<" constucted"<<endl;
    image_v.reserve(SV_LEN);
    res_v.reserve(10);
-   for (int i = 0; i < 10; ++i)
-   {
-      cout<<sv_start_addr[i]<<endl;
-   }
-
 }
 
 
@@ -94,7 +80,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
       cmd=TLM_READ_COMMAND;
       pl.set_command         ( cmd );
       pl.set_data_ptr        ( buf );
-
+      res_v.clear();
       for(unsigned int core=0; core<10; core++)
       {
          acc=0;
@@ -230,12 +216,11 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
       cl_num=0;
       for(int i=1; i<10; i++)
       {
-         //cout<<"res of "<<i<<"is: "<<res_v[i]<<endl;
+
          if(max_res<res_v[i])
          {
             max_res=res_v[i];
             cl_num=(num_t)i;
-            //cout<<cl_num<<endl;
          }
       }
 
@@ -247,6 +232,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
       buf=(unsigned char *)&cl_num;
       pl.set_data_ptr        ( buf );
       pl.set_response_status( TLM_OK_RESPONSE );
+
       break;
 
    default:
@@ -371,7 +357,7 @@ void Classificator::file_extract()
       t_file.close();
       b_file.close();
    }
-   cout<<"sum is: "<<sum<<endl;
+
 
 }
 int Classificator::num_of_lines(string str)

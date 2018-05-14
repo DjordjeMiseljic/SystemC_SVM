@@ -17,38 +17,6 @@ MemCtrl::MemCtrl(sc_module_name name): sc_module(name),
 void MemCtrl::memory_init()
 {
    file_extract();
-   int b;
-   int num = 1;
-   int offset = 0;
-   if(num == 0)
-      b = 0;
-   else
-      b = 1;
-   //uint64 address = (sum_of_sv(num-1)+offset)*784+sum_of_sv(num-1)+b;
-   uint64 address = sum_of_sv(num-1)*(784+1)+b+offset*784;
-
-   buffer = read_from_mem(address);
-   // cout<<"value in lambda0 is: "<<lambdas[2][0]<<endl;
-   din_t* test = (din_t*)buffer;
-   for (int i = 0; i < 784; ++i)
-      if(test[i]!=sv[num][offset*784+i])
-         cout<<RED<<"ERROR MISMATCH"<<RST<<endl;
-
-   uint64 address_l = sum_of_sv(num)*784 + sum_of_sv(num-1)+offset;
-   cout<<"address_l is: "<<address_l<<endl;
-   buffer = read_from_mem(address_l);
-   lin_t *test_l = (lin_t*)buffer;
-   if(*test_l!=lambdas[num][offset])
-      cout<<GREEN<<"LAMBDA MISMATCH"<<RST<<endl;
-   
-   uint64 address_b = sum_of_sv(num)*784 + sum_of_sv(num);
-   buffer = read_from_mem(address_b);
-   bin_t *test_b = (bin_t*)buffer;
-
-   
-   if(*test_b!=biases[num])
-      cout<<YELLOW<<"BIAS MISMATCH"<<RST<<endl;
-   cout<<"TEST_FINISHED"<<endl;
    return;
 }
 void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
@@ -195,7 +163,7 @@ void MemCtrl::file_extract()
          t_file.close();
          b_file.close();
       }
-   cout<<"sum is: "<<sum<<endl;
+
 
 }
 
