@@ -52,7 +52,7 @@ void Checker::verify()
          label = (num_t)stoi(l_line);
          if(label == *num)
          {
-            cout<<B_GREEN<<"CLASSIFICATION MATCH";
+            cout<<B_GREEN<<"CLASSIFICATION MATCH\t";
             cout<<"PREDICTED_NUMBER: "<<*num<<RST<<GREEN" REAL_NUMBER ["<<label<<"]"<<RST<<endl;
             match++;
          }
@@ -63,7 +63,7 @@ void Checker::verify()
          }
          
       }
-      cout<<B_BLUE<<"Clasification percentage: "<<(float)lines/match<<"%"<<" on "<<lines<<"images"<<RST<<endl;
+      cout<<B_BLUE<<"Clasification percentage: "<<(float)match/lines*100<<"%"<<" on "<<lines<<" images"<<RST<<endl;
    }
    else
       cout<<RED<<"ERROR OPENING LABEL FILE"<<RST<<endl;
