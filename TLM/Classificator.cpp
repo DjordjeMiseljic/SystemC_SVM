@@ -19,14 +19,14 @@ int sum_of_sv(int to_element)
 }
 #define SV0 0
 #define SV1 (466*(SV_LEN+1))+1
-#define SV2 SV1+(408*(SV_LEN+1))
-#define SV3 SV2+(827*(SV_LEN+1))
-#define SV4 SV3+(948*(SV_LEN+1))
-#define SV5 SV4+(683*(SV_LEN+1))
-#define SV6 SV5+(756*(SV_LEN+1))
-#define SV7 SV6+(533*(SV_LEN+1))
-#define SV8 SV7+(659*(SV_LEN+1))
-#define SV9 SV8+(1078*(SV_LEN+1))
+#define SV2 SV1+(408*(SV_LEN+1))+1
+#define SV3 SV2+(827*(SV_LEN+1))+1
+#define SV4 SV3+(948*(SV_LEN+1))+1
+#define SV5 SV4+(683*(SV_LEN+1))+1
+#define SV6 SV5+(756*(SV_LEN+1))+1
+#define SV7 SV6+(533*(SV_LEN+1))+1
+#define SV8 SV7+(659*(SV_LEN+1))+1
+#define SV9 SV8+(1078*(SV_LEN+1))+1
 
 const array<int, 10> sv_start_addr = {SV0, SV1, SV2, SV3, SV4, SV5, SV6, SV7, SV8, SV9};
 
@@ -150,10 +150,10 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
             P_CHECK_OVERFLOW
                
                //REQUEST LAMBDA
-               if(core == 0)
-                  adr=sv_start_addr[core]+sv_array[core]*SV_LEN+sv;
-               else
-                  adr=sv_start_addr[core]-1+sv_array[core]*SV_LEN+sv;
+               //if(core == 0)
+               adr=sv_start_addr[core]+sv_array[core]*SV_LEN+sv;
+            //else
+            //    adr=sv_start_addr[core]-1+sv_array[core]*SV_LEN+sv;
                   /*
               address where support vectors for current core start + 
               num of sv for current core * num of pixels +
@@ -187,10 +187,10 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
                }
 
          //REQUEST BIAS
-         if(core == 0)
-            adr=sv_start_addr[core]+sv_array[core]*(SV_LEN+1);
-         else
-            adr=sv_start_addr[core]-1+sv_array[core]*(SV_LEN+1);
+         //if(core == 0)
+         adr=sv_start_addr[core]+sv_array[core]*(SV_LEN+1);
+         // else
+            // adr=sv_start_addr[core]-1+sv_array[core]*(SV_LEN+1);
          /*
            address where support vectors for current core start + 
            number of support vectors for current core * 

@@ -55,7 +55,7 @@ void Checker::verify()
    {
       for(int i=0; i<10; i++)
       {
-         image = (unsigned char*)&images[2*784];
+         image = (unsigned char*)&images[9*784];
          pl.set_address(1);
          pl.set_data_ptr(image);
          pl.set_command(TLM_WRITE_COMMAND);
