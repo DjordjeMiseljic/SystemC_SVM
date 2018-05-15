@@ -7,7 +7,7 @@ MemCtrl::MemCtrl(sc_module_name name): sc_module(name),
                                        buffer(NULL)
 {
    
-   tsoc(*this);
+   tsoc.register_b_transport(this, &MemCtrl::b_transport);
    SC_THREAD(memory_init);
    for(int i=0; i!=RAM_SIZE; i++)
       ram[i]=0;
@@ -47,34 +47,6 @@ void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
 }
 
 
-tlm_sync_enum MemCtrl::nb_transport_fw(pl_t& pl, phase_t& phase, sc_time& offset)
-{
-   return TLM_ACCEPTED;
-}
-
-bool MemCtrl::get_direct_mem_ptr(pl_t& pl, tlm_dmi& dmi)
-{
-   dmi.allow_read_write();
-
-   dmi.set_dmi_ptr       ( ram );
-   dmi.set_start_address ( 0   );
-   dmi.set_end_address   ( 199 );
-
-   return true;
-}
-
-unsigned int MemCtrl::transport_dbg(pl_t& pl)
-{
-   tlm_command cmd = pl.get_command();
-   unsigned char* ptr = pl.get_data_ptr();
-
-   if ( cmd == TLM_READ_COMMAND )
-      memcpy(ptr, ram, RAM_SIZE);
-   else if ( cmd == TLM_WRITE_COMMAND )
-      memcpy(ram, ptr, RAM_SIZE);
-
-   return RAM_SIZE;
-}
 void MemCtrl::file_extract()
 {
    

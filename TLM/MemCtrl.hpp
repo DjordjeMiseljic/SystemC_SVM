@@ -9,7 +9,7 @@
 #include <array>
 #include <algorithm>
 #include <tlm>
-
+#include <tlm_utils/simple_target_socket.h>
 #include "Format.hpp"
 #include "Types.hpp"
 using namespace std;
@@ -26,11 +26,8 @@ class MemCtrl :
       //processes
       void memory_init();
       //tlm methods
-      tlm_target_socket<> tsoc;
+      tlm_utils::simple_target_socket<timer> tsoc;
       void b_transport(pl_t&, sc_time&);
-      tlm_sync_enum nb_transport_fw(pl_t&, phase_t&, sc_core::sc_time&);
-      bool get_direct_mem_ptr(pl_t&, tlm_dmi&);
-      unsigned int transport_dbg(pl_t&);
 
       unsigned char *buffer = NULL;
    protected:
