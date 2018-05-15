@@ -6,10 +6,10 @@
 #include <vector>
 #include <array>
 #include <tlm>
-#include "Types.hpp"
-#include "Format.hpp"
 #include <tlm_utils/simple_initiator_socket.h>
 #include <tlm_utils/simple_target_socket.h>
+#include "Types.hpp"
+#include "Format.hpp"
 
 using namespace std;
 using namespace sc_core;

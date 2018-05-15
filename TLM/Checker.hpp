@@ -8,7 +8,6 @@
 #include <iomanip>
 #include <tlm>
 #include <tlm_utils/simple_initiator_socket.h>
-
 #include "Format.hpp"
 #include "Types.hpp"
 using namespace std;

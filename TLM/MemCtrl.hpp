@@ -17,8 +17,7 @@ using namespace sc_core;
 using namespace tlm;
 
 class MemCtrl :
-   public sc_module,
-   public tlm_fw_transport_if<>
+   public sc_module 
 {
    public:
       SC_HAS_PROCESS(MemCtrl);
