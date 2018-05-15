@@ -26,7 +26,7 @@ class MemCtrl :
       //processes
       void memory_init();
       //tlm methods
-      tlm_utils::simple_target_socket<timer> tsoc;
+      tlm_utils::simple_target_socket<MemCtrl> s_mc_t;
       void b_transport(pl_t&, sc_time&);
 
       unsigned char *buffer = NULL;

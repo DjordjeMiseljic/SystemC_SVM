@@ -3,11 +3,10 @@
 #include "MemCtrl.hpp"
 
 MemCtrl::MemCtrl(sc_module_name name): sc_module(name),
-                                       tsoc("mem_ctrl_tsoc"),
                                        buffer(NULL)
 {
    
-   tsoc.register_b_transport(this, &MemCtrl::b_transport);
+   s_mc_t.register_b_transport(this, &MemCtrl::b_transport);
    SC_THREAD(memory_init);
    for(int i=0; i!=RAM_SIZE; i++)
       ram[i]=0;

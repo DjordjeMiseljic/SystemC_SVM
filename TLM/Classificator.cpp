@@ -20,13 +20,9 @@
 
 const array<int, 10> sv_start_addr = {SV0, SV1, SV2, SV3, SV4, SV5, SV6, SV7, SV8, SV9};
 
-Classificator::Classificator(sc_module_name name): sc_module(name),
-                                                   tsoc("classificator_tsoc"),
-                                                   isoc("classificator_isoc"),
-                                                   dmi_valid(false)
+Classificator::Classificator(sc_module_name name): sc_module(name)
 {
-   tsoc(*this);
-   isoc(*this);
+   s_cl_t.register_b_transport(this, &Classificator::b_transport);
    cout<<name<<" constucted"<<endl;
    image_v.reserve(SV_LEN);
    res_v.reserve(10);
@@ -41,12 +37,6 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
    uint64 adr         = pl.get_address();
    unsigned char *buf = pl.get_data_ptr();
    unsigned int len   = pl.get_data_length();
-
-   if(adr!=1)
-   {
-      SC_REPORT_ERROR("Classificator"," Not my payload ");
-      return;
-   }
 
    switch(cmd)
    {
@@ -73,7 +63,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
             len=SV_LEN;
             pl.set_data_length (len);
             pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
-            isoc->b_transport(pl,offset);
+            s_cl_i->b_transport(pl,offset);
 
             if (pl.get_response_status() != TLM_OK_RESPONSE)
                SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
@@ -98,7 +88,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
             len=1;
             pl.set_data_length (len);
             pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
-            isoc->b_transport(pl,offset);
+            s_cl_i->b_transport(pl,offset);
 
             if (pl.get_response_status() != TLM_OK_RESPONSE)
                SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
@@ -118,7 +108,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          len=1;
          pl.set_data_length (len);
          pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
-         isoc->b_transport(pl,offset);
+         s_cl_i->b_transport(pl,offset);
 
          if (pl.get_response_status() != TLM_OK_RESPONSE)
             SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
@@ -161,30 +151,4 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
 }
 
-
-tlm_sync_enum Classificator::nb_transport_fw(pl_t& pl, phase_t& phase, sc_time& offset)
-{
-   return TLM_ACCEPTED;
-}
-
-bool Classificator::get_direct_mem_ptr(pl_t& pl, tlm_dmi& dmi)
-{
-   dmi.allow_read_write();
-   return true;
-}
-
-unsigned int Classificator::transport_dbg(pl_t& pl)
-{
-   return 0;
-}
-
-tlm_sync_enum Classificator::nb_transport_bw(pl_t& pl, phase_t& phase, sc_time& offset)
-{
-   return TLM_ACCEPTED;
-}
-
-void Classificator::invalidate_direct_mem_ptr(uint64 start, uint64 end)
-{
-   dmi_valid = false;
-}
 #endif

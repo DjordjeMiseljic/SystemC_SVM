@@ -8,34 +8,25 @@
 #include <tlm>
 #include "Types.hpp"
 #include "Format.hpp"
+#include <tlm_utils/simple_initiator_socket.h>
+#include <tlm_utils/simple_target_socket.h>
 
 using namespace std;
 using namespace sc_core;
 using namespace tlm;
 
 class Classificator :
-   public sc_module,
-   public tlm_fw_transport_if<>,
-   public tlm_bw_transport_if<>
+   public sc_module
 {
 public:
    SC_HAS_PROCESS(Classificator);
    Classificator(sc_module_name name);
-   //TARGET SOCKET
-   tlm_target_socket<> tsoc;
-   void b_transport(pl_t&, sc_time&);
-   tlm_sync_enum nb_transport_fw(pl_t&, phase_t&, sc_core::sc_time&);
-   bool get_direct_mem_ptr(pl_t&, tlm_dmi&);
-   unsigned int transport_dbg(pl_t&);
-   //INITIATIOR SOCKET
-   tlm_initiator_socket<> isoc;
-   tlm_sync_enum nb_transport_bw(pl_t&, phase_t&, sc_time&);
-   void invalidate_direct_mem_ptr(uint64, uint64);
-
+   
+   tlm_utils::simple_target_socket<Classificator> s_cl_t;
+   tlm_utils::simple_initiator_socket<Classificator> s_cl_i;
+   
 protected:
-   //INITIATOR SOCKET VARIABLES
-   bool dmi_valid;
-   unsigned char* dmi_mem; 
+   void b_transport(pl_t&, sc_time&);
    //CLASSIFICATOR VARIABLES
    vector <din_t> image_v;
    vector <res_t> res_v;

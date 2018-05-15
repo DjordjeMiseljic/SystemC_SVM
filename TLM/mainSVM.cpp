@@ -20,8 +20,8 @@ int sc_main(int argc, char* argv[])
 	Mc = new MemCtrl("Memory_Controller");
    Ch = new Checker("Checker");
    
-   Ch->isoc(Cl->tsoc);
-   Cl->isoc(Mc->tsoc);
+   Ch->s_ch_i.bind(Cl->s_cl_t);
+   Cl->s_cl_i.bind(Mc->s_mc_t);
 
 	#ifdef QUANTUM
 	tlm_global_quantum::instance().set(sc_time(10, SC_NS));

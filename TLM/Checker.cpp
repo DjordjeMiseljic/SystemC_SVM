@@ -5,13 +5,10 @@
 
 SC_HAS_PROCESS(Checker);
 
-Checker::Checker(sc_module_name name) : sc_module(name),
-                                        isoc("checker_isoc"),
-                                        dmi_valid(false)
+Checker::Checker(sc_module_name name) : sc_module(name)
 {
    cout<<name<<" constucted"<<endl;
    SC_THREAD(verify);
-   isoc(*this);
 }
 
 void Checker::verify()
@@ -50,7 +47,7 @@ void Checker::verify()
          pl.set_address(1);
          pl.set_data_length(SV_LEN);
          pl.set_command(TLM_WRITE_COMMAND);
-         isoc->b_transport(pl, offset);
+         s_ch_i->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
          #ifdef QUANTUM
@@ -68,7 +65,7 @@ void Checker::verify()
          pl.set_command(TLM_READ_COMMAND);
          pl.set_address(1);
          pl.set_data_length(SV_LEN);
-         isoc->b_transport(pl, offset);
+         s_ch_i->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
          num = (num_t*)pl.get_data_ptr();
    
@@ -105,17 +102,6 @@ void Checker::verify()
    l_file.close();
 
    return;
-}
-
-
-tlm_sync_enum Checker::nb_transport_bw(pl_t& pl, phase_t& phase, sc_time& offset)
-{
-	return TLM_ACCEPTED;
-}
-
-void Checker::invalidate_direct_mem_ptr(uint64 start, uint64 end)
-{
-	dmi_valid = false;
 }
 
 int Checker::num_of_lines(string str)

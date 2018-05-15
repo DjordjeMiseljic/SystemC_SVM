@@ -7,6 +7,7 @@
 #include <string>
 #include <iomanip>
 #include <tlm>
+#include <tlm_utils/simple_initiator_socket.h>
 
 #include "Format.hpp"
 #include "Types.hpp"
@@ -15,16 +16,13 @@ using namespace sc_core;
 using namespace tlm;
 
 class Checker :
-   public sc_module,
-   public tlm_bw_transport_if<>
+   public sc_module
 {
    public:
       SC_HAS_PROCESS(Checker);
       Checker(sc_module_name name);
       
-      tlm_initiator_socket<> isoc;
-      tlm_sync_enum nb_transport_bw(pl_t&, phase_t&, sc_time&);
-      void invalidate_direct_mem_ptr(uint64, uint64);
+      tlm_utils::simple_initiator_socket<Checker> s_ch_i;
    
    protected:
       vector<din_t> images;
@@ -32,7 +30,7 @@ class Checker :
       bool dmi_valid;
       unsigned char* dmi_mem;
       //METHODS
-   void images_extraction();
+      void images_extraction();
       int num_of_lines(string str);
      
 };
