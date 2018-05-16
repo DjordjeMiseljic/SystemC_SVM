@@ -15,8 +15,7 @@ using namespace std;
 using namespace sc_core;
 using namespace tlm;
 
-class Classificator :
-   public sc_module
+class Classificator : public sc_module
 {
 public:
    SC_HAS_PROCESS(Classificator);

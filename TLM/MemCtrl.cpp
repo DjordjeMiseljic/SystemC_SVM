@@ -257,6 +257,7 @@ int MemCtrl::sum_of_sv(int to_element)
    
    return sum;
 }
+
 #endif
 
          

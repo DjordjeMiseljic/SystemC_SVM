@@ -1,8 +1,7 @@
 #include <systemc>
 #include <string>
 #include <deque>
-#include "Classificator.hpp"
-#include "MemCtrl.hpp"
+#include "VP.hpp"
 #include "Checker.hpp"
 #include "Types.hpp"
 
@@ -11,17 +10,11 @@ using namespace std;
 using namespace sc_core;
 
 int sc_main(int argc, char* argv[])
-{/*
-	Classificator *Cl;
-	MemCtrl *Mc;
-   Checker *Ch;
-   */
-	Classificator Cl("Classificator");
-	MemCtrl Mc("Memory_Controller");
-   Checker Ch("Checker");
+{
+   VP vp("Virtual_Platform");
+   Checker ch("Checker_TB");
    
-   Ch.s_ch_i.bind(Cl.s_cl_t);
-   Cl.s_cl_i.bind(Mc.s_mc_t);
+   ch.s_ch_i.bind(vp.s_vp_t);
 
 	#ifdef QUANTUM
 	tlm_global_quantum::instance().set(sc_time(10, SC_NS));

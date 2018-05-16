@@ -16,8 +16,7 @@ using namespace std;
 using namespace sc_core;
 using namespace tlm;
 
-class MemCtrl :
-   public sc_module 
+class MemCtrl : public sc_module 
 {
    public:
       SC_HAS_PROCESS(MemCtrl);

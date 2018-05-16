@@ -44,7 +44,7 @@ void Checker::verify()
                
          image = (unsigned char*)&images[i*SV_LEN];
          pl.set_data_ptr(image);
-         pl.set_address(1);
+         pl.set_address(0x80000000);
          pl.set_data_length(SV_LEN);
          pl.set_command(TLM_WRITE_COMMAND);
          s_ch_i->b_transport(pl, offset);
@@ -63,7 +63,7 @@ void Checker::verify()
          #endif
 
          pl.set_command(TLM_READ_COMMAND);
-         pl.set_address(1);
+         pl.set_address(0x80000000);
          pl.set_data_length(SV_LEN);
          s_ch_i->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
