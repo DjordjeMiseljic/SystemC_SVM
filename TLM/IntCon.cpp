@@ -24,7 +24,7 @@ void IntCon::b_transport(pl_t& pl, sc_time& offset)
       ss<<hex<<address;
       string cmd = pl.get_command() == TLM_READ_COMMAND ? "read":"write";
       msg = "ERROR WRONG ADDRESS";
-      msg += (" address: 0x" + ss.str() + "command: " + cmd + " ");
+      msg += (" address: 0x" + ss.str() + " command: " + cmd + " ");
       msg +="@ "+sc_time_stamp().to_string();
       SC_REPORT_INFO("IntCon ", msg.c_str());
    }

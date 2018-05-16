@@ -4,7 +4,6 @@
 #include <systemc>
 #include <string>
 #include <fstream>
-#include <deque>
 #include <vector>
 #include <array>
 #include <algorithm>
