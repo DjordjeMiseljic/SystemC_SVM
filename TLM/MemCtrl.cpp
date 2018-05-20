@@ -82,7 +82,7 @@ void MemCtrl::file_extract()
          lines = num_of_lines(str);
          sv_lines[i] = lines;
          sum += lines;
-         //cout<<"sv "<<i<<"is "<<sv_lines[i]<<endl;
+         cout<<"sv "<<i<<"is "<<sv_lines[i]<<endl;
          ifstream sv_file(str);
          if(sv_file.is_open())
             while(j!=lines*sv_len)

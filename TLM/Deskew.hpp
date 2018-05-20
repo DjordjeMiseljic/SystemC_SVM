@@ -1,0 +1,30 @@
+#ifndef DESKEW_H
+#define DESKEW_H
+#include <systemc>
+#include <tlm>
+#include <tlm_utils/simple_initiator_socket.h>
+#include <tlm_utils/simple_target_socket.h>
+#include "Format.hpp"
+#include "Types.hpp"
+#include <string>
+#include <array>
+#include <vector>
+using namespace std;
+using namespace sc_core;
+using namespace tlm;
+
+class Deskew : public sc_module
+{
+   public:
+      Deskew(sc_module_name name);
+      tlm_utils::simple_initiator_socket<Deskew> s_de_i;
+      tlm_utils::simple_target_socket<Deskew> s_de_t;
+   protected:
+      void b_transport(pl_t&, sc_time&);
+
+      vector<din_t> reshape_image_784(array<vector<din_t>, 28> image);
+      array<vector<din_t>, 28> reshape_image_28(vector<din_t> image);
+      void calc_moments(vector<din_t> image, p_t& mu11, p_t& mu02);
+      vector<din_t> deskew(vector <din_t> image);
+};
+#endif

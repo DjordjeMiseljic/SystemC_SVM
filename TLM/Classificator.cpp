@@ -8,15 +8,15 @@
 
 
 #define SV0 0
-#define SV1 (466*(SV_LEN+1))+1
-#define SV2 SV1+(408*(SV_LEN+1))+1
-#define SV3 SV2+(827*(SV_LEN+1))+1
-#define SV4 SV3+(948*(SV_LEN+1))+1
-#define SV5 SV4+(683*(SV_LEN+1))+1
-#define SV6 SV5+(756*(SV_LEN+1))+1
-#define SV7 SV6+(533*(SV_LEN+1))+1
-#define SV8 SV7+(659*(SV_LEN+1))+1
-#define SV9 SV8+(1078*(SV_LEN+1))+1
+#define SV1 (361*(SV_LEN+1))+1
+#define SV2 SV1+(267*(SV_LEN+1))+1
+#define SV3 SV2+(581*(SV_LEN+1))+1
+#define SV4 SV3+(632*(SV_LEN+1))+1
+#define SV5 SV4+(480*(SV_LEN+1))+1
+#define SV6 SV5+(513*(SV_LEN+1))+1
+#define SV7 SV6+(376*(SV_LEN+1))+1
+#define SV8 SV7+(432*(SV_LEN+1))+1
+#define SV9 SV8+(751*(SV_LEN+1))+1
 
 const array<int, 10> sv_start_addr = {SV0, SV1, SV2, SV3, SV4, SV5, SV6, SV7, SV8, SV9};
 
