@@ -19,7 +19,7 @@ typedef sc_fixed_fast <WIDTH,1,Q,O> bin_t;
 typedef sc_fixed_fast <WIDTH,0,Q,O> lin_t;
 typedef sc_fixed_fast <WIDTH,6,Q,O> res_t;
 typedef sc_fixed_fast <WIDTH+8,8,Q,O> acc_t;
-typedef sc_fixed_fast <(12+WIDTH),14,Q,O> p_t;
+typedef sc_fixed_fast <(12+WIDTH),12,Q,O> p_t;
 typedef sc_fixed_fast <WIDTH+20,16,Q,O> mu11_t;
 typedef sc_uint <4> num_t;
 //TLM
