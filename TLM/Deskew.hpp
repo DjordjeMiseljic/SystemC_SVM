@@ -22,8 +22,7 @@ class Deskew : public sc_module
    protected:
       void b_transport(pl_t&, sc_time&);
 
-      vector<din_t> reshape_image_784(array<vector<din_t>, 28> image);
-      array<vector<din_t>, 28> reshape_image_28(vector<din_t> image);
+      
       void calc_moments(vector<din_t> image, p_t& mu11, p_t& mu02);
       vector<din_t> deskew(vector <din_t> image);
 };

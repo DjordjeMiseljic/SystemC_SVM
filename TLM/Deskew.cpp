@@ -41,20 +41,21 @@ vector<din_t> Deskew:: deskew(vector <din_t> image)
 {
    p_t mu02 = 0;
    p_t mu11 = 0;
-   array<vector<din_t>, 28> reshaped_image, new_image_28;
+   
+   vector <din_t> new_image;
    deskew_t skew = 0;
    array<array<deskew_t, 3>, 2> M;
    deskew_t xp, yp,R1,R2;
    din_t P;
    deskew_t x1,y1,x2,y2;
-
+   new_image.reserve(784);
 
    calc_moments(image, mu11, mu02);
    skew = mu11/mu02;
    if(skew.overflow_flag())
       cout<<"SKEW_OVERFLOW"<<endl;
    
-   reshaped_image = reshape_image_28(image);
+   
    M[0][0] = 1;
    M[0][1] = skew;
    M[0][2] = -0.5*28*skew;
@@ -79,9 +80,8 @@ vector<din_t> Deskew:: deskew(vector <din_t> image)
                y1=(int)yp;
                x2=(x1+1);
                y2=(y1+1);
-               R1 = reshaped_image[y1][x1] + (xp-x1)/(x2-x1)*(reshaped_image[y1][x2]-reshaped_image[y1][x1]);
-               
-               R2 = reshaped_image[y2][x1] + (xp-x1)/(x2-x1)*(reshaped_image[y2][x2]-reshaped_image[y2][x1]);
+               R1 = image[x1+y1*28] + (xp-x1)/(x2-x1)*(image[x2+y1*28]-image[x1+y1*28]);
+               R2 = image[x1+y2*28] + (xp-x1)/(x2-x1)*(image[x2+y2*28]-image[x1+y2*28]);
 
                P = R2 + (yp-y1)/(y2-y1)*(R1-R2);
                
@@ -91,15 +91,15 @@ vector<din_t> Deskew:: deskew(vector <din_t> image)
                if(P>1)
                   cout<<"error"<<endl;
 
-               new_image_28[y].push_back(P);
+               new_image[x+y*28]=P;
               
             }
             else
-               new_image_28[y].push_back(0);
+               new_image[x+y*28]=0;
          }
    
-   image = reshape_image_784(new_image_28);
-   return image;
+   
+   return new_image;
 }
 
 
@@ -108,18 +108,19 @@ void Deskew::calc_moments(vector<din_t> image, p_t& mu11, p_t& mu02)
    p_t m00,m10,m01 = 0;
    p_t x_mc, y_mc;
    p_t max = 0;
-   array<vector<din_t>, 28> reshaped_image;
-   reshaped_image = reshape_image_28(image);
+   
    for (int x=0; x<28; x++)
       for(int y = 0; y<28; y++)
          {
-            m00 += reshaped_image[y][x];
+            m00 += image[x+y*28];
             if(m00.overflow_flag())
                cout<<"m00 overflow"<<endl;
-            m10 += reshaped_image[y][x]*x;
+
+            m10 += image[x+y*28]*x;
             if(m10.overflow_flag())
                cout<<"m10 overflow"<<endl;
-            m01 += reshaped_image[y][x]*y;
+
+            m01 += image[x+y*28]*y;
             if(m01.overflow_flag())
                cout<<"m10 overflow"<<endl;
             
@@ -130,55 +131,18 @@ void Deskew::calc_moments(vector<din_t> image, p_t& mu11, p_t& mu02)
    for (int x=0; x<28; x++)
       for(int y = 0; y<28; y++)
          {
-            mu02 += (reshaped_image[y][x]*pow((y-y_mc),2));
+            
+            mu02 += (image[x+y*28]*pow((y-y_mc),2));
             if(mu02.overflow_flag())
                cout<<"mu02 overflow:"<<mu02<<endl;
-            mu11 += (reshaped_image[y][x]*(x-x_mc)*(y-y_mc));
+            
+            mu11 += (image[x+y*28]*(x-x_mc)*(y-y_mc));
             if(mu11.overflow_flag())
                cout<<"mu11 overflow:"<<mu11<<endl;
          }
-   //cout<<"mu02: "<<mu02<<"\t mu11: "<<mu11<<endl;
    
    
-}
-array<vector<din_t>, 28> Deskew:: reshape_image_28(vector<din_t> image)
-{
-   int k = 0;
-   array<vector<din_t>, 28> new_image;
-   for (int i = 0; i < 784; ++i)
-      {
-         if(i%28 == 0)
-         {
-            if(i != 0)
-               k++;
-         }
-         new_image[k].push_back(image[i]);
-
-      }
    
-   return new_image;
-}
-
-vector<din_t> Deskew::reshape_image_784(array<vector<din_t>, 28> image)
-{
-   int k=0,j=0;
-   vector<din_t> new_image;
-   for (int i = 0; i < 784; ++i)
-   {
-      
-      if(i%28 == 0)
-      {
-         if(i != 0)
-            k++;
-         j = 0;
-      }
-      new_image.push_back(image[k][j]);
-      j++;
-
-      
-   }
-
-   return new_image;
 }
 
 
