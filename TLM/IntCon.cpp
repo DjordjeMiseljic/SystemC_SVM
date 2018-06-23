@@ -14,19 +14,24 @@ void IntCon::b_transport(pl_t& pl, sc_time& offset)
    stringstream ss;
    offset += sc_time(2, SC_NS);
 
-   if(address == 0x80000000)
+   switch(address)
    {
-      pl.set_address(1);
-      s_ic_i->b_transport(pl, offset);
-   }
-   else
-   {
-      ss<<hex<<address;
-      string cmd = pl.get_command() == TLM_READ_COMMAND ? "read":"write";
-      msg = "ERROR WRONG ADDRESS";
-      msg += (" address: 0x" + ss.str() + " command: " + cmd + " ");
-      msg +="@ "+sc_time_stamp().to_string();
-      SC_REPORT_INFO("IntCon ", msg.c_str());
+      case 0x80000000:
+         s_ic_i1->b_transport(pl, offset);
+         break; 
+
+      case 0x80000001:
+         s_ic_i2->b_transport(pl, offset);
+         break; 
+         
+      default: 
+         ss<<hex<<address;
+         string cmd = pl.get_command() == TLM_READ_COMMAND ? "read":"write";
+         msg = "ERROR WRONG ADDRESS";
+         msg += (" address: 0x" + ss.str() + " command: " + cmd + " ");
+         msg +="@ "+sc_time_stamp().to_string();
+         SC_REPORT_INFO("IntCon ", msg.c_str());
+         break;
    }
 
 }

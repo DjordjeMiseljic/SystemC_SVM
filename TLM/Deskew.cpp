@@ -14,7 +14,6 @@ void Deskew::b_transport(pl_t& pl, sc_time& offset)
    tlm_command cmd    = pl.get_command();
    uint64 adr         = pl.get_address();
    unsigned char *buf = pl.get_data_ptr();
-   vector<din_t> image;
    image.reserve(SV_LEN);
    switch (cmd)
    {
@@ -22,15 +21,16 @@ void Deskew::b_transport(pl_t& pl, sc_time& offset)
          for(int i=0; i<SV_LEN; i++)
             image.push_back(((din_t*)buf)[i]);
          image = deskew(image);
-         pl.set_data_ptr((unsigned char*)&image[0]);
-         offset += sc_time(5, SC_NS);
-         
-         s_de_i->b_transport(pl,offset);
+         pl.set_response_status( TLM_OK_RESPONSE );
+         offset += sc_time(50, SC_NS);
          break;
+
       case TLM_READ_COMMAND:
-         offset += sc_time(1, SC_NS);
-         s_de_i->b_transport(pl, offset);
+         pl.set_data_ptr((unsigned char*)&image[0]);
+         pl.set_response_status( TLM_OK_RESPONSE );
+         offset += sc_time(5, SC_NS);
          break;
+
       default:
          pl.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
    }
@@ -82,8 +82,7 @@ vector<din_t> Deskew:: deskew(vector <din_t> image)
                y2=(y1+1);
                R1 = image[x1+y1*28] + (xp-x1)/(x2-x1)*(image[x2+y1*28]-image[x1+y1*28]);
                R2 = image[x1+y2*28] + (xp-x1)/(x2-x1)*(image[x2+y2*28]-image[x1+y2*28]);
-               // cout<<"R1 is: "<<R1<<" R2 is: "<<R2<<endl;
-               // cout<<"xp is: "<<xp<<" yp is: "<<yp<<endl;
+
                P = R2 + (yp-y1)/(y2-y1)*(R1-R2);
                
                 if(P.overflow_flag())
