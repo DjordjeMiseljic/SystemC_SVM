@@ -82,7 +82,8 @@ vector<din_t> Deskew:: deskew(vector <din_t> image)
                y2=(y1+1);
                R1 = image[x1+y1*28] + (xp-x1)/(x2-x1)*(image[x2+y1*28]-image[x1+y1*28]);
                R2 = image[x1+y2*28] + (xp-x1)/(x2-x1)*(image[x2+y2*28]-image[x1+y2*28]);
-
+               // cout<<"R1 is: "<<R1<<" R2 is: "<<R2<<endl;
+               // cout<<"xp is: "<<xp<<" yp is: "<<yp<<endl;
                P = R2 + (yp-y1)/(y2-y1)*(R1-R2);
                
                 if(P.overflow_flag())

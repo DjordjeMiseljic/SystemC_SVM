@@ -79,19 +79,19 @@ void Checker::verify()
          {
                cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<RST<<D_GREEN<<" :: classified number: "
                   <<*num<<"["<<label<<"] :true_number"<<RST;
-               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<i<<")"<<RST<<endl;
             match++;
          }
          else
          {
                cout<<B_RED<<"     MISCLASSIFICATION"<<RST<<D_RED<<" :: classified number: "
                   <<*num<<"["<<label<<"] :true_number"<<RST;
-               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<i<<")"<<RST<<endl;
          }
          
       }
       cout<<"Number of classifications : "<<lines<<D_MAGNETA<<"\nPercentage: "<<B_MAGNETA
-         <<(float)match/lines*100<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
+          <<(float)match/lines*100<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
    }
    else
    {
