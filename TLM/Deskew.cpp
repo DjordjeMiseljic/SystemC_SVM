@@ -8,6 +8,7 @@ Deskew::Deskew(sc_module_name name):sc_module(name)
    cout<<name<<" constructed"<<endl;
    p_exp.bind(s_fin);
    toggle = SC_LOGIC_0;
+   image.reserve(SV_LEN);
    
 }
 
@@ -16,28 +17,41 @@ void Deskew::b_transport(pl_t& pl, sc_time& offset)
    tlm_command cmd    = pl.get_command();
    uint64 adr         = pl.get_address();
    unsigned char *buf = pl.get_data_ptr();
-   image.reserve(SV_LEN);
-   switch (cmd)
+   
+   if(cmd==TLM_WRITE_COMMAND && adr==0x81000000)
    {
-      case TLM_WRITE_COMMAND:
-         for(int i=0; i<SV_LEN; i++)
-            image.push_back(((din_t*)buf)[i]);
-         image = deskew(image);
-         pl.set_response_status( TLM_OK_RESPONSE );
-         offset += sc_time(50, SC_NS);
-         toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
-         s_fin.write(toggle);//finished, send interrupt
-         break;
+      //READ IMAGE FROM BRAM 
+      pl.set_command(TLM_READ_COMMAND);
+      pl.set_address(0x80000000);
+      pl.set_data_length(SV_LEN);
 
-      case TLM_READ_COMMAND:
-         pl.set_data_ptr((unsigned char*)&image[0]);
-         pl.set_response_status( TLM_OK_RESPONSE );
-         offset += sc_time(5, SC_NS);
-         break;
+      s_de_i -> b_transport(pl, offset);
+      assert(pl.get_response_status() == TLM_OK_RESPONSE);
+      
+      //DESKEW IT
+      for(int i=0; i<SV_LEN; i++)
+         image.push_back(((din_t*)buf)[i]);
+      image = deskew(image);
+      
+      //WRITE NEW IMAGE TO BRAM
+      pl.set_data_ptr((unsigned char *)&image[0]);
+      pl.set_command(TLM_WRITE_COMMAND);
+      pl.set_address(0x80000000+SV_LEN);
+      pl.set_data_length(SV_LEN);
 
-      default:
-         pl.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
+      s_de_i -> b_transport(pl, offset);
+      assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+      toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
+      s_fin.write(toggle);//finished, send interrupt
    }
+   else 
+   {
+      pl.set_response_status(TLM_COMMAND_ERROR_RESPONSE);
+   } 
+
+   offset += sc_time(50, SC_NS);
+   image.clear();
 }
 
 

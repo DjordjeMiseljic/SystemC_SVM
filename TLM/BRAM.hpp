@@ -20,8 +20,7 @@ class BRAM : public sc_module
       tlm_utils::simple_target_socket<BRAM> s_br_t0;
       tlm_utils::simple_target_socket<BRAM> s_br_t1;
    protected:
-      void b_transport1(pl_t&, sc_time&);
-      //void b_transport2(pl_t&, sc_time&);
+      void b_transport(pl_t&, sc_time&);
       vector<din_t> mem;
 };
 #endif

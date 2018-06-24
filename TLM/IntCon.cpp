@@ -14,7 +14,7 @@ void IntCon::b_transport(pl_t& pl, sc_time& offset)
    stringstream ss;
    offset += sc_time(2, SC_NS);
 
-   switch(address)
+   switch(address & 0xFF000000)
    {
       case 0x80000000:
          s_ic_i0->b_transport(pl, offset);
