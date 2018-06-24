@@ -6,6 +6,8 @@ Deskew::Deskew(sc_module_name name):sc_module(name)
 {
    s_de_t.register_b_transport(this, &Deskew::b_transport);
    cout<<name<<" constructed"<<endl;
+   p_exp.bind(s_fin);
+   toggle = SC_LOGIC_0;
    
 }
 
@@ -23,6 +25,8 @@ void Deskew::b_transport(pl_t& pl, sc_time& offset)
          image = deskew(image);
          pl.set_response_status( TLM_OK_RESPONSE );
          offset += sc_time(50, SC_NS);
+         toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
+         s_fin.write(toggle);//finished, send interrupt
          break;
 
       case TLM_READ_COMMAND:

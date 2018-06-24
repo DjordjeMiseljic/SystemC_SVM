@@ -9,6 +9,8 @@ Checker::Checker(sc_module_name name) : sc_module(name)
 {
    cout<<name<<" constucted"<<endl;
    SC_THREAD(verify);
+   SC_METHOD(monitor);
+   sensitive <<p_port;
 }
 
 void Checker::verify()
@@ -44,13 +46,15 @@ void Checker::verify()
                
          image = (unsigned char*)&images[i*SV_LEN];
          pl.set_data_ptr(image);
-         pl.set_address(0x80000000);
+         pl.set_address(0x81000000);
          pl.set_data_length(SV_LEN);
          pl.set_command(TLM_WRITE_COMMAND);
          s_ch_i->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
+         
+         
 
-         pl.set_address(0x80000000);
+         pl.set_address(0x81000000);
          pl.set_data_length(SV_LEN);
          pl.set_command(TLM_READ_COMMAND);
          s_ch_i->b_transport(pl, offset);
@@ -68,13 +72,13 @@ void Checker::verify()
          offset += sc_time(4, SC_NS);
          #endif
 
-         pl.set_address(0x80000001);
+         pl.set_address(0x82000000);
          pl.set_data_length(SV_LEN);
          pl.set_command(TLM_WRITE_COMMAND);
          s_ch_i->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
-         pl.set_address(0x80000001);
+         pl.set_address(0x82000000);
          pl.set_data_length(1);//provjeri duzinu
          pl.set_command(TLM_READ_COMMAND);
          s_ch_i->b_transport(pl, offset);
@@ -116,6 +120,17 @@ void Checker::verify()
 
    return;
 }
+
+
+void Checker::monitor()
+{
+   cout<< "Interruppt " ;
+   cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+}
+
+
+
+
 
 int Checker::num_of_lines(string str)
 {

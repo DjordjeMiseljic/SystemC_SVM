@@ -9,6 +9,7 @@
 #include "MemCtrl.hpp"
 #include "Types.hpp"
 #include "Deskew.hpp"
+#include "BRAM.hpp"
 using namespace sc_core;
 using namespace std;
 
@@ -18,12 +19,14 @@ class VP : sc_module
       VP(sc_module_name);
       tlm_utils::simple_target_socket<VP> s_vp_t;
 
+      sc_export<sc_signal_out_if<sc_logic>> p_exp;
       protected:
       tlm_utils::simple_initiator_socket<VP> s_vp_i;
       IntCon ic;
       Classificator cl;
       MemCtrl mc;
       Deskew de;
+      BRAM br;
 
       typedef tlm::tlm_base_protocol_types::tlm_payload_type pl_t;
       void b_transport(pl_t&, sc_core::sc_time&);

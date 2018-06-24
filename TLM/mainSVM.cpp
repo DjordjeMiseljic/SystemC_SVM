@@ -15,6 +15,7 @@ int sc_main(int argc, char* argv[])
    Checker ch("Checker_TB");
    
    ch.s_ch_i.bind(vp.s_vp_t);
+   ch.p_port.bind(vp.p_exp);
 
 	#ifdef QUANTUM
 	tlm_global_quantum::instance().set(sc_time(10, SC_NS));

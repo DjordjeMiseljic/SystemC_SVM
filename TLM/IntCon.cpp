@@ -17,10 +17,14 @@ void IntCon::b_transport(pl_t& pl, sc_time& offset)
    switch(address)
    {
       case 0x80000000:
+         s_ic_i0->b_transport(pl, offset);
+         break; 
+
+      case 0x81000000:
          s_ic_i1->b_transport(pl, offset);
          break; 
 
-      case 0x80000001:
+      case 0x82000000:
          s_ic_i2->b_transport(pl, offset);
          break; 
          
