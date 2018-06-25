@@ -10,6 +10,8 @@ VP::VP(sc_module_name name) :
    de("Deskew"),
    br("BRAM")
 {
+   fifo(748);
+
 	s_vp_t.register_b_transport(this, &VP::b_transport);
 
    cout<<name<<" constructed"<<endl;
@@ -17,9 +19,16 @@ VP::VP(sc_module_name name) :
    ic.s_ic_i0.bind(br.s_br_t0);
    ic.s_ic_i1.bind(de.s_de_t);
    ic.s_ic_i2.bind(cl.s_cl_t);
+   ic.s_ic_i2.bind(dm.s_dm_t);
 	cl.s_cl_i.bind(mc.s_mc_t);
    de.s_de_i.bind(br.s_br_t1);
-   p_exp.bind(de.p_exp);
+
+   dm.p_fifo(fifo);
+   cl.p_fifo(fifo);
+
+   p_exp0.bind(de.p_exp);
+   p_exp1.bind(cl.p_exp);
+
 }
 
 void VP::b_transport(pl_t& pl, sc_time& delay)

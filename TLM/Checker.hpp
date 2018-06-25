@@ -21,7 +21,8 @@ class Checker : public sc_module
       Checker(sc_module_name name);
       
       tlm_utils::simple_initiator_socket<Checker> s_ch_i;
-      sc_port<sc_signal_out_if<sc_logic>> p_port;
+      sc_port<sc_signal_out_if<sc_logic>> p_port0;
+      sc_port<sc_signal_out_if<sc_logic>> p_port1;
    
    protected:
       vector<din_t> images;
@@ -31,7 +32,8 @@ class Checker : public sc_module
       //METHODS
       void images_extraction();
       int num_of_lines(string str);
-      void monitor();   
+      void monitor0();   
+      void monitor1();   
 };
 
 #endif

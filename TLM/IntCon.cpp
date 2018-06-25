@@ -28,6 +28,10 @@ void IntCon::b_transport(pl_t& pl, sc_time& offset)
          s_ic_i2->b_transport(pl, offset);
          break; 
          
+      case 0x83000000:
+         s_ic_i3->b_transport(pl, offset);
+         break; 
+
       default: 
          ss<<hex<<address;
          string cmd = pl.get_command() == TLM_READ_COMMAND ? "read":"write";

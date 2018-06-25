@@ -25,7 +25,9 @@ Classificator::Classificator(sc_module_name name): sc_module(name)
    s_cl_t.register_b_transport(this, &Classificator::b_transport);
    cout<<name<<" constucted"<<endl;
    image_v.reserve(SV_LEN);
+   p_exp.bind(s_new);
    res_v.reserve(10);
+   toggle = SC_LOGIC_0;
 }
 
 
@@ -109,6 +111,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          pl.set_data_length (len);
          pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
          s_cl_i->b_transport(pl,offset);
+         
 
          if (pl.get_response_status() != TLM_OK_RESPONSE)
             SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
@@ -135,6 +138,8 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
       offset+=sc_time(100, SC_NS);
       pl.set_response_status( TLM_OK_RESPONSE );
+      toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
+      s_new.write(toggle);//demand new, send interrupt                 **
       break;
 
    case TLM_READ_COMMAND://--------------------------------------------------------RETURN RESULTS

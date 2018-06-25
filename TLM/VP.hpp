@@ -19,7 +19,9 @@ class VP : sc_module
       VP(sc_module_name);
       tlm_utils::simple_target_socket<VP> s_vp_t;
 
-      sc_export<sc_signal_out_if<sc_logic>> p_exp;
+      sc_export<sc_signal_out_if<sc_logic>> p_exp0;
+      sc_export<sc_signal_out_if<sc_logic>> p_exp1;
+
       protected:
       tlm_utils::simple_initiator_socket<VP> s_vp_i;
       IntCon ic;
@@ -27,6 +29,9 @@ class VP : sc_module
       MemCtrl mc;
       Deskew de;
       BRAM br;
+      DMI dm; 
+
+      sc_fifo<din_t> fifo;
 
       typedef tlm::tlm_base_protocol_types::tlm_payload_type pl_t;
       void b_transport(pl_t&, sc_core::sc_time&);

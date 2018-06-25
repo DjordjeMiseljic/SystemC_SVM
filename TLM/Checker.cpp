@@ -9,8 +9,10 @@ Checker::Checker(sc_module_name name) : sc_module(name)
 {
    cout<<name<<" constucted"<<endl;
    SC_THREAD(verify);
-   SC_METHOD(monitor);
-   sensitive <<p_port;
+   SC_METHOD(monitor0);
+   sensitive <<p_port0;
+   SC_METHOD(monitor1);
+   sensitive <<p_port1;
 }
 
 void Checker::verify()
@@ -128,12 +130,17 @@ void Checker::verify()
 }
 
 
-void Checker::monitor()
+void Checker::monitor0()
 {
-   cout<< "Interruppt " ;
+   cout<< "Deskew Interrupt " ;
    cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
 }
 
+void Checker::monitor1()
+{
+   cout<< "SVM Interrupt " ;
+   cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+}
 
 
 
