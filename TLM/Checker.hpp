@@ -33,10 +33,12 @@ class Checker : public sc_module
       vector<num_t> labels;
 
       void verify();
+      void synchronize();
       bool dmi_valid;
       unsigned char* dmi_mem;
       unsigned int lines;
       int match;
+      sc_event e_sync;
 
       //VARIABLES FOR ISR
       unsigned int img; //number of test image

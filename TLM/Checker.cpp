@@ -29,6 +29,7 @@ Checker::Checker(sc_module_name name) : sc_module(name)
    dont_initialize();
 
    SC_THREAD(verify);
+   SC_THREAD(synchronize);
 
    offset= SC_ZERO_TIME;
    img=0;
@@ -59,6 +60,25 @@ void Checker::verify()
    #endif
 }
 
+void Checker::synchronize()
+{
+   while(1)
+   {
+      wait(e_sync);
+      cout<<"ZZ"<<endl; 
+      #ifdef QUANTUM
+      qk.inc(sc_time(4, SC_NS));
+      offset = qk.get_local_time();
+      #else
+      offset += sc_time(4, SC_NS);
+      #endif
+
+      #ifdef QUANTUM
+      qk.set_and_sync(offset);
+      #endif
+
+   }
+}
 
 void Checker::deskew_isr()
 {
@@ -89,6 +109,7 @@ void Checker::deskew_isr()
    qk.set_and_sync(offset);
    #endif*/
 
+   e_sync.notify(5,SC_NS);
    return;
 }
 
@@ -113,8 +134,6 @@ void Checker::classificator_isr()
       qk.set_and_sync(offset);
       #endif*/
 
-      return;
-         
    }
    else if (core==10) //sledeca slika
    {
@@ -170,7 +189,6 @@ void Checker::classificator_isr()
       
       img++;
       core=0;
-      return;
 
    }
    else if (sv==lmb && sv!=sv_array[core]) //treba mu sledeci sv
@@ -182,7 +200,6 @@ void Checker::classificator_isr()
       assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
       sv++;
-      return;
    }
    else if(sv>lmb) //treba mu sledeca lambda
    {
@@ -195,7 +212,6 @@ void Checker::classificator_isr()
       assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
       lmb++;
-      return;
    }
    else if(sv==lmb && sv==sv_array[core]) //treba mu bias
    {
@@ -209,15 +225,14 @@ void Checker::classificator_isr()
       sv=0;
       lmb=0;
       core++;
-      return;
    }
    else
    {
       cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" ! FORBIDDEN STATE !"<<endl;
       cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
-      return;
    }
 
+   e_sync.notify(5,SC_NS);
 }
 
 
