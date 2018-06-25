@@ -60,7 +60,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          for( int sv=0; sv<sv_array[core]; sv++)
          {
             //REQUEST SV
-            adr=sv_start_addr[core]+sv*SV_LEN;
+            /*adr=sv_start_addr[core]+sv*SV_LEN;
             pl.set_address ((uint64)adr);
             len=SV_LEN;
             pl.set_data_length (len);
@@ -71,11 +71,15 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
                SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
                
             buf=pl.get_data_ptr();
+            */
+
+            toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
+            s_new.write(toggle);//demand new, send interrupt                 **
 
             p=1.0;
             for( int i=0; i<SV_LEN; i++)
             {
-               p+=image_v[i]*((din_t*)buf)[i];
+               p+=image_v[i]*p_fifo.read();
                P_CHECK_OVERFLOW
             }
             p*=0.1;
@@ -85,7 +89,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
             P_CHECK_OVERFLOW
                
             //REQUEST LAMBDA
-            adr=sv_start_addr[core]+sv_array[core]*SV_LEN+sv;
+            /*adr=sv_start_addr[core]+sv_array[core]*SV_LEN+sv;
             pl.set_address (adr);
             len=1;
             pl.set_data_length (len);
@@ -96,16 +100,19 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
                SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
                
             buf=pl.get_data_ptr();
+            */
+            toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
+            s_new.write(toggle);//demand new, send interrupt                 **
 
-            p*= *(lin_t*)buf;
+            p*= p_fifo.read();
             P_CHECK_OVERFLOW
                
-               acc+=p;
+            acc+=p;
             A_CHECK_OVERFLOW
          }
 
          //REQUEST BIAS
-         adr=sv_start_addr[core]+sv_array[core]*(SV_LEN+1);
+         /*adr=sv_start_addr[core]+sv_array[core]*(SV_LEN+1);
          pl.set_address (adr);
          len=1;
          pl.set_data_length (len);
@@ -117,7 +124,11 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
             SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
 
          buf=pl.get_data_ptr();
-         acc+=*(bin_t*)buf;
+         */
+         toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
+         s_new.write(toggle);//demand new, send interrupt                 **
+
+         acc+=p_fifo.read();
          A_CHECK_OVERFLOW
 
          res_v.push_back (acc);

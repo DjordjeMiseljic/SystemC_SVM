@@ -26,14 +26,26 @@ class Checker : public sc_module
    
    protected:
       vector<din_t> images;
+      vector<din_t> labels;
+
       void verify();
       bool dmi_valid;
       unsigned char* dmi_mem;
+      
+      //VARIABLES FOR ISR
+      unsigned int img; //number of test image
+      unsigned int core; //number of current svm core
+      unsigned int sv; //number of current support vector for the core
+      unsigned int lmb; //number of current lambda for the core 
+      
       //METHODS
       void images_extraction();
+      void label_extraction();
       int num_of_lines(string str);
-      void monitor0();   
-      void monitor1();   
+      void deskew_isr();   
+      void classificator_isr();   
+
+
 };
 
 #endif

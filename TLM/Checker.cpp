@@ -3,17 +3,39 @@
 #include "Checker.hpp"
 #include "tlm_utils/tlm_quantumkeeper.h"
 
+#define SV0 0
+#define SV1 (361*(SV_LEN+1))+1
+#define SV2 SV1+(267*(SV_LEN+1))+1
+#define SV3 SV2+(581*(SV_LEN+1))+1
+#define SV4 SV3+(632*(SV_LEN+1))+1
+#define SV5 SV4+(480*(SV_LEN+1))+1
+#define SV6 SV5+(513*(SV_LEN+1))+1
+#define SV7 SV6+(376*(SV_LEN+1))+1
+#define SV8 SV7+(432*(SV_LEN+1))+1
+#define SV9 SV8+(751*(SV_LEN+1))+1
+
+const array<int, 10> sv_start_addr = {SV0, SV1, SV2, SV3, SV4, SV5, SV6, SV7, SV8, SV9};
 SC_HAS_PROCESS(Checker);
 
 Checker::Checker(sc_module_name name) : sc_module(name)
 {
    cout<<name<<" constucted"<<endl;
    SC_THREAD(verify);
-   SC_METHOD(monitor0);
+
+   SC_METHOD(deskew_isr);
    sensitive <<p_port0;
-   SC_METHOD(monitor1);
+   dont_initialize();
+
+   SC_METHOD(classificator_isr);
    sensitive <<p_port1;
+   dont_initialize();
+
+   img=0;
+   core=0;
+   sv=0;
+   lmb=0;
 }
+
 
 void Checker::verify()
 {
@@ -34,8 +56,8 @@ void Checker::verify()
    lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    images_extraction();
    ifstream l_file("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
-   if(l_file.is_open())
-   {
+   labels_extraction();
+
       for(int i=0; i<lines; i++)
       {
 
@@ -117,29 +139,28 @@ void Checker::verify()
       }
       cout<<"Number of classifications : "<<lines<<D_MAGNETA<<"\nPercentage: "<<B_MAGNETA
           <<(float)match/lines*100<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
-   }
-   else
-   {
-      cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" OPENING LABEL FILE"<<endl;
-      cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
-   }
       
-   l_file.close();
-
    return;
 }
 
 
-void Checker::monitor0()
+void Checker::deskew_isr()
 {
    cout<< "Deskew Interrupt " ;
    cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+   
+
 }
 
-void Checker::monitor1()
+void Checker::classificator_isr()
 {
    cout<< "SVM Interrupt " ;
    cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+
+   if(sv<=img)
+
+
+
 }
 
 
@@ -162,14 +183,17 @@ int Checker::num_of_lines(string str)
    return count;
 
 }
+
 void Checker::images_extraction()
 {
    int k =0;
    string  y_line;
    int lines;
+   images.clear();
    ifstream y_file("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
       if(y_file.is_open())
+      {
          for(int i=0; i<SV_LEN*lines;i++)
          {
             if(k == SV_LEN-1 )
@@ -184,8 +208,35 @@ void Checker::images_extraction()
             }
             images.push_back(stod(y_line));
          }
+      }
       else
-         cout<<RED<<"ERROR OPENING Y_FILE"<<RST<<endl;
+      {
+         cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" OPENING Y FILE"<<endl;
+         cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+      }
    y_file.close();   
+}
+
+void Checker::labels_extraction()
+{
+   string  l_line;
+   int lines;
+   labels.clear();
+   ifstream l_file("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
+   lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
+      if(l_file.is_open())
+      {
+         for(int i=0; i<lines;i++)
+         {
+            getline(l_file,l_line);
+            labels.push_back ((num_t)stoi(l_line));
+         }
+      }
+      else
+      {
+         cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" OPENING LABEL FILE"<<endl;
+         cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+      }
+   l_file.close();   
 }
 #endif
