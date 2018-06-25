@@ -8,9 +8,10 @@ VP::VP(sc_module_name name) :
 	cl("Classificator"),
 	mc("MControl"),
    de("Deskew"),
-   br("BRAM")
+   br("BRAM"),
+   dm("DMI"),
+   fifo(748)
 {
-   sc_fifo<din_t> fifo(748);
 
 	s_vp_t.register_b_transport(this, &VP::b_transport);
 
@@ -19,7 +20,7 @@ VP::VP(sc_module_name name) :
    ic.s_ic_i0.bind(br.s_br_t0);
    ic.s_ic_i1.bind(de.s_de_t);
    ic.s_ic_i2.bind(cl.s_cl_t);
-   ic.s_ic_i2.bind(dm.s_dm_t);
+   ic.s_ic_i3.bind(dm.s_dm_t);
 	dm.s_dm_i.bind(mc.s_mc_t);
    de.s_de_i.bind(br.s_br_t1);
 

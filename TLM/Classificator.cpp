@@ -39,6 +39,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
    uint64 adr         = pl.get_address();
    unsigned char *buf = pl.get_data_ptr();
    unsigned int len   = pl.get_data_length();
+   din_t fifo_tmp; 
 
    switch(cmd)
    {
@@ -79,7 +80,8 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
             p=1.0;
             for( int i=0; i<SV_LEN; i++)
             {
-               p+=image_v[i]*p_fifo.read();
+               p_fifo->nb_read(fifo_tmp);
+               p+=image_v[i]*fifo_tmp;
                P_CHECK_OVERFLOW
             }
             p*=0.1;
@@ -104,7 +106,8 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
             toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
             s_new.write(toggle);//demand new, send interrupt                 **
 
-            p*= p_fifo.read();
+            p_fifo->nb_read(fifo_tmp);
+            p*= fifo_tmp;
             P_CHECK_OVERFLOW
                
             acc+=p;
@@ -128,7 +131,8 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
          s_new.write(toggle);//demand new, send interrupt                 **
 
-         acc+=p_fifo.read();
+         p_fifo->nb_read(fifo_tmp);
+         acc+=fifo_tmp;
          A_CHECK_OVERFLOW
 
          res_v.push_back (acc);

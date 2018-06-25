@@ -26,7 +26,7 @@ class Classificator : public sc_module
       
       sc_export<sc_signal_out_if<sc_logic>> p_exp;
       sc_signal <sc_logic> s_new;
-      sc_port<sc_fifo_out_if<d_in>> p_fifo;
+      sc_port<sc_fifo_in_if<din_t>> p_fifo;
 
    protected:
       void b_transport(pl_t&, sc_time&);

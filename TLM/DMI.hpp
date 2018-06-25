@@ -18,7 +18,7 @@ class DMI : public sc_module
    public:
       DMI(sc_module_name name);
       tlm_utils::simple_target_socket<DMI> s_dm_t;
-      tlm_utils::simple_initiatior_socket<DMI> s_dm_i;
+      tlm_utils::simple_initiator_socket<DMI> s_dm_i;
       sc_port<sc_fifo_out_if<din_t>> p_fifo;
    protected:
       void b_transport(pl_t&, sc_time&);

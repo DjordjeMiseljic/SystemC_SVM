@@ -10,6 +10,7 @@
 #include "Types.hpp"
 #include "Deskew.hpp"
 #include "BRAM.hpp"
+#include "DMI.hpp"
 using namespace sc_core;
 using namespace std;
 
