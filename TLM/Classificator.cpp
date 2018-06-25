@@ -24,6 +24,8 @@ Classificator::Classificator(sc_module_name name): sc_module(name)
 {
    s_cl_t.register_b_transport(this, &Classificator::b_transport);
    cout<<name<<" constucted"<<endl;
+   SC_THREAD(classify);
+   
    image_v.reserve(SV_LEN);
    p_exp.bind(s_new);
    res_v.reserve(10);
@@ -31,56 +33,38 @@ Classificator::Classificator(sc_module_name name): sc_module(name)
 }
 
 
-
-void Classificator::b_transport(pl_t& pl, sc_time& offset)
+void Classificator::classify ()
 {
-	
-   tlm_command cmd    = pl.get_command();
-   uint64 adr         = pl.get_address();
-   unsigned char *buf = pl.get_data_ptr();
-   unsigned int len   = pl.get_data_length();
-   din_t fifo_tmp; 
-
-   switch(cmd)
+   din_t fifo_tmp;
+   bool nbf=true; 
+   wait(1,SC_NS);
+   toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
+   s_new.write(toggle);//demand new, send interrupt                 **
+   while(1)
    {
-
-   case TLM_WRITE_COMMAND://**********CLASSIFY IMAGE**********
-         
-      image_v.clear();
-      for(unsigned int i=0; i<len; i++)
-         image_v.push_back(((din_t *)buf)[i]);
-
-      cmd=TLM_READ_COMMAND;
-      pl.set_command         ( cmd );
-      pl.set_data_ptr        ( buf );
+      wait(e_start);
+      //cout<<"SVM...entering infinity loop"<<endl;
       res_v.clear();
       for(unsigned int core=0; core<10; core++)
       {
          acc=0;
+         //cout<<"SVM...core="<<core<<endl;
 
          for( int sv=0; sv<sv_array[core]; sv++)
          {
-            //REQUEST SV
-            /*adr=sv_start_addr[core]+sv*SV_LEN;
-            pl.set_address ((uint64)adr);
-            len=SV_LEN;
-            pl.set_data_length (len);
-            pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
-            s_cl_i->b_transport(pl,offset);
 
-            if (pl.get_response_status() != TLM_OK_RESPONSE)
-               SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
-               
-            buf=pl.get_data_ptr();
-            */
-
+            //cout<<"SVM...sv="<<sv<<endl;
             toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
             s_new.write(toggle);//demand new, send interrupt                 **
 
             p=1.0;
             for( int i=0; i<SV_LEN; i++)
             {
-               p_fifo->nb_read(fifo_tmp);
+               //cout<<"SVM...i="<<i<<endl;
+               p_fifo->read(fifo_tmp);
+
+              // cout<<"SVM...read fifo="<<(float)fifo_tmp<<endl;
+
                p+=image_v[i]*fifo_tmp;
                P_CHECK_OVERFLOW
             }
@@ -90,55 +74,27 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
             p=p*p*p;
             P_CHECK_OVERFLOW
                
-            //REQUEST LAMBDA
-            /*adr=sv_start_addr[core]+sv_array[core]*SV_LEN+sv;
-            pl.set_address (adr);
-            len=1;
-            pl.set_data_length (len);
-            pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
-            s_cl_i->b_transport(pl,offset);
-
-            if (pl.get_response_status() != TLM_OK_RESPONSE)
-               SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
-               
-            buf=pl.get_data_ptr();
-            */
             toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
             s_new.write(toggle);//demand new, send interrupt                 **
 
-            p_fifo->nb_read(fifo_tmp);
+            p_fifo->read(fifo_tmp);
             p*= fifo_tmp;
             P_CHECK_OVERFLOW
                
             acc+=p;
             A_CHECK_OVERFLOW
          }
-
-         //REQUEST BIAS
-         /*adr=sv_start_addr[core]+sv_array[core]*(SV_LEN+1);
-         pl.set_address (adr);
-         len=1;
-         pl.set_data_length (len);
-         pl.set_response_status ( TLM_INCOMPLETE_RESPONSE );
-         s_cl_i->b_transport(pl,offset);
-         
-
-         if (pl.get_response_status() != TLM_OK_RESPONSE)
-            SC_REPORT_INFO("Classificator","WARNING: WRONG RESPONSE");
-
-         buf=pl.get_data_ptr();
-         */
          toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
          s_new.write(toggle);//demand new, send interrupt                 **
 
-         p_fifo->nb_read(fifo_tmp);
+         p_fifo->read(fifo_tmp);
          acc+=fifo_tmp;
          A_CHECK_OVERFLOW
 
          res_v.push_back (acc);
          R_CHECK_OVERFLOW
          
-         }
+      }
 
       max_res=res_v[0];
       cl_num=0;
@@ -151,13 +107,31 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
          }
       }
 
-      offset+=sc_time(100, SC_NS);
-      pl.set_response_status( TLM_OK_RESPONSE );
       toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
       s_new.write(toggle);//demand new, send interrupt                 **
+   }
+}
+void Classificator::b_transport(pl_t& pl, sc_time& offset)
+{
+	
+   tlm_command cmd    = pl.get_command();
+   uint64 adr         = pl.get_address();
+   unsigned char *buf = pl.get_data_ptr();
+   unsigned int len   = pl.get_data_length();
+
+   switch(cmd)
+   {
+   case TLM_WRITE_COMMAND://--------------SAVE NEW PICTURE
+         
+      image_v.clear();
+      for(unsigned int i=0; i<len; i++)
+         image_v.push_back(((din_t *)buf)[i]);
+      pl.set_response_status( TLM_OK_RESPONSE );
+      e_start.notify();
+      offset+=sc_time(10, SC_NS);
       break;
 
-   case TLM_READ_COMMAND://--------------------------------------------------------RETURN RESULTS
+   case TLM_READ_COMMAND://----------------RETURN RESULTS
          
       buf=(unsigned char *)&cl_num;
       pl.set_data_ptr        ( buf );

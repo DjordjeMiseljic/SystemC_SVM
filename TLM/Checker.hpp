@@ -30,7 +30,7 @@ class Checker : public sc_module
    
    protected:
       vector<din_t> images;
-      vector<din_t> labels;
+      vector<num_t> labels;
 
       void verify();
       bool dmi_valid;

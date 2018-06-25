@@ -17,22 +17,29 @@ void DMI::b_transport(pl_t& pl, sc_time& offset)
    unsigned int len   = pl.get_data_length();
    unsigned char *buf = pl.get_data_ptr();
    unsigned int start = adr-0x83000000;
+   bool nb;
     
+   //cout<<"DMI : b_transport, start="<<start<<"  len="<<len<<endl;
    switch (cmd)
    {
       case TLM_WRITE_COMMAND:
          //TAKE REQUESTED DATA FROM DDR3 RAM
          pl.set_command(TLM_READ_COMMAND);
-         pl.set_address((uint64)start);
+         pl.set_address(start);
          s_dm_i->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
          //PUT IT IN TEMPORARY VARIABLE
          tmp_mem.clear();
+         //cout<<"DMI : Starting transfer from buf to tmp_mem"<<endl;
          for(int i=0; i<len; i++)
-            tmp_mem[i]=(((din_t*)buf)[i]);
+            tmp_mem.push_back(((din_t*)pl.get_data_ptr())[i]);
+
          //PUSH IT INTO FIFO TOWARDS SVM
+         //cout<<"DMI : Starting transfer from tmp_mem to fifo"<<endl;
          for(int i=0; i<len; i++)
-           p_fifo->nb_write(tmp_mem[i]);
+         {
+            nb=p_fifo->nb_write(tmp_mem[i]);
+         }
          //AFTER ITS DONE, FINISH TRANSACTION
          pl.set_response_status( TLM_OK_RESPONSE );
          offset += sc_time(10, SC_NS);

@@ -19,7 +19,6 @@ SC_HAS_PROCESS(Checker);
 Checker::Checker(sc_module_name name) : sc_module(name)
 {
    cout<<name<<" constucted"<<endl;
-   SC_THREAD(verify);
 
    SC_METHOD(deskew_isr);
    sensitive <<p_port0;
@@ -29,9 +28,11 @@ Checker::Checker(sc_module_name name) : sc_module(name)
    sensitive <<p_port1;
    dont_initialize();
 
+   SC_THREAD(verify);
+
    offset= SC_ZERO_TIME;
    img=0;
-   core=0;
+   core=10;
    sv=0;
    lmb=0;
    match=0;
@@ -53,35 +54,16 @@ void Checker::verify()
    labels_extraction();
 
    
-   //WRITE THE FIRST IMAGE TO BRAM
-   cout<<"...writing first image to BRAM"<<endl;
-   image = (unsigned char*)&images[0];
-   pl.set_data_ptr(image);
-   pl.set_address(0x80000000);
-   pl.set_data_length(SV_LEN);
-   pl.set_command(TLM_WRITE_COMMAND);
-   s_ch_i->b_transport(pl, offset);
-   assert(pl.get_response_status() == TLM_OK_RESPONSE);
-
-   //DUMMY TRANSACTION TO START DSKW MODULE
-
-   cout<<"...starting Deskew module"<<endl;
-   pl.set_address(0x81000000);
-   pl.set_command(TLM_WRITE_COMMAND);
-   s_ch_i->b_transport(pl, offset);
-   assert(pl.get_response_status() == TLM_OK_RESPONSE);
-   
    #ifdef QUANTUM
    qk.set_and_sync(offset);
    #endif
-
 }
 
 
 void Checker::deskew_isr()
 {
-   cout<< "Deskew Interrupt " ;
-   cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+   //cout<< "Deskew Interrupt " ;
+   //cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
    pl_t pl;
    
    //READ DESKEWED IMAGE FROM BRAM
@@ -114,13 +96,13 @@ void Checker::deskew_isr()
 
 void Checker::classificator_isr()
 {
-   cout<< "SVM Interrupt " ;
-   cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+  // cout<< "SVM Interrupt " ;
+   //cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
    pl_t pl;
    
    if (img==lines) //zavrsi simulaciju
    {
-      cout<<"...SVM ISR: prosle sve slike"<<endl;
+      //cout<<"...SVM ISR: prosle sve slike"<<endl;
       //NAKON STO PRODJU SVE SLIKE 
       cout<<"Number of classifications : "<<lines<<D_MAGNETA<<"\nPercentage: "<<B_MAGNETA
        <<(float)match/lines*100<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
@@ -141,35 +123,39 @@ void Checker::classificator_isr()
    }
    else if (core==10) //sledeca slika
    {
-      cout<<"...SVM ISR: sledeca slika"<<endl;
+      //cout<<"...SVM ISR: sledeca slika"<<endl;
       num_t *num;
       unsigned char* image;
       
-      //READ RESULTS FROM SVM
-      pl.set_address(0x82000000);
-      pl.set_data_length(1);
-      pl.set_command(TLM_READ_COMMAND);
-      s_ch_i->b_transport(pl, offset);
-      assert(pl.get_response_status() == TLM_OK_RESPONSE);
+      if (img != 0)
+      {
 
-      num = (num_t*)pl.get_data_ptr();
-      
-      //REPORT CLASSIFICATION
-      if(labels[img] == *num)
-      {
-            cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<RST<<D_GREEN<<" :: classified number: "
-               <<*num<<"["<<labels[img]<<"] :true_number"<<RST;
-            cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<img<<")"<<RST<<endl;
-         match++;
+         //READ RESULTS FROM SVM
+         pl.set_address(0x82000000);
+         pl.set_data_length(1);
+         pl.set_command(TLM_READ_COMMAND);
+         s_ch_i->b_transport(pl, offset);
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+         num = (num_t*)pl.get_data_ptr();
+         
+         //REPORT CLASSIFICATION
+         if(labels[img-1] == *num)
+         {
+               cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<RST<<D_GREEN<<" :: classified number: "
+                  <<*num<<"["<<labels[img-1]<<"] :true_number"<<RST;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<img-1<<")"<<RST<<endl;
+            match++;
+         }
+         else
+         {
+               cout<<B_RED<<"     MISCLASSIFICATION"<<RST<<D_RED<<" :: classified number: "
+                  <<*num<<"["<<labels[img-1]<<"] :true_number"<<RST;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<img-1<<")"<<RST<<endl;
+         }
+         
       }
-      else
-      {
-            cout<<B_RED<<"     MISCLASSIFICATION"<<RST<<D_RED<<" :: classified number: "
-               <<*num<<"["<<labels[img]<<"] :true_number"<<RST;
-            cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<img<<")"<<RST<<endl;
-      }
-      
-      img++;
+
       if(img<lines)
       {
          //WRITE NEW IMAGE TO BRAM
@@ -188,13 +174,14 @@ void Checker::classificator_isr()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
       }
       
+      img++;
       core=0;
       return;
 
    }
    else if (sv==lmb && sv!=sv_array[core]) //treba mu sledeci sv
    {
-      cout<<"...SVM ISR: sledeci sv"<<endl;
+      //cout<<"...SVM ISR: sledeci sv"<<endl;
       pl.set_address(0x83000000+sv_start_addr[core]+sv*SV_LEN);
       pl.set_data_length(SV_LEN);
       pl.set_command(TLM_WRITE_COMMAND);
@@ -207,8 +194,9 @@ void Checker::classificator_isr()
    else if(sv>lmb) //treba mu sledeca lambda
    {
 
-      cout<<"...SVM ISR: sledeca lambda"<<endl;
-      pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*SV_LEN+sv);
+      //cout<<"...SVM ISR: sledeca lambda"<<endl;
+      pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*SV_LEN+sv-1);
+      //-1 zato sto prethodi sv++ a treba lambda za neuvecani sv
       pl.set_data_length(1);
       pl.set_command(TLM_WRITE_COMMAND);
       s_ch_i->b_transport(pl, offset);
@@ -220,7 +208,7 @@ void Checker::classificator_isr()
    else if(sv==lmb && sv==sv_array[core]) //treba mu bias
    {
    
-      cout<<"...SVM ISR: bias"<<endl;
+      //cout<<"...SVM ISR: bias"<<endl;
       pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*(SV_LEN+1));
       pl.set_data_length(1);
       pl.set_command(TLM_WRITE_COMMAND);
@@ -230,11 +218,13 @@ void Checker::classificator_isr()
       sv=0;
       lmb=0;
       core++;
+
+      //cout<<"...SVM ISR: core"<<core<<endl;
       return;
    }
    else
    {
-      cout<<"SVM ISR: forbidden state"<<endl;
+      //cout<<"SVM ISR: forbidden state"<<endl;
       cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" ! FORBIDDEN STATE !"<<endl;
       cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
       return;

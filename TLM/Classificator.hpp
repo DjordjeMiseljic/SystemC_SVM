@@ -30,6 +30,7 @@ class Classificator : public sc_module
 
    protected:
       void b_transport(pl_t&, sc_time&);
+      void classify();
       //CLASSIFICATOR VARIABLES
       vector <din_t> image_v;
       vector <res_t> res_v;
@@ -38,6 +39,8 @@ class Classificator : public sc_module
       num_t cl_num;
       res_t max_res;
       sc_logic toggle;
+      sc_event e_start;
+
 
 };
 
