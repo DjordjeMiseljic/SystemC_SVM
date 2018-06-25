@@ -37,6 +37,7 @@ class Checker : public sc_module
       unsigned char* dmi_mem;
       unsigned int lines;
       int match;
+
       //VARIABLES FOR ISR
       unsigned int img; //number of test image
       unsigned int core; //number of current svm core

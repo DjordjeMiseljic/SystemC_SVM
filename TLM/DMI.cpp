@@ -6,7 +6,7 @@ DMI::DMI(sc_module_name name):sc_module(name)
 {
    s_dm_t.register_b_transport(this, &DMI::b_transport);
    cout<<name<<" constructed"<<endl;
-   
+   SC_THREAD(send_to_fifo);
    tmp_mem.reserve(SV_LEN);
 }
 
@@ -17,12 +17,12 @@ void DMI::b_transport(pl_t& pl, sc_time& offset)
    unsigned int len   = pl.get_data_length();
    unsigned char *buf = pl.get_data_ptr();
    unsigned int start = adr-0x83000000;
-   bool nb;
     
    //cout<<"DMI : b_transport, start="<<start<<"  len="<<len<<endl;
    switch (cmd)
    {
       case TLM_WRITE_COMMAND:
+         length=len;
          //TAKE REQUESTED DATA FROM DDR3 RAM
          pl.set_command(TLM_READ_COMMAND);
          pl.set_address(start);
@@ -30,16 +30,14 @@ void DMI::b_transport(pl_t& pl, sc_time& offset)
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
          //PUT IT IN TEMPORARY VARIABLE
          tmp_mem.clear();
-         //cout<<"DMI : Starting transfer from buf to tmp_mem"<<endl;
          for(int i=0; i<len; i++)
             tmp_mem.push_back(((din_t*)pl.get_data_ptr())[i]);
-
-         //PUSH IT INTO FIFO TOWARDS SVM
-         //cout<<"DMI : Starting transfer from tmp_mem to fifo"<<endl;
+         
+         tmp_mem.clear();
          for(int i=0; i<len; i++)
-         {
-            nb=p_fifo->nb_write(tmp_mem[i]);
-         }
+            tmp_mem.push_back(((din_t*)pl.get_data_ptr())[i]);
+         //START SENDING IT INTO FIFO
+         e_send.notify();
          //AFTER ITS DONE, FINISH TRANSACTION
          pl.set_response_status( TLM_OK_RESPONSE );
          offset += sc_time(10, SC_NS);
@@ -56,6 +54,20 @@ void DMI::b_transport(pl_t& pl, sc_time& offset)
          pl.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
    }
 }
+
+void DMI::send_to_fifo()
+{
+   while(1)
+   {
+         wait(e_send);
+         //PUSH IT INTO FIFO TOWARDS SVM
+         for(int i=0; i<length; i++)
+            p_fifo->write(tmp_mem[i]);
+   }
+
+}
+
+
 
 
 #endif

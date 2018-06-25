@@ -43,28 +43,21 @@ void Classificator::classify ()
    while(1)
    {
       wait(e_start);
-      //cout<<"SVM...entering infinity loop"<<endl;
       res_v.clear();
       for(unsigned int core=0; core<10; core++)
       {
          acc=0;
-         //cout<<"SVM...core="<<core<<endl;
 
          for( int sv=0; sv<sv_array[core]; sv++)
          {
 
-            //cout<<"SVM...sv="<<sv<<endl;
             toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
             s_new.write(toggle);//demand new, send interrupt                 **
 
             p=1.0;
             for( int i=0; i<SV_LEN; i++)
             {
-               //cout<<"SVM...i="<<i<<endl;
                p_fifo->read(fifo_tmp);
-
-              // cout<<"SVM...read fifo="<<(float)fifo_tmp<<endl;
-
                p+=image_v[i]*fifo_tmp;
                P_CHECK_OVERFLOW
             }

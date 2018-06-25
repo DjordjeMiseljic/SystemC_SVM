@@ -62,8 +62,6 @@ void Checker::verify()
 
 void Checker::deskew_isr()
 {
-   //cout<< "Deskew Interrupt " ;
-   //cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
    pl_t pl;
    
    //READ DESKEWED IMAGE FROM BRAM
@@ -96,13 +94,10 @@ void Checker::deskew_isr()
 
 void Checker::classificator_isr()
 {
-  // cout<< "SVM Interrupt " ;
-   //cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
    pl_t pl;
    
    if (img==lines) //zavrsi simulaciju
    {
-      //cout<<"...SVM ISR: prosle sve slike"<<endl;
       //NAKON STO PRODJU SVE SLIKE 
       cout<<"Number of classifications : "<<lines<<D_MAGNETA<<"\nPercentage: "<<B_MAGNETA
        <<(float)match/lines*100<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
@@ -123,7 +118,6 @@ void Checker::classificator_isr()
    }
    else if (core==10) //sledeca slika
    {
-      //cout<<"...SVM ISR: sledeca slika"<<endl;
       num_t *num;
       unsigned char* image;
       
@@ -181,7 +175,6 @@ void Checker::classificator_isr()
    }
    else if (sv==lmb && sv!=sv_array[core]) //treba mu sledeci sv
    {
-      //cout<<"...SVM ISR: sledeci sv"<<endl;
       pl.set_address(0x83000000+sv_start_addr[core]+sv*SV_LEN);
       pl.set_data_length(SV_LEN);
       pl.set_command(TLM_WRITE_COMMAND);
@@ -194,7 +187,6 @@ void Checker::classificator_isr()
    else if(sv>lmb) //treba mu sledeca lambda
    {
 
-      //cout<<"...SVM ISR: sledeca lambda"<<endl;
       pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*SV_LEN+sv-1);
       //-1 zato sto prethodi sv++ a treba lambda za neuvecani sv
       pl.set_data_length(1);
@@ -208,7 +200,6 @@ void Checker::classificator_isr()
    else if(sv==lmb && sv==sv_array[core]) //treba mu bias
    {
    
-      //cout<<"...SVM ISR: bias"<<endl;
       pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*(SV_LEN+1));
       pl.set_data_length(1);
       pl.set_command(TLM_WRITE_COMMAND);
@@ -218,13 +209,10 @@ void Checker::classificator_isr()
       sv=0;
       lmb=0;
       core++;
-
-      //cout<<"...SVM ISR: core"<<core<<endl;
       return;
    }
    else
    {
-      //cout<<"SVM ISR: forbidden state"<<endl;
       cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" ! FORBIDDEN STATE !"<<endl;
       cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
       return;

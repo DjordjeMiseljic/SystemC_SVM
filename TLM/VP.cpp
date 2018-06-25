@@ -10,7 +10,7 @@ VP::VP(sc_module_name name) :
    de("Deskew"),
    br("BRAM"),
    dm("DMI"),
-   fifo(784)
+   fifo(748)
 {
 
 	s_vp_t.register_b_transport(this, &VP::b_transport);

@@ -22,7 +22,6 @@ class Classificator : public sc_module
       Classificator(sc_module_name name);
       
       tlm_utils::simple_target_socket<Classificator> s_cl_t;
-      //tlm_utils::simple_initiator_socket<Classificator> s_cl_i;
       
       sc_export<sc_signal_out_if<sc_logic>> p_exp;
       sc_signal <sc_logic> s_new;
@@ -31,6 +30,7 @@ class Classificator : public sc_module
    protected:
       void b_transport(pl_t&, sc_time&);
       void classify();
+
       //CLASSIFICATOR VARIABLES
       vector <din_t> image_v;
       vector <res_t> res_v;

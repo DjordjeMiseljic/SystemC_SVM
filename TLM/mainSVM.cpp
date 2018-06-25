@@ -24,10 +24,5 @@ int sc_main(int argc, char* argv[])
 
 	sc_start(20,SC_SEC);
 	cout << "Simulation finished at " << sc_time_stamp() <<endl;
-   /*
-	delete Cl;
-	delete Mc;	
-   delete Ch;
-*/
 	return 0;
 }
