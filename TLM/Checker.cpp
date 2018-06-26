@@ -99,6 +99,7 @@ void Checker::deskew_isr()
    offset += sc_time(4, SC_NS);
    #endif*/
 
+   //WRITE DEKEWED IMAGE TO SVM
    pl.set_address(0x82000000);
    pl.set_data_length(SV_LEN);
    pl.set_command(TLM_WRITE_COMMAND);

@@ -42,7 +42,7 @@ void Classificator::classify ()
    s_new.write(toggle);//demand new, send interrupt                 **
    while(1)
    {
-      wait(e_start);
+      wait(e_start);//ceka sledecu sliku iz deskew isr-a
       res_v.clear();
       for(unsigned int core=0; core<10; core++)
       {

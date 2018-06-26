@@ -29,13 +29,14 @@ void DMI::b_transport(pl_t& pl, sc_time& offset)
          s_dm_i->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
          //PUT IT IN TEMPORARY VARIABLE
+         buf = pl.get_data_ptr();
          tmp_mem.clear();
          for(int i=0; i<len; i++)
-            tmp_mem.push_back(((din_t*)pl.get_data_ptr())[i]);
+            tmp_mem.push_back(((din_t*)buf)[i]);
          
          tmp_mem.clear();
          for(int i=0; i<len; i++)
-            tmp_mem.push_back(((din_t*)pl.get_data_ptr())[i]);
+            tmp_mem.push_back(((din_t*)buf)[i]);
          //START SENDING IT INTO FIFO
          e_send.notify();
          //AFTER ITS DONE, FINISH TRANSACTION
