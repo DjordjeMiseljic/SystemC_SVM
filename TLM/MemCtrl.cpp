@@ -8,14 +8,32 @@ MemCtrl::MemCtrl(sc_module_name name): sc_module(name),
    
    s_mc_t.register_b_transport(this, &MemCtrl::b_transport);
    SC_THREAD(memory_init);
-   for(int i=0; i!=RAM_SIZE; i++)
-      ram[i]=0;
+   
+   // for(int i=0; i!=RAM_SIZE; i++)
+   //    ram[i]=0;
    cout<<name<<" constructed"<<endl;
+
 }
 
 void MemCtrl::memory_init()
 {
+   vector<din_t> test_image;
+   test_image.reserve(784);
+   uint64 addr;
+
    file_extract();
+   // cout<<"sum of sv: "<<sum_of_sv(9)*784<<endl;
+   // cout<<"sum of lambdas: "<<sum_of_sv(9)<<endl;
+   // addr = sum_of_sv(9)*SV_LEN+sum_of_sv(9)+10;
+   // unsigned char  *test =read_from_mem(addr);
+   
+   // //din_t *test2 = (lin_t*)test;
+   // for (int i = 0; i < 784; ++i)
+   // {
+   //    cout<<"entered"<<endl;
+   //    test_image.push_back(((bin_t*)test)[i]);
+   //    cout<<i<<". pixel is: "<<test_image[i]<<endl;
+   // }
    return;
 }
 void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
@@ -58,13 +76,13 @@ void MemCtrl::file_extract()
    int j, k=0;
    int sv_len = SV_LEN;
    int sum = 0;
-   
+   images_extraction();
    for (int i = 0; i < 10; ++i)
       {
          sv[i].reserve(sv_array[i]*SV_LEN);
          lambdas[i].reserve(sv_array[i]);
       }
-
+   
    for(int i=0; i<10; i++)
       {
       
@@ -82,7 +100,7 @@ void MemCtrl::file_extract()
          lines = num_of_lines(str);
          sv_lines[i] = lines;
          sum += lines;
-         cout<<"sv "<<i<<"is "<<sv_lines[i]<<endl;
+         cout<<"number of sv for "<<i<<". clasificator is: "<<sv_lines[i]<<endl;
          ifstream sv_file(str);
          if(sv_file.is_open())
             while(j!=lines*sv_len)
@@ -240,13 +258,13 @@ unsigned char* MemCtrl::read_from_mem(uint64 address)
       else
          buf = (unsigned char*)&biases[9];
    else
-      cout<<BLUE<<"ADRESS_OUT_OF_RANGE ADDRESS IS: "<<address<<RST<<endl;
+      buf = (unsigned char*) &images[address - (sum_of_sv(9)*SV_LEN+sum_of_sv(9)+10)];
    
                                                                           
 
-         return buf;
+return buf;
 
-      }
+}
 int MemCtrl::sum_of_sv(int to_element)
 {
    if(to_element == -1)
@@ -257,6 +275,43 @@ int MemCtrl::sum_of_sv(int to_element)
    
    return sum;
 }
+
+
+void MemCtrl::images_extraction()
+{
+   int k =0;
+   string  y_line;
+   int lines;
+   images.clear();
+   lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   ifstream y_file("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   
+   images.reserve(lines*784);
+   if(y_file.is_open())
+      {
+         for(int i=0; i<SV_LEN*lines;i++)
+            {
+               if(k == SV_LEN-1 )
+                  {
+                     getline(y_file, y_line, '\n');
+                     k = 0;
+                  }
+               else
+                  {
+                     getline(y_file, y_line, ' ');
+                     k++;
+                  }
+               images.push_back(stod(y_line));
+            }
+      }
+   else
+      {
+         cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" OPENING Y FILE"<<endl;
+         cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
+      }
+   y_file.close();   
+}
+
 
 #endif
 
