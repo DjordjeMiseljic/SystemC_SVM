@@ -9,7 +9,7 @@ VP::VP(sc_module_name name) :
 	mc("MControl"),
    de("Deskew"),
    br("BRAM"),
-   dm("DMI"),
+   dm("DMA"),
    fifo(785)
 {
 
