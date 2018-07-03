@@ -10,7 +10,7 @@
 #include "Types.hpp"
 #include "Deskew.hpp"
 #include "BRAM.hpp"
-#include "DMI.hpp"
+#include "DMA.hpp"
 using namespace sc_core;
 using namespace std;
 
@@ -30,7 +30,7 @@ class VP : sc_module
       MemCtrl mc;
       Deskew de;
       BRAM br;
-      DMI dm; 
+      DMA dm; 
 
       sc_fifo<din_t> fifo;
 
