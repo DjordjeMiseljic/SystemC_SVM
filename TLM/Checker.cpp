@@ -12,6 +12,7 @@
 #define SV7 SV6+(376*(SV_LEN+1))+1
 #define SV8 SV7+(432*(SV_LEN+1))+1
 #define SV9 SV8+(751*(SV_LEN+1))+1
+#define IMG_START SV9+(687*(SV_LEN+1))+1
 
 const array<int, 10> sv_start_addr = {SV0, SV1, SV2, SV3, SV4, SV5, SV6, SV7, SV8, SV9};
 SC_HAS_PROCESS(Checker);
@@ -19,23 +20,7 @@ SC_HAS_PROCESS(Checker);
 Checker::Checker(sc_module_name name) : sc_module(name)
 {
    cout<<name<<" constucted"<<endl;
-
-   SC_METHOD(deskew_isr);
-   sensitive <<p_port0;
-   dont_initialize();
-
-   SC_METHOD(classificator_isr);
-   sensitive <<p_port1;
-   dont_initialize();
-
    SC_THREAD(verify);
-   SC_THREAD(synchronize);
-
-   offset= SC_ZERO_TIME;
-   img=0;
-   core=10;
-   sv=0;
-   lmb=0;
    match=0;
 }
 
@@ -43,198 +28,277 @@ Checker::Checker(sc_module_name name) : sc_module(name)
 void Checker::verify()
 {
    pl_t pl;
-   unsigned char* image;
+   unsigned char *buf;
+   unsigned char *image;
+   unsigned int addr = 0;
+   sc_time offset=SC_ZERO_TIME;
 
    #ifdef QUANTUM
+   tlm_utils::tlm_quantumkeeper qk;
    qk.reset();
    #endif
-   
+
    cout<<"...file extraction"<<endl;
    lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
    images_extraction();
    labels_extraction();
 
+   #ifdef QUANTUM
+   qk.inc(sc_time(10, SC_NS));
+   offset = qk.get_local_time();
+   #else
+   offset += sc_time(4, SC_NS);
+   #endif
    
    #ifdef QUANTUM
    qk.set_and_sync(offset);
    #endif
-}
-
-void Checker::synchronize()
-{
-   while(1)
-   {
-      wait(e_sync);
-      cout<<"ZZ"<<endl; 
-      #ifdef QUANTUM
-      qk.inc(sc_time(4, SC_NS));
-      offset = qk.get_local_time();
-      #else
-      offset += sc_time(4, SC_NS);
-      #endif
-
-      #ifdef QUANTUM
-      qk.set_and_sync(offset);
-      #endif
-
-   }
-}
-
-void Checker::deskew_isr()
-{
-   pl_t pl;
    
-   //READ DESKEWED IMAGE FROM BRAM
-   pl.set_address(0x80000000+SV_LEN);
-   pl.set_data_length(SV_LEN);
-   pl.set_command(TLM_READ_COMMAND);
-   s_ch_i->b_transport(pl, offset);
-   assert(pl.get_response_status() == TLM_OK_RESPONSE);
-
-
-   /*#ifdef QUANTUM
-   qk.inc(sc_time(4, SC_NS));
-   offset = qk.get_local_time();
-   #else
-   offset += sc_time(4, SC_NS);
-   #endif*/
-
-   //WRITE DEKEWED IMAGE TO SVM
-   pl.set_address(0x82000000);
-   pl.set_data_length(SV_LEN);
-   pl.set_command(TLM_WRITE_COMMAND);
-   s_ch_i->b_transport(pl, offset);
-   assert(pl.get_response_status() == TLM_OK_RESPONSE);
-
-   /*#ifdef QUANTUM
-   qk.set_and_sync(offset);
-   #endif*/
-
-   e_sync.notify(5,SC_NS);
-   return;
-}
-
-void Checker::classificator_isr()
-{
-   pl_t pl;
-   
-   if (img==lines) //zavrsi simulaciju
+   for(int img=0; img<lines; img++)
    {
-      //NAKON STO PRODJU SVE SLIKE 
-      cout<<"Number of classifications : "<<lines<<D_MAGNETA<<"\nPercentage: "<<B_MAGNETA
-       <<(float)match/lines*100<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
-      
-      /*#ifdef QUANTUM
-      qk.inc(sc_time(4, SC_NS));
-      offset = qk.get_local_time();
-      #else
-      offset += sc_time(4, SC_NS);
-      #endif
-   
-      #ifdef QUANTUM
-      qk.set_and_sync(offset);
-      #endif*/
+         //READ NEW IMAGE FROM DDR 
+         addr = + IMG_START img*SV_LEN;
+         pl.set_address(addr);
+         pl.set_data_length(SV_LEN);
+         pl.set_command(TLM_READ_COMMAND);
+         s_ch_i1->b_transport(pl, offset);
+         buf = pl.get_data_ptr();
+         image = ((din_t*)buf[0]);
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
-   }
-   else if (core==10) //sledeca slika
-   {
-      num_t *num;
-      unsigned char* image;
-      
-      if (img != 0)
-      {
+         #ifdef QUANTUM
+         qk.inc(sc_time(4, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+         
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+
+         //WRITE NEW IMAGE TO BRAM
+         pl.set_data_ptr(image);
+         pl.set_address(0x80000000);
+         pl.set_data_length(SV_LEN);
+         pl.set_command(TLM_WRITE_COMMAND);
+         s_ch_i0->b_transport(pl, offset);
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+         #ifdef QUANTUM
+         qk.inc(sc_time(4, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+         
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+
+         //DUMMY TRANSACTION TO START DSKW MODULE
+         pl.set_address(0x81000000);
+         pl.set_command(TLM_WRITE_COMMAND);
+         s_ch_i0->b_transport(pl, offset);
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
+         
+         #ifdef QUANTUM
+         qk.inc(sc_time(4, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+         
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+
+         //************** WAIT FOR DSKW TO FINISH PROCESSING IMAGE    
+         while(p_port0->nb_read() == SC_LOGIC_0)
+         {
+            #ifdef QUANTUM
+            qk.inc(sc_time(4, SC_NS));
+            offset = qk.get_local_time();
+            #else
+            offset += sc_time(4, SC_NS);
+            #endif
+            
+            #ifdef QUANTUM
+            qk.set_and_sync(offset);
+            #endif
+
+         }
+
+         //READ DESKEWED IMAGE FROM BRAM
+         pl.set_address(0x80000000+SV_LEN);
+         pl.set_data_length(SV_LEN);
+         pl.set_command(TLM_READ_COMMAND);
+         s_ch_i0->b_transport(pl, offset);
+         buf = pl.get_data_ptr();
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+         #ifdef QUANTUM
+         qk.inc(sc_time(4, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+         
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+         
+         //WRITE NEW IMAGE TO DDR 
+         addr = IMG_START + img*SV_LEN;
+         pl.set_address(addr);
+         pl.set_data_ptr(buf);
+         pl.set_data_length(SV_LEN);
+         pl.set_command(TLM_WRITE_COMMAND);
+         s_ch_i1->b_transport(pl, offset);
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+         #ifdef QUANTUM
+         qk.inc(sc_time(4, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+         
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+
+         //START SVM
+         pl.set_address(0x82000000);
+         pl.set_data_length(SV_LEN);
+         pl.set_command(TLM_WRITE_COMMAND);
+         s_ch_i0->b_transport(pl, offset);
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
+              
+         //SEND DESKEWED IMAGE - TROUGH DMA TO SVM
+         pl.set_address(0x83000000 + IMG_START + img*SV_LEN);
+         pl.set_data_length(SV_LEN);
+         pl.set_command(TLM_WRITE_COMMAND);
+         s_ch_i0->b_transport(pl, offset);
+         assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+         for (int core=0; core<10; core++)
+         {
+            for (int sv=0; sv<sv_array[core]; sv++)
+            {
+               //SEND APPROPRIATE SV - TROUGH DMA TO SVM
+               pl.set_address(0x83000000+sv_start_addr[core]+sv*SV_LEN);
+               pl.set_data_length(SV_LEN);
+               pl.set_command(TLM_WRITE_COMMAND);
+               s_ch_i0->b_transport(pl, offset);
+               assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+               #ifdef QUANTUM
+               qk.inc(sc_time(4, SC_NS));
+               offset = qk.get_local_time();
+               #else
+               offset += sc_time(4, SC_NS);
+               #endif
+               
+               #ifdef QUANTUM
+               qk.set_and_sync(offset);
+               #endif
+
+               //SEND APPROPRIATE LAMBDA - TROUGH DMA TO SVM
+               pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*SV_LEN+sv);
+               pl.set_data_length(1);
+               pl.set_command(TLM_WRITE_COMMAND);
+               s_ch_i0->b_transport(pl, offset);
+               assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+               #ifdef QUANTUM
+               qk.inc(sc_time(4, SC_NS));
+               offset = qk.get_local_time();
+               #else
+               offset += sc_time(4, SC_NS);
+               #endif
+               
+               #ifdef QUANTUM
+               qk.set_and_sync(offset);
+               #endif
+
+               //SEND BIAS - TROUGH DMA TO SVM
+               pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*(SV_LEN+1));
+               pl.set_data_length(1);
+               pl.set_command(TLM_WRITE_COMMAND);
+               s_ch_i0->b_transport(pl, offset);
+               assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+               #ifdef QUANTUM
+               qk.inc(sc_time(4, SC_NS));
+               offset = qk.get_local_time();
+               #else
+               offset += sc_time(4, SC_NS);
+               #endif
+               
+               #ifdef QUANTUM
+               qk.set_and_sync(offset);
+               #endif
+            }
+
+         }
+         //********* WAIT FOR SVM TO FINISH CLASSIFYING THIS IMAGE 
+         while(p_port1->nb_read() == SC_LOGIC_0)
+         {
+            
+            #ifdef QUANTUM
+            qk.inc(sc_time(4, SC_NS));
+            offset = qk.get_local_time();
+            #else
+            offset += sc_time(4, SC_NS);
+            #endif
+            
+            #ifdef QUANTUM
+            qk.set_and_sync(offset);
+            #endif
+         }
 
          //READ RESULTS FROM SVM
          pl.set_address(0x82000000);
          pl.set_data_length(1);
          pl.set_command(TLM_READ_COMMAND);
-         s_ch_i->b_transport(pl, offset);
+         s_ch_i0->b_transport(pl, offset);
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
-
          num = (num_t*)pl.get_data_ptr();
          
+         #ifdef QUANTUM
+         qk.inc(sc_time(4, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+         
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+         
          //REPORT CLASSIFICATION
-         if(labels[img-1] == *num)
+         if(labels[img] == *num)
          {
                cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<RST<<D_GREEN<<" :: classified number: "
-                  <<*num<<"["<<labels[img-1]<<"] :true_number"<<RST;
-               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<img-1<<")"<<RST<<endl;
+                  <<*num<<"["<<labels[img]<<"] :true_number"<<RST;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<img<<")"<<RST<<endl;
             match++;
          }
          else
          {
                cout<<B_RED<<"     MISCLASSIFICATION"<<RST<<D_RED<<" :: classified number: "
-                  <<*num<<"["<<labels[img-1]<<"] :true_number"<<RST;
-               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<img-1<<")"<<RST<<endl;
+                  <<*num<<"["<<labels[img]<<"] :true_number"<<RST;
+               cout<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<"  ("<<img<<")"<<RST<<endl;
          }
-         
-      }
-
-      if(img<lines)
-      {
-         //WRITE NEW IMAGE TO BRAM
-         image = (unsigned char*)&images[img*SV_LEN];
-         pl.set_data_ptr(image);
-         pl.set_address(0x80000000);
-         pl.set_data_length(SV_LEN);
-         pl.set_command(TLM_WRITE_COMMAND);
-         s_ch_i->b_transport(pl, offset);
-         assert(pl.get_response_status() == TLM_OK_RESPONSE);
-
-         //DUMMY TRANSACTION TO START DSKW MODULE
-         pl.set_address(0x81000000);
-         pl.set_command(TLM_WRITE_COMMAND);
-         s_ch_i->b_transport(pl, offset);
-         assert(pl.get_response_status() == TLM_OK_RESPONSE);
-      }
-      
-      img++;
-      core=0;
-
-   }
-   else if (sv==lmb && sv!=sv_array[core]) //treba mu sledeci sv
-   {
-      pl.set_address(0x83000000+sv_start_addr[core]+sv*SV_LEN);
-      pl.set_data_length(SV_LEN);
-      pl.set_command(TLM_WRITE_COMMAND);
-      s_ch_i->b_transport(pl, offset);
-      assert(pl.get_response_status() == TLM_OK_RESPONSE);
-
-      sv++;
-   }
-   else if(sv>lmb) //treba mu sledeca lambda
-   {
-
-      pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*SV_LEN+sv-1);
-      //-1 zato sto prethodi sv++ a treba lambda za neuvecani sv
-      pl.set_data_length(1);
-      pl.set_command(TLM_WRITE_COMMAND);
-      s_ch_i->b_transport(pl, offset);
-      assert(pl.get_response_status() == TLM_OK_RESPONSE);
-
-      lmb++;
-   }
-   else if(sv==lmb && sv==sv_array[core]) //treba mu bias
-   {
-   
-      pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*(SV_LEN+1));
-      pl.set_data_length(1);
-      pl.set_command(TLM_WRITE_COMMAND);
-      s_ch_i->b_transport(pl, offset);
-      assert(pl.get_response_status() == TLM_OK_RESPONSE);
-
-      sv=0;
-      lmb=0;
-      core++;
-   }
-   else
-   {
-      cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" ! FORBIDDEN STATE !"<<endl;
-      cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
    }
 
-   e_sync.notify(5,SC_NS);
+   //NAKON STO PRODJU SVE SLIKE 
+   cout<<"Number of classifications : "<<lines<<D_MAGNETA<<"\nPercentage: "<<B_MAGNETA
+    <<(float)match/lines*100<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
+
 }
+
 
 
 

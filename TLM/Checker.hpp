@@ -21,37 +21,27 @@ class Checker : public sc_module
       SC_HAS_PROCESS(Checker);
       Checker(sc_module_name name);
       
-      tlm_utils::simple_initiator_socket<Checker> s_ch_i;
+      tlm_utils::simple_initiator_socket<Checker> s_ch_i0;
+      tlm_utils::simple_initiator_socket<Checker> s_ch_i1;
       sc_port<sc_signal_out_if<sc_logic>> p_port0;
       sc_port<sc_signal_out_if<sc_logic>> p_port1;
-      
-      tlm_utils::tlm_quantumkeeper qk;
-      sc_time offset;
    
    protected:
       vector<din_t> images;
       vector<num_t> labels;
 
       void verify();
-      void synchronize();
       bool dmi_valid;
       unsigned char* dmi_mem;
       unsigned int lines;
       int match;
       sc_event e_sync;
+      sc_logic tmp_sig;
 
-      //VARIABLES FOR ISR
-      unsigned int img; //number of test image
-      unsigned int core; //number of current svm core
-      unsigned int sv; //number of current support vector for the core
-      unsigned int lmb; //number of current lambda for the core 
-      
       //METHODS
       void images_extraction();
       void labels_extraction();
       int num_of_lines(string str);
-      void deskew_isr();   
-      void classificator_isr();   
    
 };
 

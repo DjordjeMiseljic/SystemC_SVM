@@ -37,12 +37,37 @@ void Classificator::classify ()
 {
    din_t fifo_tmp;
    bool nbf=true; 
-   wait(1,SC_NS);
-   toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
-   s_new.write(toggle);//demand new, send interrupt                 **
+   #ifdef QUANTUM
+   tlm_utils::tlm_quantumkeeper qk;
+   qk.reset();
+   #endif
+
    while(1)
    {
-      wait(e_start);//ceka sledecu sliku iz deskew isr-a
+      wait(e_start);// Wait for start signal
+      for( int pixel=0; i<SV_LEN; i++)
+      {
+         toggle =  SC_LOGIC_1; 
+         s_new.write(toggle);// wait
+         while(p_fifo->nb_read(fifo_tmp)=TRUE)
+         {
+            #ifdef QUANTUM
+            qk.inc(sc_time(10, SC_NS));
+            offset = qk.get_local_time();
+            #else
+            offset += sc_time(4, SC_NS);
+            #endif
+            
+            #ifdef QUANTUM
+            qk.set_and_sync(offset);
+            #endif
+         }
+         toggle =  SC_LOGIC_0; 
+         s_new.write(toggle);
+
+         image_v[pixel]= fifo_tmp;
+      }
+
       res_v.clear();
       for(unsigned int core=0; core<10; core++)
       {
@@ -50,16 +75,28 @@ void Classificator::classify ()
 
          for( int sv=0; sv<sv_array[core]; sv++)
          {
-
-            toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
-            s_new.write(toggle);//demand new, send interrupt                 **
-
             p=1.0;
             for( int i=0; i<SV_LEN; i++)
             {
-               p_fifo->read(fifo_tmp);
+               toggle =  SC_LOGIC_1; 
+               s_new.write(toggle);//wait
+               while(p_fifo->nb_read(fifo_tmp)=TRUE)
+               {
+                  #ifdef QUANTUM
+                  qk.inc(sc_time(10, SC_NS));
+                  offset = qk.get_local_time();
+                  #else
+                  offset += sc_time(4, SC_NS);
+                  #endif
+                  
+                  #ifdef QUANTUM
+                  qk.set_and_sync(offset);
+                  #endif
+               }
                p+=image_v[i]*fifo_tmp;
                P_CHECK_OVERFLOW
+               toggle =  SC_LOGIC_0; 
+               s_new.write(toggle);
             }
             p*=0.1;
             P_CHECK_OVERFLOW
@@ -67,20 +104,49 @@ void Classificator::classify ()
             p=p*p*p;
             P_CHECK_OVERFLOW
                
-            toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
-            s_new.write(toggle);//demand new, send interrupt                 **
-
-            p_fifo->read(fifo_tmp);
+            toggle =  SC_LOGIC_1; 
+            s_new.write(toggle);// wait
+            while(p_fifo->nb_read(fifo_tmp)=TRUE)
+            {
+               #ifdef QUANTUM
+               qk.inc(sc_time(10, SC_NS));
+               offset = qk.get_local_time();
+               #else
+               offset += sc_time(4, SC_NS);
+               #endif
+               
+               #ifdef QUANTUM
+               qk.set_and_sync(offset);
+               #endif
+            }
+            toggle =  SC_LOGIC_0; 
+            s_new.write(toggle);
+            
             p*= fifo_tmp;
             P_CHECK_OVERFLOW
                
             acc+=p;
             A_CHECK_OVERFLOW
          }
-         toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
-         s_new.write(toggle);//demand new, send interrupt                 **
 
-         p_fifo->read(fifo_tmp);
+         toggle =  SC_LOGIC_1; 
+         s_new.write(toggle);// wait
+         while(p_fifo->nb_read(fifo_tmp)=TRUE)
+         {
+            #ifdef QUANTUM
+            qk.inc(sc_time(10, SC_NS));
+            offset = qk.get_local_time();
+            #else
+            offset += sc_time(4, SC_NS);
+            #endif
+            
+            #ifdef QUANTUM
+            qk.set_and_sync(offset);
+            #endif
+         }
+         toggle =  SC_LOGIC_0; 
+         s_new.write(toggle);
+
          acc+=fifo_tmp;
          A_CHECK_OVERFLOW
 
@@ -99,9 +165,6 @@ void Classificator::classify ()
             cl_num=(num_t)i;
          }
       }
-
-      toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
-      s_new.write(toggle);//demand new, send interrupt                 **
    }
 }
 void Classificator::b_transport(pl_t& pl, sc_time& offset)
@@ -117,8 +180,6 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
    case TLM_WRITE_COMMAND://--------------SAVE NEW PICTURE
          
       image_v.clear();
-      for(unsigned int i=0; i<len; i++)
-         image_v.push_back(((din_t *)buf)[i]);
       pl.set_response_status( TLM_OK_RESPONSE );
       e_start.notify();
       offset+=sc_time(10, SC_NS);
