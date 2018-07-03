@@ -28,13 +28,9 @@ class MemCtrl : public sc_module
 
       unsigned char *buffer = NULL;
    protected:
-      //static const int RAM_SIZE = 1024;
-      //unsigned char ram[RAM_SIZE];
       //global variables
-      array<vector<din_t>, 10> sv;
-      array<vector<lin_t>, 10> lambdas;
-      vector<din_t> images;
-      array<bin_t, 10> biases;
+      
+      vector <din_t> ram;
       array<int, 10> sv_lines;
       //methods
       void file_extract();
