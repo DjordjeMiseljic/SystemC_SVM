@@ -6,7 +6,6 @@ Deskew::Deskew(sc_module_name name):sc_module(name)
 {
    s_de_t.register_b_transport(this, &Deskew::b_transport);
    cout<<name<<" constructed"<<endl;
-   p_exp.bind(s_fin);
    SC_THREAD(proc);
    toggle = SC_LOGIC_0;
    start = SC_LOGIC_0;
@@ -89,7 +88,7 @@ void Deskew::proc()
       assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
       toggle = SC_LOGIC_1; 
-      s_fin.write(toggle);//finished, send interrupt
+      p_out->write(toggle);//finished, send interrupt
       
       #ifdef QUANTUM
       qk.inc(sc_time(20, SC_NS));
@@ -103,7 +102,7 @@ void Deskew::proc()
       #endif
       
       toggle = SC_LOGIC_0; 
-      s_fin.write(toggle);//finished, send interrupt
+      p_out->write(toggle);//finished, send interrupt
 
    }
 }
@@ -124,7 +123,7 @@ void Deskew::b_transport(pl_t& pl, sc_time& offset)
    {
 
       toggle = SC_LOGIC_0; 
-      s_fin.write(toggle);//finished, send interrupt
+      p_out->write(toggle);//finished, send interrupt
       pl.set_response_status(TLM_OK_RESPONSE);
    }
    else 

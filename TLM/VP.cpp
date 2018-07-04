@@ -30,8 +30,8 @@ VP::VP(sc_module_name name) :
    dm.p_fifo(fifo);
    cl.p_fifo(fifo);
 
-   p_exp0.bind(de.p_exp);
-   p_exp1.bind(cl.p_exp);
+   de.p_out(p_out0);
+   cl.p_out(p_out1);
 
 }
 

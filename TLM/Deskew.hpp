@@ -21,8 +21,7 @@ class Deskew : public sc_module
       Deskew(sc_module_name name);
       tlm_utils::simple_initiator_socket<Deskew> s_de_i;
       tlm_utils::simple_target_socket<Deskew> s_de_t;
-      sc_export<sc_signal_out_if<sc_logic>> p_exp;
-      sc_signal <sc_logic> s_fin;
+      sc_out<sc_logic> p_out;
    protected:
       void b_transport(pl_t&, sc_time&);
       void calc_moments(vector<din_t> image, p_t& mu11, p_t& mu02);

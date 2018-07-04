@@ -27,7 +27,6 @@ Classificator::Classificator(sc_module_name name): sc_module(name)
    SC_THREAD(classify);
    
    image_v.reserve(SV_LEN);
-   p_exp.bind(s_new);
    res_v.reserve(10);
    toggle = SC_LOGIC_0;
    start = SC_LOGIC_0;
@@ -93,7 +92,7 @@ void Classificator::classify ()
       for( int p=0; p<SV_LEN; p++)
       {
          toggle =  SC_LOGIC_1; 
-         s_new.write(toggle);// wait
+         p_out->write(toggle);// wait
          while(!p_fifo->nb_read(fifo_tmp))
          {
             #ifdef QUANTUM
@@ -108,7 +107,7 @@ void Classificator::classify ()
             #endif
          }
          toggle =  SC_LOGIC_0; 
-         s_new.write(toggle);
+         p_out->write(toggle);
 
          image_v[p]= fifo_tmp;
       }
@@ -130,7 +129,7 @@ void Classificator::classify ()
             for( int i=0; i<SV_LEN; i++)
             {
                toggle =  SC_LOGIC_1; 
-               s_new.write(toggle);//wait
+               p_out->write(toggle);//wait
                while(!p_fifo->nb_read(fifo_tmp))
                {
                   #ifdef QUANTUM
@@ -147,7 +146,7 @@ void Classificator::classify ()
                p+=image_v[i]*fifo_tmp;
                P_CHECK_OVERFLOW
                toggle =  SC_LOGIC_0; 
-               s_new.write(toggle);
+               p_out->write(toggle);
             }
             p*=0.1;
             P_CHECK_OVERFLOW
@@ -156,7 +155,7 @@ void Classificator::classify ()
             P_CHECK_OVERFLOW
                
             toggle =  SC_LOGIC_1; 
-            s_new.write(toggle);// wait
+            p_out->write(toggle);// wait
             while(!p_fifo->nb_read(fifo_tmp))
             {
                #ifdef QUANTUM
@@ -171,7 +170,7 @@ void Classificator::classify ()
                #endif
             }
             toggle =  SC_LOGIC_0; 
-            s_new.write(toggle);
+            p_out->write(toggle);
             
             p*= fifo_tmp;
             P_CHECK_OVERFLOW
@@ -181,7 +180,7 @@ void Classificator::classify ()
          }
 
          toggle =  SC_LOGIC_1; 
-         s_new.write(toggle);// wait
+         p_out->write(toggle);// wait
          while(!p_fifo->nb_read(fifo_tmp))
          {
             #ifdef QUANTUM
@@ -196,7 +195,7 @@ void Classificator::classify ()
             #endif
          }
          toggle =  SC_LOGIC_0; 
-         s_new.write(toggle);
+         p_out->write(toggle);
 
          acc+=fifo_tmp;
          A_CHECK_OVERFLOW

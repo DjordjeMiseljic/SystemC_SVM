@@ -23,8 +23,10 @@ class Checker : public sc_module
       
       tlm_utils::simple_initiator_socket<Checker> s_ch_i0;
       tlm_utils::simple_initiator_socket<Checker> s_ch_i1;
-      sc_port<sc_signal_out_if<sc_logic>> p_port0;
-      sc_port<sc_signal_out_if<sc_logic>> p_port1;
+      sc_out<sc_logic> p_port0;
+      sc_out<sc_logic> p_port1;
+      sc_signal <sc_logic> sig0;
+      sc_signal <sc_logic> sig1;
    
    protected:
       vector<din_t> images;

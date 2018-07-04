@@ -22,6 +22,8 @@ Checker::Checker(sc_module_name name) : sc_module(name)
    cout<<name<<" constucted"<<endl;
    SC_THREAD(verify);
    match=0;
+   p_port0.bind(sig0);
+   p_port1.bind(sig1);
 }
 
 
@@ -134,7 +136,7 @@ void Checker::verify()
 
 
             
-         tmp_sig=p_port0->read();
+         tmp_sig=sig0.read();
          }
          while( tmp_sig == SC_LOGIC_0);
 
@@ -251,7 +253,7 @@ void Checker::verify()
                   qk.set_and_sync(offset);
                   #endif
 
-               tmp_sig=p_port1->read();
+               tmp_sig=sig1.read();
                }
                while( tmp_sig == SC_LOGIC_0);
 
@@ -287,7 +289,7 @@ void Checker::verify()
                   qk.set_and_sync(offset);
                   #endif
 
-               tmp_sig=p_port1->read();
+               tmp_sig=sig1.read();
                }
                while( tmp_sig == SC_LOGIC_0);
 
@@ -345,7 +347,7 @@ void Checker::verify()
             qk.set_and_sync(offset);
             #endif
 
-         tmp_sig=p_port1->read();
+         tmp_sig=sig1.read();
          }
          while( tmp_sig == SC_LOGIC_0);
 

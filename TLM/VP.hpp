@@ -21,8 +21,8 @@ class VP : sc_module
       tlm_utils::simple_target_socket<VP> s_vp_t0;
       tlm_utils::simple_target_socket<VP> s_vp_t1;
 
-      sc_export<sc_signal_out_if<sc_logic>> p_exp0;
-      sc_export<sc_signal_out_if<sc_logic>> p_exp1;
+      sc_out<sc_logic> p_out0;
+      sc_out<sc_logic> p_out1;
 
       protected:
       tlm_utils::simple_initiator_socket<VP> s_vp_i0;

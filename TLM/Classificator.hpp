@@ -24,8 +24,7 @@ class Classificator : public sc_module
       
       tlm_utils::simple_target_socket<Classificator> s_cl_t;
       
-      sc_export<sc_signal_out_if<sc_logic>> p_exp;
-      sc_signal <sc_logic> s_new;
+      sc_out<sc_logic> p_out;
       sc_port<sc_fifo_in_if<din_t>> p_fifo;
 
    protected:
