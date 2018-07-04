@@ -80,6 +80,7 @@ void MemCtrl::file_extract()
    int j, k=0;
    int sv_len = SV_LEN;
    int sum = 0;
+   cout<<"\nExtracting data from files:"<<endl;
    
    for(int i=0; i<10; i++)
       {
@@ -90,7 +91,7 @@ void MemCtrl::file_extract()
          lines = num_of_lines(str);
          sv_lines[i] = lines;
          sum += lines;
-         cout<<"number of sv for "<<i<<". clasificator is: "<<sv_lines[i]<<endl;
+         cout<<"-clasificator no."<<i<<": "<<sv_lines[i]<<" support vectors"<<endl;
          ifstream sv_file(str);
          if(sv_file.is_open())
             while(j!=lines*sv_len)

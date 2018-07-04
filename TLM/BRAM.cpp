@@ -28,21 +28,16 @@ void BRAM::b_transport(pl_t& pl, sc_time& offset)
    switch (cmd)
    {
       case TLM_WRITE_COMMAND:
-
-         cout<<"WRITING in BRAM"<<endl;
+         //cout<<"BRAM: WRITING"<<endl;
          for(int i=0; i<len; i++)
-         {
             mem[start+i]=(((din_t*)buf)[i]);
-            /*if(i%7==0)
-               cout<<endl;
-            cout<<mem[start+i]<<",";*/
-         
-         }
+
          pl.set_response_status( TLM_OK_RESPONSE );
          offset += sc_time(10, SC_NS);
          break;
 
       case TLM_READ_COMMAND:
+         //cout<<"BRAM: READING"<<endl;
          pl.set_data_ptr((unsigned char*)&mem[start]);
          pl.set_response_status( TLM_OK_RESPONSE );
          offset += sc_time(10, SC_NS);

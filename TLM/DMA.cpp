@@ -69,10 +69,10 @@ void DMA::send_to_fifo()
       while(send==SC_LOGIC_0)
       {
          #ifdef QUANTUM
-         qk.inc(sc_time(1, SC_NS));
+         qk.inc(sc_time(10, SC_NS));
          offset = qk.get_local_time();
          #else
-         offset += sc_time(4, SC_NS);
+         offset += sc_time(10, SC_NS);
          #endif
          
          #ifdef QUANTUM
@@ -85,14 +85,11 @@ void DMA::send_to_fifo()
          while(!p_fifo->nb_write(tmp_mem[i]))
          {
             #ifdef QUANTUM
-            qk.inc(sc_time(1, SC_NS));
+            qk.inc(sc_time(10, SC_NS));
             offset = qk.get_local_time();
-            #else
-            offset += sc_time(4, SC_NS);
-            #endif
-            
-            #ifdef QUANTUM
             qk.set_and_sync(offset);
+            #else
+            offset += sc_time(10, SC_NS);
             #endif
          }
       }

@@ -11,8 +11,8 @@ using namespace sc_core;
 
 int sc_main(int argc, char* argv[])
 {
-   VP vp("Virtual_Platform");
-   Checker ch("Checker_TB");
+   VP vp("VP");
+   Checker ch("TB");
    
    ch.s_ch_i0.bind(vp.s_vp_t0);
    ch.s_ch_i1.bind(vp.s_vp_t1);
