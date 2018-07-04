@@ -42,17 +42,28 @@ void Deskew::b_transport(pl_t& pl, sc_time& offset)
       s_de_i -> b_transport(pl, offset);
       assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
-      toggle = (toggle==SC_LOGIC_0)? SC_LOGIC_1 : SC_LOGIC_0; 
+      toggle = SC_LOGIC_1; 
       s_fin.write(toggle);//finished, send interrupt
+      pl.set_response_status(TLM_OK_RESPONSE);
+      offset += sc_time(50, SC_NS);
+   }
+   else if(cmd==TLM_READ_COMMAND && adr==0x81000000)
+   {
+
+      toggle = SC_LOGIC_0; 
+      s_fin.write(toggle);//finished, send interrupt
+      pl.set_response_status(TLM_OK_RESPONSE);
    }
    else 
    {
       pl.set_response_status(TLM_COMMAND_ERROR_RESPONSE);
    } 
 
-   offset += sc_time(50, SC_NS);
    image.clear();
 }
+
+
+
 
 
 vector<din_t> Deskew:: deskew(vector <din_t> image)

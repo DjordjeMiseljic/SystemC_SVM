@@ -8,6 +8,7 @@ DMA::DMA(sc_module_name name):sc_module(name)
    cout<<name<<" constructed"<<endl;
    SC_THREAD(send_to_fifo);
    tmp_mem.reserve(SV_LEN);
+   send = SC_LOGIC_0;
 }
 
 void DMA::b_transport(pl_t& pl, sc_time& offset)
@@ -38,7 +39,7 @@ void DMA::b_transport(pl_t& pl, sc_time& offset)
          for(int i=0; i<len; i++)
             tmp_mem.push_back(((din_t*)buf)[i]);
          //START SENDING IT INTO FIFO
-         e_send.notify();
+         send = SC_LOGIC_1;
          //AFTER ITS DONE, FINISH TRANSACTION
          pl.set_response_status( TLM_OK_RESPONSE );
          offset += sc_time(10, SC_NS);
@@ -58,12 +59,44 @@ void DMA::b_transport(pl_t& pl, sc_time& offset)
 
 void DMA::send_to_fifo()
 {
+   sc_time offset=SC_ZERO_TIME;
+   #ifdef QUANTUM
+   tlm_utils::tlm_quantumkeeper qk;
+   qk.reset();
+   #endif
    while(1)
    {
-         wait(e_send);
-         //PUSH IT INTO FIFO TOWARDS SVM
-         for(int i=0; i<length; i++)
-            p_fifo->write(tmp_mem[i]);
+      while(send==SC_LOGIC_0)
+      {
+         #ifdef QUANTUM
+         qk.inc(sc_time(1, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+         
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+      }
+      //PUSH IT INTO FIFO TOWARDS SVM
+      for(int i=0; i<length; i++)
+      {
+         while(!p_fifo->nb_write(tmp_mem[i]))
+         {
+            #ifdef QUANTUM
+            qk.inc(sc_time(1, SC_NS));
+            offset = qk.get_local_time();
+            #else
+            offset += sc_time(4, SC_NS);
+            #endif
+            
+            #ifdef QUANTUM
+            qk.set_and_sync(offset);
+            #endif
+         }
+      }
+      send=SC_LOGIC_0;
    }
 
 }

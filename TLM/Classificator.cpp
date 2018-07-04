@@ -30,13 +30,46 @@ Classificator::Classificator(sc_module_name name): sc_module(name)
    p_exp.bind(s_new);
    res_v.reserve(10);
    toggle = SC_LOGIC_0;
+   start = SC_LOGIC_0;
+}
+
+void Classificator::b_transport(pl_t& pl, sc_time& offset)
+{
+	
+   tlm_command cmd    = pl.get_command();
+   uint64 adr         = pl.get_address();
+   unsigned char *buf = pl.get_data_ptr();
+   unsigned int len   = pl.get_data_length();
+
+   switch(cmd)
+   {
+   case TLM_WRITE_COMMAND://--------------SAVE NEW PICTURE
+         
+      image_v.clear();
+      pl.set_response_status( TLM_OK_RESPONSE );
+      start=SC_LOGIC_1;
+      offset+=sc_time(10, SC_NS);
+      break;
+
+   case TLM_READ_COMMAND://----------------RETURN RESULTS
+         
+      buf=(unsigned char *)&cl_num;
+      pl.set_data_ptr        ( buf );
+      pl.set_response_status( TLM_OK_RESPONSE );
+      offset+=sc_time(5, SC_NS);
+      break;
+
+   default:
+      pl.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
+   }
+
 }
 
 
 void Classificator::classify ()
 {
    din_t fifo_tmp;
-   bool nbf=true; 
+   sc_time offset=SC_ZERO_TIME;
    #ifdef QUANTUM
    tlm_utils::tlm_quantumkeeper qk;
    qk.reset();
@@ -44,15 +77,27 @@ void Classificator::classify ()
 
    while(1)
    {
-      wait(e_start);// Wait for start signal
-      for( int pixel=0; i<SV_LEN; i++)
+      while(start==SC_LOGIC_0)
+      {
+         #ifdef QUANTUM
+         qk.inc(sc_time(1, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+         
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+      }
+      for( int p=0; p<SV_LEN; p++)
       {
          toggle =  SC_LOGIC_1; 
          s_new.write(toggle);// wait
-         while(p_fifo->nb_read(fifo_tmp)=TRUE)
+         while(!p_fifo->nb_read(fifo_tmp))
          {
             #ifdef QUANTUM
-            qk.inc(sc_time(10, SC_NS));
+            qk.inc(sc_time(1, SC_NS));
             offset = qk.get_local_time();
             #else
             offset += sc_time(4, SC_NS);
@@ -65,9 +110,15 @@ void Classificator::classify ()
          toggle =  SC_LOGIC_0; 
          s_new.write(toggle);
 
-         image_v[pixel]= fifo_tmp;
+         image_v[p]= fifo_tmp;
       }
-
+      /*cout<<"IMAGE TO BE CLASSIFIED"<<endl;
+      for (int i=0; i<SV_LEN; i++)
+      {
+         if(i%7==0)
+            cout<<endl;
+         cout<<image_v[i]<<",";
+      }*/
       res_v.clear();
       for(unsigned int core=0; core<10; core++)
       {
@@ -80,10 +131,10 @@ void Classificator::classify ()
             {
                toggle =  SC_LOGIC_1; 
                s_new.write(toggle);//wait
-               while(p_fifo->nb_read(fifo_tmp)=TRUE)
+               while(!p_fifo->nb_read(fifo_tmp))
                {
                   #ifdef QUANTUM
-                  qk.inc(sc_time(10, SC_NS));
+                  qk.inc(sc_time(1, SC_NS));
                   offset = qk.get_local_time();
                   #else
                   offset += sc_time(4, SC_NS);
@@ -106,10 +157,10 @@ void Classificator::classify ()
                
             toggle =  SC_LOGIC_1; 
             s_new.write(toggle);// wait
-            while(p_fifo->nb_read(fifo_tmp)=TRUE)
+            while(!p_fifo->nb_read(fifo_tmp))
             {
                #ifdef QUANTUM
-               qk.inc(sc_time(10, SC_NS));
+               qk.inc(sc_time(1, SC_NS));
                offset = qk.get_local_time();
                #else
                offset += sc_time(4, SC_NS);
@@ -131,10 +182,10 @@ void Classificator::classify ()
 
          toggle =  SC_LOGIC_1; 
          s_new.write(toggle);// wait
-         while(p_fifo->nb_read(fifo_tmp)=TRUE)
+         while(!p_fifo->nb_read(fifo_tmp))
          {
             #ifdef QUANTUM
-            qk.inc(sc_time(10, SC_NS));
+            qk.inc(sc_time(1, SC_NS));
             offset = qk.get_local_time();
             #else
             offset += sc_time(4, SC_NS);
@@ -165,38 +216,7 @@ void Classificator::classify ()
             cl_num=(num_t)i;
          }
       }
+   start=SC_LOGIC_1;
    }
 }
-void Classificator::b_transport(pl_t& pl, sc_time& offset)
-{
-	
-   tlm_command cmd    = pl.get_command();
-   uint64 adr         = pl.get_address();
-   unsigned char *buf = pl.get_data_ptr();
-   unsigned int len   = pl.get_data_length();
-
-   switch(cmd)
-   {
-   case TLM_WRITE_COMMAND://--------------SAVE NEW PICTURE
-         
-      image_v.clear();
-      pl.set_response_status( TLM_OK_RESPONSE );
-      e_start.notify();
-      offset+=sc_time(10, SC_NS);
-      break;
-
-   case TLM_READ_COMMAND://----------------RETURN RESULTS
-         
-      buf=(unsigned char *)&cl_num;
-      pl.set_data_ptr        ( buf );
-      pl.set_response_status( TLM_OK_RESPONSE );
-      offset+=sc_time(5, SC_NS);
-      break;
-
-   default:
-      pl.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
-   }
-
-}
-
 #endif

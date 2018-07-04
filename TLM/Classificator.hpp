@@ -8,6 +8,7 @@
 #include <tlm>
 #include <tlm_utils/simple_initiator_socket.h>
 #include <tlm_utils/simple_target_socket.h>
+#include "tlm_utils/tlm_quantumkeeper.h"
 #include "Types.hpp"
 #include "Format.hpp"
 
@@ -39,7 +40,7 @@ class Classificator : public sc_module
       num_t cl_num;
       res_t max_res;
       sc_logic toggle;
-      sc_event e_start;
+      sc_logic start;
 
 
 };

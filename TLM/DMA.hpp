@@ -4,6 +4,7 @@
 #include <tlm>
 #include <tlm_utils/simple_initiator_socket.h>
 #include <tlm_utils/simple_target_socket.h>
+#include "tlm_utils/tlm_quantumkeeper.h"
 #include "Format.hpp"
 #include "Types.hpp"
 #include <string>
@@ -26,7 +27,7 @@ class DMA : public sc_module
       void send_to_fifo();
       unsigned int length;
 
+      sc_logic send;
       vector<din_t> tmp_mem;
-      sc_event e_send;
 };
 #endif

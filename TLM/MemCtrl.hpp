@@ -23,13 +23,13 @@ class MemCtrl : public sc_module
       //processes
       void memory_init();
       //tlm methods
-      tlm_utils::simple_target_socket<MemCtrl> s_mc_t;
+      tlm_utils::simple_target_socket<MemCtrl> s_mc_t0;
+      tlm_utils::simple_target_socket<MemCtrl> s_mc_t1;
       void b_transport(pl_t&, sc_time&);
 
       unsigned char *buffer = NULL;
    protected:
       //global variables
-      
       vector <din_t> ram;
       array<int, 10> sv_lines;
       //methods

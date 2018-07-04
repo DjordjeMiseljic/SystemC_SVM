@@ -1,17 +1,21 @@
 #ifndef MEMCTRL_C
 #define MEMCTRL_C
 #include "MemCtrl.hpp"
+#define SV_NUM 5076
 
 MemCtrl::MemCtrl(sc_module_name name): sc_module(name),
                                        buffer(NULL)
 {
    
-   s_mc_t.register_b_transport(this, &MemCtrl::b_transport);
+   s_mc_t0.register_b_transport(this, &MemCtrl::b_transport);
+   s_mc_t1.register_b_transport(this, &MemCtrl::b_transport);
    SC_THREAD(memory_init);
    
    // for(int i=0; i!=RAM_SIZE; i++)
    //    ram[i]=0;
    cout<<name<<" constructed"<<endl;
+   
+   ram.reserve(SV_NUM*SV_LEN + SV_NUM + 10+ 10*SV_LEN);
 
 }
 
@@ -41,19 +45,26 @@ void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
    tlm_command cmd    = pl.get_command();
    uint64 adr         = pl.get_address();
    unsigned char *buf = pl.get_data_ptr();
-   //unsigned int len   = pl.get_data_length();
-
-   buf=buf;
+   unsigned int len   = pl.get_data_length();
 
    switch(cmd)
       {
       case TLM_WRITE_COMMAND:
-         assert(cmd != TLM_WRITE_COMMAND);
+         for(int i=0; i<len; i++)
+            ram[adr+i]=((din_t*)buf)[i];
+         pl.set_response_status(TLM_OK_RESPONSE);
+
+         /*cout<<"Writing into DDR:"<<endl;
+         for(int i=0; i<len; i++)
+         {
+            if(i%7==0)
+               cout<<endl;
+            cout<<ram[adr+i]<<",";
+         }*/
          break;
-      case TLM_READ_COMMAND:
-         //buf = read_from_mem(adr);
-         buf = (unsigned char*)&ram[adr];
          
+      case TLM_READ_COMMAND:
+         buf = (unsigned char*)&ram[adr];
          pl.set_data_ptr(buf);
          pl.set_response_status(TLM_OK_RESPONSE);
          break;
@@ -61,7 +72,7 @@ void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
          pl.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
       }
 
-   offset += sc_time(5, SC_NS);
+   offset += sc_time(50, SC_NS);
 }
 
 
@@ -77,9 +88,6 @@ void MemCtrl::file_extract()
    int j, k=0;
    int sv_len = SV_LEN;
    int sum = 0;
-   int sv_num = 5076;
-   
-   ram.reserve(sv_num * SV_LEN + sv_num + 10);
    
    for(int i=0; i<10; i++)
       {
