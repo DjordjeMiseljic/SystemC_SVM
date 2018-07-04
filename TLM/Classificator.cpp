@@ -79,15 +79,13 @@ void Classificator::classify ()
       while(start==SC_LOGIC_0)
       {
          #ifdef QUANTUM
-         qk.inc(sc_time(1, SC_NS));
+         qk.inc(sc_time(10, SC_NS));
          offset = qk.get_local_time();
+         qk.set_and_sync(offset);
          #else
-         offset += sc_time(4, SC_NS);
+         offset += sc_time(10, SC_NS);
          #endif
          
-         #ifdef QUANTUM
-         qk.set_and_sync(offset);
-         #endif
       }
       for( int p=0; p<SV_LEN; p++)
       {
@@ -96,14 +94,11 @@ void Classificator::classify ()
          while(!p_fifo->nb_read(fifo_tmp))
          {
             #ifdef QUANTUM
-            qk.inc(sc_time(1, SC_NS));
+            qk.inc(sc_time(10, SC_NS));
             offset = qk.get_local_time();
-            #else
-            offset += sc_time(4, SC_NS);
-            #endif
-            
-            #ifdef QUANTUM
             qk.set_and_sync(offset);
+            #else
+            offset += sc_time(10, SC_NS);
             #endif
          }
          toggle =  SC_LOGIC_0; 
@@ -111,13 +106,7 @@ void Classificator::classify ()
 
          image_v[p]= fifo_tmp;
       }
-      /*cout<<"IMAGE TO BE CLASSIFIED"<<endl;
-      for (int i=0; i<SV_LEN; i++)
-      {
-         if(i%7==0)
-            cout<<endl;
-         cout<<image_v[i]<<",";
-      }*/
+      
       res_v.clear();
       for(unsigned int core=0; core<10; core++)
       {
@@ -133,14 +122,11 @@ void Classificator::classify ()
                while(!p_fifo->nb_read(fifo_tmp))
                {
                   #ifdef QUANTUM
-                  qk.inc(sc_time(1, SC_NS));
+                  qk.inc(sc_time(10, SC_NS));
                   offset = qk.get_local_time();
-                  #else
-                  offset += sc_time(4, SC_NS);
-                  #endif
-                  
-                  #ifdef QUANTUM
                   qk.set_and_sync(offset);
+                  #else
+                  offset += sc_time(10, SC_NS);
                   #endif
                }
                p+=image_v[i]*fifo_tmp;
@@ -159,15 +145,13 @@ void Classificator::classify ()
             while(!p_fifo->nb_read(fifo_tmp))
             {
                #ifdef QUANTUM
-               qk.inc(sc_time(1, SC_NS));
+               qk.inc(sc_time(10, SC_NS));
                offset = qk.get_local_time();
+               qk.set_and_sync(offset);
                #else
-               offset += sc_time(4, SC_NS);
+               offset += sc_time(10, SC_NS);
                #endif
                
-               #ifdef QUANTUM
-               qk.set_and_sync(offset);
-               #endif
             }
             toggle =  SC_LOGIC_0; 
             p_out->write(toggle);
@@ -184,14 +168,11 @@ void Classificator::classify ()
          while(!p_fifo->nb_read(fifo_tmp))
          {
             #ifdef QUANTUM
-            qk.inc(sc_time(1, SC_NS));
+            qk.inc(sc_time(10, SC_NS));
             offset = qk.get_local_time();
-            #else
-            offset += sc_time(4, SC_NS);
-            #endif
-            
-            #ifdef QUANTUM
             qk.set_and_sync(offset);
+            #else
+            offset += sc_time(10, SC_NS);
             #endif
          }
          toggle =  SC_LOGIC_0; 

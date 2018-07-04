@@ -53,14 +53,6 @@ void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
          for(int i=0; i<len; i++)
             ram[adr+i]=((din_t*)buf)[i];
          pl.set_response_status(TLM_OK_RESPONSE);
-
-         /*cout<<"Writing into DDR:"<<endl;
-         for(int i=0; i<len; i++)
-         {
-            if(i%7==0)
-               cout<<endl;
-            cout<<ram[adr+i]<<",";
-         }*/
          break;
          
       case TLM_READ_COMMAND:
@@ -72,7 +64,7 @@ void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
          pl.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
       }
 
-   offset += sc_time(50, SC_NS);
+   offset += sc_time(10, SC_NS);
 }
 
 

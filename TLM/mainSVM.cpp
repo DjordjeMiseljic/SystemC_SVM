@@ -23,7 +23,7 @@ int sc_main(int argc, char* argv[])
 	tlm_global_quantum::instance().set(sc_time(10, SC_NS));
 	#endif
 
-	sc_start(20,SC_SEC);
+	sc_start(100,SC_SEC);
 	cout << "Simulation finished at " << sc_time_stamp() <<endl;
 	return 0;
 }
