@@ -89,10 +89,10 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
          #ifdef QUANTUM
-         qk.inc(sc_time(1, SC_NS));
+         qk.inc(sc_time(40, SC_NS));
          offset = qk.get_local_time();
          #else
-         offset += sc_time(4, SC_NS);
+         offset += sc_time(40, SC_NS);
          #endif
          
          #ifdef QUANTUM
@@ -107,10 +107,10 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
          
          #ifdef QUANTUM
-         qk.inc(sc_time(1, SC_NS));
+         qk.inc(sc_time(10, SC_NS));
          offset = qk.get_local_time();
          #else
-         offset += sc_time(4, SC_NS);
+         offset += sc_time(40, SC_NS);
          #endif
          
          #ifdef QUANTUM
@@ -138,7 +138,7 @@ void Checker::verify()
          }
          while( tmp_sig == SC_LOGIC_0);
 
-         cout<<"RESET DSKW"<<endl;
+         /*cout<<"RESET DSKW"<<endl;
          //DUMMY TRANSACTION RESET DSKW INTERRUPT
          pl.set_address(0x81000000);
          pl.set_command(TLM_READ_COMMAND);
@@ -155,7 +155,7 @@ void Checker::verify()
          #ifdef QUANTUM
          qk.set_and_sync(offset);
          #endif
-         cout<<"READ DESKEWED IMAGE FROM BRAM"<<endl;
+         */cout<<"READ DESKEWED IMAGE FROM BRAM"<<endl;
          //READ DESKEWED IMAGE FROM BRAM
          pl.set_address(0x80000000+SV_LEN);
          pl.set_data_length(SV_LEN);

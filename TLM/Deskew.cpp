@@ -7,19 +7,44 @@ Deskew::Deskew(sc_module_name name):sc_module(name)
    s_de_t.register_b_transport(this, &Deskew::b_transport);
    cout<<name<<" constructed"<<endl;
    p_exp.bind(s_fin);
+   SC_THREAD(proc);
    toggle = SC_LOGIC_0;
+   start = SC_LOGIC_0;
    image.reserve(SV_LEN);
    
 }
 
-void Deskew::b_transport(pl_t& pl, sc_time& offset)
+void Deskew::proc()
 {
+   pl_t pl;
    tlm_command cmd    = pl.get_command();
    uint64 adr         = pl.get_address();
    unsigned char *buf = pl.get_data_ptr();
-   
-   if(cmd==TLM_WRITE_COMMAND && adr==0x81000000)
+   sc_time offset=SC_ZERO_TIME;
+   #ifdef QUANTUM
+   tlm_utils::tlm_quantumkeeper qk;
+   qk.reset();
+   #endif
+   while(1)
    {
+      while(start==SC_LOGIC_0)
+      {
+         #ifdef QUANTUM
+         qk.inc(sc_time(10, SC_NS));
+         offset = qk.get_local_time();
+         #else
+         offset += sc_time(4, SC_NS);
+         #endif
+         
+         #ifdef QUANTUM
+         qk.set_and_sync(offset);
+         #endif
+      }
+      start=SC_LOGIC_0;
+
+      cout<<"START RESETED"<<endl;
+      
+      image.clear();
       //READ IMAGE FROM BRAM 
       pl.set_command(TLM_READ_COMMAND);
       pl.set_address(0x80000000);
@@ -27,12 +52,33 @@ void Deskew::b_transport(pl_t& pl, sc_time& offset)
 
       s_de_i -> b_transport(pl, offset);
       assert(pl.get_response_status() == TLM_OK_RESPONSE);
+
+      #ifdef QUANTUM
+      qk.inc(sc_time(1, SC_NS));
+      offset = qk.get_local_time();
+      #else
+      offset += sc_time(4, SC_NS);
+      #endif
       
+      #ifdef QUANTUM
+      qk.set_and_sync(offset);
+      #endif
       //DESKEW IT
+      buf = pl.get_data_ptr();
       for(int i=0; i<SV_LEN; i++)
          image.push_back(((din_t*)buf)[i]);
       image = deskew(image);
       
+      #ifdef QUANTUM
+      qk.inc(sc_time(1, SC_NS));
+      offset = qk.get_local_time();
+      #else
+      offset += sc_time(4, SC_NS);
+      #endif
+      
+      #ifdef QUANTUM
+      qk.set_and_sync(offset);
+      #endif
       //WRITE NEW IMAGE TO BRAM
       pl.set_data_ptr((unsigned char *)&image[0]);
       pl.set_command(TLM_WRITE_COMMAND);
@@ -44,8 +90,35 @@ void Deskew::b_transport(pl_t& pl, sc_time& offset)
 
       toggle = SC_LOGIC_1; 
       s_fin.write(toggle);//finished, send interrupt
+      
+      #ifdef QUANTUM
+      qk.inc(sc_time(20, SC_NS));
+      offset = qk.get_local_time();
+      #else
+      offset += sc_time(20, SC_NS);
+      #endif
+      
+      #ifdef QUANTUM
+      qk.set_and_sync(offset);
+      #endif
+      
+      toggle = SC_LOGIC_0; 
+      s_fin.write(toggle);//finished, send interrupt
+
+   }
+}
+void Deskew::b_transport(pl_t& pl, sc_time& offset)
+{
+   tlm_command cmd    = pl.get_command();
+   uint64 adr         = pl.get_address();
+   unsigned char *buf = pl.get_data_ptr();
+   
+   if(cmd==TLM_WRITE_COMMAND && adr==0x81000000)
+   {
+      start=SC_LOGIC_1; 
       pl.set_response_status(TLM_OK_RESPONSE);
       offset += sc_time(50, SC_NS);
+      
    }
    else if(cmd==TLM_READ_COMMAND && adr==0x81000000)
    {
@@ -59,7 +132,6 @@ void Deskew::b_transport(pl_t& pl, sc_time& offset)
       pl.set_response_status(TLM_COMMAND_ERROR_RESPONSE);
    } 
 
-   image.clear();
 }
 
 

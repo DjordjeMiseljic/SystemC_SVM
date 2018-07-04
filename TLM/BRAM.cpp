@@ -45,7 +45,7 @@ void BRAM::b_transport(pl_t& pl, sc_time& offset)
       case TLM_READ_COMMAND:
          pl.set_data_ptr((unsigned char*)&mem[start]);
          pl.set_response_status( TLM_OK_RESPONSE );
-         offset += sc_time(5, SC_NS);
+         offset += sc_time(10, SC_NS);
          break;
 
       default:
