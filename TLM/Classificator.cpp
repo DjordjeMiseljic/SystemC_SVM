@@ -87,10 +87,10 @@ void Classificator::classify ()
          #endif
          
       }
+      toggle =  SC_LOGIC_1; 
+      p_out->write(toggle);// wait
       for( int p=0; p<SV_LEN; p++)
       {
-         toggle =  SC_LOGIC_1; 
-         p_out->write(toggle);// wait
          while(!p_fifo->nb_read(fifo_tmp))
          {
             #ifdef QUANTUM
@@ -101,11 +101,11 @@ void Classificator::classify ()
             offset += sc_time(10, SC_NS);
             #endif
          }
+         image_v[p]= fifo_tmp;
          toggle =  SC_LOGIC_0; 
          p_out->write(toggle);
-
-         image_v[p]= fifo_tmp;
       }
+
       
       res_v.clear();
       for(unsigned int core=0; core<10; core++)
@@ -115,10 +115,10 @@ void Classificator::classify ()
          for( int sv=0; sv<sv_array[core]; sv++)
          {
             p=1.0;
+            toggle =  SC_LOGIC_1; 
+            p_out->write(toggle);//wait
             for( int i=0; i<SV_LEN; i++)
             {
-               toggle =  SC_LOGIC_1; 
-               p_out->write(toggle);//wait
                while(!p_fifo->nb_read(fifo_tmp))
                {
                   #ifdef QUANTUM
@@ -131,8 +131,11 @@ void Classificator::classify ()
                }
                p+=image_v[i]*fifo_tmp;
                P_CHECK_OVERFLOW
-               toggle =  SC_LOGIC_0; 
-               p_out->write(toggle);
+               if(i==0)
+               {
+                  toggle =  SC_LOGIC_0; 
+                  p_out->write(toggle);
+               }
             }
             p*=0.1;
             P_CHECK_OVERFLOW
@@ -151,7 +154,6 @@ void Classificator::classify ()
                #else
                offset += sc_time(10, SC_NS);
                #endif
-               
             }
             toggle =  SC_LOGIC_0; 
             p_out->write(toggle);
