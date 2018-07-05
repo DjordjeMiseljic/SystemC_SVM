@@ -42,14 +42,14 @@ void DMA::b_transport(pl_t& pl, sc_time& offset)
          send = SC_LOGIC_1;
          //AFTER ITS DONE, FINISH TRANSACTION
          pl.set_response_status( TLM_OK_RESPONSE );
-         offset += sc_time(10, SC_NS);
+         offset += sc_time(20, SC_NS);
          break;
 
       case TLM_READ_COMMAND:
          //IF ZYNC REQUESTS DATA GIVE HIM TMP ( last data taken from ddr3)
          pl.set_data_ptr((unsigned char*)&tmp_mem[start]);
          pl.set_response_status( TLM_OK_RESPONSE );
-         offset += sc_time(5, SC_NS);
+         offset += sc_time(20, SC_NS);
          break;
 
       default:
@@ -79,6 +79,7 @@ void DMA::send_to_fifo()
          qk.set_and_sync(offset);
          #endif
       }
+      send=SC_LOGIC_0;
       //PUSH IT INTO FIFO TOWARDS SVM
       for(int i=0; i<length; i++)
       {
@@ -93,7 +94,6 @@ void DMA::send_to_fifo()
             #endif
          }
       }
-      send=SC_LOGIC_0;
    }
 
 }

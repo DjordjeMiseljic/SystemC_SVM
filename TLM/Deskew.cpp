@@ -13,6 +13,24 @@ Deskew::Deskew(sc_module_name name):sc_module(name)
    
 }
 
+void Deskew::b_transport(pl_t& pl, sc_time& offset)
+{
+   tlm_command cmd    = pl.get_command();
+   uint64 adr         = pl.get_address();
+   unsigned char *buf = pl.get_data_ptr();
+   
+   if(cmd==TLM_WRITE_COMMAND && adr==0x81000000)
+   {
+      start=SC_LOGIC_1; 
+      pl.set_response_status(TLM_OK_RESPONSE);
+   }
+   else 
+   {
+      pl.set_response_status(TLM_COMMAND_ERROR_RESPONSE);
+   } 
+
+}
+
 void Deskew::proc()
 {
    pl_t pl;
@@ -46,16 +64,11 @@ void Deskew::proc()
       pl.set_command(TLM_READ_COMMAND);
       pl.set_address(0x80000000);
       pl.set_data_length(SV_LEN);
-
       s_de_i -> b_transport(pl, offset);
       assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
       #ifdef QUANTUM
-      qk.inc(sc_time(10, SC_NS));
-      offset = qk.get_local_time();
       qk.set_and_sync(offset);
-      #else
-      offset += sc_time(50, SC_NS);
       #endif
 
      // cout<<"DSKW: DESKEWING"<<endl;
@@ -88,11 +101,7 @@ void Deskew::proc()
       p_out->write(toggle);//finished, send interrupt
       
       #ifdef QUANTUM
-      qk.inc(sc_time(10, SC_NS));
-      offset = qk.get_local_time();
       qk.set_and_sync(offset);
-      #else
-      offset += sc_time(20, SC_NS);
       #endif
       
       //cout<<"DSKW: RESET TOGGLE"<<endl;
@@ -100,32 +109,6 @@ void Deskew::proc()
       p_out->write(toggle);//finished, send interrupt
 
    }
-}
-void Deskew::b_transport(pl_t& pl, sc_time& offset)
-{
-   tlm_command cmd    = pl.get_command();
-   uint64 adr         = pl.get_address();
-   unsigned char *buf = pl.get_data_ptr();
-   
-   if(cmd==TLM_WRITE_COMMAND && adr==0x81000000)
-   {
-      start=SC_LOGIC_1; 
-      pl.set_response_status(TLM_OK_RESPONSE);
-      offset += sc_time(10, SC_NS);
-      
-   }
-   else if(cmd==TLM_READ_COMMAND && adr==0x81000000)
-   {
-
-      toggle = SC_LOGIC_0; 
-      p_out->write(toggle);//finished, send interrupt
-      pl.set_response_status(TLM_OK_RESPONSE);
-   }
-   else 
-   {
-      pl.set_response_status(TLM_COMMAND_ERROR_RESPONSE);
-   } 
-
 }
 
 

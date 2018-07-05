@@ -73,7 +73,6 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
          #ifdef QUANTUM
-         offset = qk.get_local_time();
          qk.set_and_sync(offset);
          #endif
          
@@ -87,7 +86,6 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
          #ifdef QUANTUM
-         offset = qk.get_local_time();
          qk.set_and_sync(offset);
          #endif
          
@@ -99,6 +97,7 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
          
          #ifdef QUANTUM
+         qk.inc(sc_time(10, SC_NS));
          offset = qk.get_local_time();
          qk.set_and_sync(offset);
          #endif
@@ -108,11 +107,9 @@ void Checker::verify()
          do
          {
             #ifdef QUANTUM
-            qk.set_and_sync(offset);
             qk.inc(sc_time(10, SC_NS));
             offset = qk.get_local_time();
-            #else
-            offset += sc_time(10, SC_NS);
+            qk.set_and_sync(offset);
             #endif
             
          tmp_sig=sig0.read();
@@ -129,7 +126,6 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
          #ifdef QUANTUM
-         offset = qk.get_local_time();
          qk.set_and_sync(offset);
          #endif
          
@@ -144,7 +140,6 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
          #ifdef QUANTUM
-         offset = qk.get_local_time();
          qk.set_and_sync(offset);
          #endif
 
@@ -157,6 +152,7 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
               
          #ifdef QUANTUM
+         qk.inc(sc_time(10, SC_NS));
          offset = qk.get_local_time();
          qk.set_and_sync(offset);
          #endif
@@ -170,6 +166,7 @@ void Checker::verify()
          assert(pl.get_response_status() == TLM_OK_RESPONSE);
          
          #ifdef QUANTUM
+         qk.inc(sc_time(10, SC_NS));
          offset = qk.get_local_time();
          qk.set_and_sync(offset);
          #endif
@@ -201,7 +198,7 @@ void Checker::verify()
                assert(pl.get_response_status() == TLM_OK_RESPONSE);
 
                #ifdef QUANTUM
-               qk.inc(sc_time(20, SC_NS));
+               qk.inc(sc_time(10, SC_NS));
                offset = qk.get_local_time();
                qk.set_and_sync(offset);
                #else
@@ -294,6 +291,7 @@ void Checker::verify()
          num= ((num_t*)pl.get_data_ptr())[0];
          
          #ifdef QUANTUM
+         qk.inc(sc_time(10, SC_NS));
          offset = qk.get_local_time();
          qk.set_and_sync(offset);
          #endif

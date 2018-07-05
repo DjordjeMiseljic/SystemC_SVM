@@ -87,6 +87,7 @@ void Classificator::classify ()
          #endif
          
       }
+      start=SC_LOGIC_0;
       toggle =  SC_LOGIC_1; 
       p_out->write(toggle);// wait
       for( int p=0; p<SV_LEN; p++)
@@ -116,7 +117,7 @@ void Classificator::classify ()
          {
             p=1.0;
             toggle =  SC_LOGIC_1; 
-            p_out->write(toggle);//wait
+            p_out->write(toggle);
             for( int i=0; i<SV_LEN; i++)
             {
                while(!p_fifo->nb_read(fifo_tmp))
@@ -131,11 +132,8 @@ void Classificator::classify ()
                }
                p+=image_v[i]*fifo_tmp;
                P_CHECK_OVERFLOW
-               if(i==0)
-               {
-                  toggle =  SC_LOGIC_0; 
-                  p_out->write(toggle);
-               }
+               toggle =  SC_LOGIC_0; 
+               p_out->write(toggle);
             }
             p*=0.1;
             P_CHECK_OVERFLOW
@@ -144,7 +142,7 @@ void Classificator::classify ()
             P_CHECK_OVERFLOW
                
             toggle =  SC_LOGIC_1; 
-            p_out->write(toggle);// wait
+            p_out->write(toggle);
             while(!p_fifo->nb_read(fifo_tmp))
             {
                #ifdef QUANTUM
@@ -198,7 +196,16 @@ void Classificator::classify ()
             cl_num=(num_t)i;
          }
       }
-   start=SC_LOGIC_1;
+
+      toggle =  SC_LOGIC_1; 
+      p_out->write(toggle);// wait
+      #ifdef QUANTUM
+      qk.inc(sc_time(20, SC_NS));
+      offset = qk.get_local_time();
+      qk.set_and_sync(offset);
+      #endif
+      toggle =  SC_LOGIC_0; 
+      p_out->write(toggle);
    }
 }
 #endif
