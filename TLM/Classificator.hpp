@@ -34,10 +34,11 @@ class Classificator : public sc_module
       //CLASSIFICATOR VARIABLES
       vector <din_t> image_v;
       vector <res_t> res_v;
+      res_t tmp_res;
+      res_t max_res;
+      num_t cl_num;
       acc_t acc;
       p_t p;
-      num_t cl_num;
-      res_t max_res;
       sc_logic toggle;
       sc_logic start;
 

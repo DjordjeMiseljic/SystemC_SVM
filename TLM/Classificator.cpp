@@ -132,6 +132,7 @@ void Classificator::classify ()
                }
                p+=image_v[i]*fifo_tmp;
                P_CHECK_OVERFLOW
+               //cout<<"Dot: im.pxl="<<image_v[i]<<"\tsv.px= "<<fifo_tmp<<"\tP: "<<p<<"\t for i="<<i<<endl;
                toggle =  SC_LOGIC_0; 
                p_out->write(toggle);
             }
@@ -140,6 +141,7 @@ void Classificator::classify ()
 
             p=p*p*p;
             P_CHECK_OVERFLOW
+            //cout<<"3P*0.1: im.pxl="<<p<<endl;
                
             toggle =  SC_LOGIC_1; 
             p_out->write(toggle);
@@ -157,10 +159,13 @@ void Classificator::classify ()
             p_out->write(toggle);
             
             p*= fifo_tmp;
+            //cout<<"LMult: p_after="<<p<<"\tlambda= "<<fifo_tmp<<endl;
             P_CHECK_OVERFLOW
                
+            //cout<<"Acc_before: "<<acc<<endl;
             acc+=p;
             A_CHECK_OVERFLOW
+            //cout<<"Acc_after_p: "<<acc<<"      sv="<<sv<<"     core="<<core<<endl;
          }
 
          toggle =  SC_LOGIC_1; 
@@ -180,11 +185,17 @@ void Classificator::classify ()
 
          acc+=fifo_tmp;
          A_CHECK_OVERFLOW
+         //cout<<"Acc_after_bias: "<<acc<<"    bias="<<fifo_tmp<<"     core="<<core<<endl;
 
          res_v.push_back (acc);
          R_CHECK_OVERFLOW
          
       }
+      
+      /*cout<<"RES:"<<endl;
+      for(int i=0; i<10; i++)
+         cout<<res_v[i]<<", ";
+      cout<<endl;*/
 
       max_res=res_v[0];
       cl_num=0;

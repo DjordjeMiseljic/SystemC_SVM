@@ -19,8 +19,10 @@ typedef sc_fixed_fast <WIDTH,2,Q,O> bin_t;
 typedef sc_fixed_fast <WIDTH+3,7,Q,O> deskew_t;
 typedef sc_fixed_fast <WIDTH,2,Q,O> lin_t;
 typedef sc_fixed_fast <WIDTH,6,Q,O> res_t;
-typedef sc_fixed_fast <WIDTH+8,14,Q,O> acc_t;
-typedef sc_fixed_fast <WIDTH+10,14,Q,O> p_t;
+typedef sc_fixed_fast <28,14,Q,O> acc_t;
+typedef sc_fixed_fast <28,14,Q,O> p_t;
+//typedef sc_fixed_fast <WIDTH+8,14,Q,O> acc_t;
+//typedef sc_fixed_fast <WIDTH+12,14,Q,O> p_t;
 typedef sc_fixed_fast <WIDTH+20,16,Q,O> mu11_t;
 typedef sc_uint <4> num_t;
 //TLM
