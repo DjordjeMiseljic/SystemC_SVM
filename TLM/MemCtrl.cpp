@@ -71,7 +71,7 @@ void MemCtrl::file_extract()
    for(int i=0; i<10; i++)
       {
          //extracting support vectors
-         str = "saved_data/support_vectors/sv";
+         str = "../saved_data/support_vectors/sv";
          str = str + to_string(i);
          str = str+".txt";
          lines = num_of_lines(str);
@@ -103,12 +103,12 @@ void MemCtrl::file_extract()
          k = 0;
          //extracting lambdas and targets
          lines = num_of_lines(str);
-         str = "saved_data/lambdas/lambdas";
+         str = "../saved_data/lambdas/lambdas";
          str = str + to_string(i);
          str = str+".txt";
          ifstream l_file(str);
 
-         str = "saved_data/targets/targets";
+         str = "../saved_data/targets/targets";
          str = str + to_string(i);
          str = str+".txt";
          ifstream t_file(str);
@@ -127,7 +127,7 @@ void MemCtrl::file_extract()
             cout<<RED<<"ERROR OPENING L_FILE of T_FILE number: "<<i<<RST<<endl;
          j = 0;
          //extracting biases
-         str = "saved_data/bias/bias";
+         str = "../saved_data/bias/bias";
          str = str + to_string(i);
          str = str+".txt";
          ifstream b_file(str);
@@ -178,8 +178,8 @@ void MemCtrl::images_extraction()
    string  y_line;
    int lines;
    
-   lines = num_of_lines("saved_data/test_images/y.txt");
-   ifstream y_file("saved_data/test_images/y.txt");
+   lines = num_of_lines("../saved_data/test_images/y.txt");
+   ifstream y_file("../saved_data/test_images/y.txt");
    
    
    if(y_file.is_open())

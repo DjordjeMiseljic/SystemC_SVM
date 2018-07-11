@@ -43,7 +43,7 @@ void Checker::verify()
    qk.reset();
    #endif
 
-   lines = num_of_lines("saved_data/test_images/y.txt");
+   lines = num_of_lines("../saved_data/test_images/y.txt");
    labels_extraction();
 
    #ifdef QUANTUM
@@ -347,8 +347,8 @@ void Checker::labels_extraction()
    string  l_line;
    int lines;
    labels.clear();
-   ifstream l_file("saved_data/labels/labels.txt");
-   lines = num_of_lines("saved_data/labels/labels.txt");
+   ifstream l_file("../saved_data/labels/labels.txt");
+   lines = num_of_lines("../saved_data/labels/labels.txt");
       if(l_file.is_open())
       {
          for(int i=0; i<lines;i++)
