@@ -41,7 +41,6 @@ class Checker : public sc_module
       sc_logic tmp_sig;
 
       //METHODS
-      void images_extraction();
       void labels_extraction();
       int num_of_lines(string str);
    

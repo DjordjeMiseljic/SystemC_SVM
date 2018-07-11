@@ -2,11 +2,6 @@
 #define CLASSIFICATOR_C
 #include "Classificator.hpp"
 
-#define P_CHECK_OVERFLOW if(p.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
-#define R_CHECK_OVERFLOW if(res_v[core].overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
-#define A_CHECK_OVERFLOW if(acc.overflow_flag()) cout<<BKG_YELLOW<<BLACK<<"WARNING"<<BKG_RST<<D_YELLOW<<" OVERFLOW DETECTED IN CORE"<<RST<<endl;
-
-
 #define SV0 0
 #define SV1 (361*(SV_LEN+1))+1
 #define SV2 SV1+(267*(SV_LEN+1))+1
@@ -42,7 +37,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
 
    switch(cmd)
    {
-   case TLM_WRITE_COMMAND://--------------SAVE NEW PICTURE
+   case TLM_WRITE_COMMAND://Begin classification
          
       image_v.clear();
       pl.set_response_status( TLM_OK_RESPONSE );
@@ -50,7 +45,7 @@ void Classificator::b_transport(pl_t& pl, sc_time& offset)
       offset+=sc_time(10, SC_NS);
       break;
 
-   case TLM_READ_COMMAND://----------------RETURN RESULTS
+   case TLM_READ_COMMAND://Read classified number 
          
       buf=(unsigned char *)&cl_num;
       pl.set_data_ptr        ( buf );
@@ -76,7 +71,7 @@ void Classificator::classify ()
 
    while(1)
    {
-      while(start==SC_LOGIC_0)
+      while(start==SC_LOGIC_0)//wait for start reg
       {
          #ifdef QUANTUM
          qk.inc(sc_time(10, SC_NS));
@@ -92,6 +87,8 @@ void Classificator::classify ()
       p_out->write(toggle);// wait
       for( int p=0; p<SV_LEN; p++)
       {
+         //send interrupt and then waste time until there is something in fifo
+         //waiting for test image in fifo
          while(!p_fifo->nb_read(fifo_tmp))
          {
             #ifdef QUANTUM
@@ -120,6 +117,8 @@ void Classificator::classify ()
             p_out->write(toggle);
             for( int i=0; i<SV_LEN; i++)
             {
+               //send interrupt and then waste time until there is something in fifo
+               //waiting for support vectors in fifo
                while(!p_fifo->nb_read(fifo_tmp))
                {
                   #ifdef QUANTUM
@@ -131,20 +130,16 @@ void Classificator::classify ()
                   #endif
                }
                p+=image_v[i]*fifo_tmp;
-               P_CHECK_OVERFLOW
-               //cout<<"Dot: im.pxl="<<image_v[i]<<"\tsv.px= "<<fifo_tmp<<"\tP: "<<p<<"\t for i="<<i<<endl;
                toggle =  SC_LOGIC_0; 
                p_out->write(toggle);
             }
             p*=0.1;
-            P_CHECK_OVERFLOW
-
             p=p*p*p;
-            P_CHECK_OVERFLOW
-            //cout<<"3P*0.1: im.pxl="<<p<<endl;
                
             toggle =  SC_LOGIC_1; 
             p_out->write(toggle);
+            //send interrupt and then waste time until there is something in fifo
+            //waiting for lambda in fifo
             while(!p_fifo->nb_read(fifo_tmp))
             {
                #ifdef QUANTUM
@@ -159,17 +154,13 @@ void Classificator::classify ()
             p_out->write(toggle);
             
             p*= fifo_tmp;
-            //cout<<"LMult: p_after="<<p<<"\tlambda= "<<fifo_tmp<<endl;
-            P_CHECK_OVERFLOW
-               
-            //cout<<"Acc_before: "<<acc<<endl;
             acc+=p;
-            A_CHECK_OVERFLOW
-            //cout<<"Acc_after_p: "<<acc<<"      sv="<<sv<<"     core="<<core<<endl;
          }
 
          toggle =  SC_LOGIC_1; 
          p_out->write(toggle);// wait
+         //send interrupt and then waste time until there is something in fifo
+         //waiting for bias in fifo
          while(!p_fifo->nb_read(fifo_tmp))
          {
             #ifdef QUANTUM
@@ -184,19 +175,10 @@ void Classificator::classify ()
          p_out->write(toggle);
 
          acc+=fifo_tmp;
-         A_CHECK_OVERFLOW
-         //cout<<"Acc_after_bias: "<<acc<<"    bias="<<fifo_tmp<<"     core="<<core<<endl;
-
          res_v.push_back (acc);
-         R_CHECK_OVERFLOW
          
       }
-      
-      /*cout<<"RES:"<<endl;
-      for(int i=0; i<10; i++)
-         cout<<res_v[i]<<", ";
-      cout<<endl;*/
-
+      //find most convincing result of 10 cores
       max_res=res_v[0];
       cl_num=0;
       for(int i=1; i<10; i++)
@@ -207,7 +189,7 @@ void Classificator::classify ()
             cl_num=(num_t)i;
          }
       }
-
+      //classification of test image finished, send interrupt to test bench
       toggle =  SC_LOGIC_1; 
       p_out->write(toggle);// wait
       #ifdef QUANTUM

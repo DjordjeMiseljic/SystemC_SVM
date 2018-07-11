@@ -43,7 +43,7 @@ void Checker::verify()
    qk.reset();
    #endif
 
-   lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   lines = num_of_lines("saved_data/test_images/y.txt");
    labels_extraction();
 
    #ifdef QUANTUM
@@ -61,8 +61,8 @@ void Checker::verify()
    
    for(int img=0; img<lines; img++)
    {
-         //cout<<"READ NEW IMAGE FROM DDR"<<endl;
          //READ NEW IMAGE FROM DDR 
+         //cout<<"READ NEW IMAGE FROM DDR"<<endl;
          addr = (IMG_START + img*SV_LEN);
          pl.set_address(addr);
          pl.set_data_length(SV_LEN);
@@ -76,8 +76,8 @@ void Checker::verify()
          qk.set_and_sync(offset);
          #endif
          
-         //cout<<"WRITE NEW IMAGE TO BRAM"<<endl;
          //WRITE NEW IMAGE TO BRAM
+         //cout<<"WRITE NEW IMAGE TO BRAM"<<endl;
          pl.set_data_ptr((unsigned char *)image);
          pl.set_address(0x80000000);
          pl.set_data_length(SV_LEN);
@@ -89,8 +89,8 @@ void Checker::verify()
          qk.set_and_sync(offset);
          #endif
          
+         //START DSKW MODULE 
          //cout<<"DUMMY FOR DSKW"<<endl;
-         //DUMMY TRANSACTION TO START DSKW MODULE
          pl.set_address(0x81000000);
          pl.set_command(TLM_WRITE_COMMAND);
          s_ch_i0->b_transport(pl, offset);
@@ -116,8 +116,8 @@ void Checker::verify()
          }
          while( tmp_sig == SC_LOGIC_0);
 
-         //cout<<"READ DESKEWED IMAGE FROM BRAM"<<endl;
          //READ DESKEWED IMAGE FROM BRAM
+         //cout<<"READ DESKEWED IMAGE FROM BRAM"<<endl;
          pl.set_address(0x80000000+SV_LEN);
          pl.set_data_length(SV_LEN);
          pl.set_command(TLM_READ_COMMAND);
@@ -129,8 +129,8 @@ void Checker::verify()
          qk.set_and_sync(offset);
          #endif
          
-         //cout<<"WRITE NEW IMAGE TO DDR"<<endl;
          //WRITE NEW IMAGE TO DDR 
+         //cout<<"WRITE NEW IMAGE TO DDR"<<endl;
          addr = (IMG_START + img*SV_LEN);
          pl.set_address(addr);
          pl.set_data_ptr(buf);
@@ -143,8 +143,8 @@ void Checker::verify()
          qk.set_and_sync(offset);
          #endif
 
-         //cout<<"START SVM"<<endl;
          //START SVM
+         //cout<<"START SVM"<<endl;
          pl.set_address(0x82000000);
          pl.set_data_length(SV_LEN);
          pl.set_command(TLM_WRITE_COMMAND);
@@ -157,8 +157,8 @@ void Checker::verify()
          qk.set_and_sync(offset);
          #endif
 
-         //cout<<"SEND DESKEWED IMAGE TO SVM TROUGH DMA"<<endl;
          //SEND DESKEWED IMAGE - TROUGH DMA TO SVM
+         //cout<<"SEND DESKEWED IMAGE TO SVM TROUGH DMA"<<endl;
          pl.set_address(0x83000000 + IMG_START + img*SV_LEN);
          pl.set_data_length(SV_LEN);
          pl.set_command(TLM_WRITE_COMMAND);
@@ -189,8 +189,8 @@ void Checker::verify()
                }
                while( tmp_sig == SC_LOGIC_0);
 
-               //if(sv==0)cout<<"SEND APPROPRIATE SV"<<endl;
                //SEND APPROPRIATE SV - TROUGH DMA TO SVM
+               //if(sv==0)cout<<"SEND APPROPRIATE SV"<<endl;
                pl.set_address(0x83000000+sv_start_addr[core]+sv*SV_LEN);
                pl.set_data_length(SV_LEN);
                pl.set_command(TLM_WRITE_COMMAND);
@@ -219,8 +219,8 @@ void Checker::verify()
                }
                while( tmp_sig == SC_LOGIC_0);
 
-               //if(sv==0)cout<<"SEND APPROPRIATE LAMBDA"<<endl;
                //SEND APPROPRIATE LAMBDA - TROUGH DMA TO SVM
+               //if(sv==0)cout<<"SEND APPROPRIATE LAMBDA"<<endl;
                pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*SV_LEN+sv);
                pl.set_data_length(1);
                pl.set_command(TLM_WRITE_COMMAND);
@@ -249,8 +249,9 @@ void Checker::verify()
                tmp_sig=sig1.read();
             }
             while( tmp_sig == SC_LOGIC_0);
-            //cout<<"SEND BIAS"<<endl;
+
             //SEND BIAS - TROUGH DMA TO SVM
+            //cout<<"SEND BIAS"<<endl;
             pl.set_address(0x83000000+sv_start_addr[core]+sv_array[core]*(SV_LEN+1));
             pl.set_data_length(1);
             pl.set_command(TLM_WRITE_COMMAND);
@@ -281,8 +282,8 @@ void Checker::verify()
          }
          while( tmp_sig == SC_LOGIC_0);
 
-         //cout<<"READ RESULTS FROM SVM"<<endl;
          //READ RESULTS FROM SVM
+         //cout<<"READ RESULTS FROM SVM"<<endl;
          pl.set_address(0x82000000);
          pl.set_data_length(1);
          pl.set_command(TLM_READ_COMMAND);
@@ -296,7 +297,7 @@ void Checker::verify()
          qk.set_and_sync(offset);
          #endif
          
-         //REPORT CLASSIFICATION
+         //REPORT CLASSIFICATION OF CURRENT IMG
          if(labels[img] == num)
          {
                cout<<B_GREEN<<"CORRECT CLASSIFICATION"<<RST<<D_GREEN<<" :: classified number: "
@@ -312,9 +313,10 @@ void Checker::verify()
          }
    }
 
-   //NAKON STO PRODJU SVE SLIKE 
+   //REPORT FINAL RESULTS ON ALL IMAGES
    cout<<"Number of classifications : "<<lines<<D_MAGNETA<<"\nPercentage: "<<B_MAGNETA
     <<(float)match/lines*100<<"%\t"<<RST<<DIM<<"@"<<sc_time_stamp()<<"\t#"<<name()<<RST<<endl;
+   return;
 
 }
 
@@ -340,46 +342,13 @@ int Checker::num_of_lines(string str)
 
 }
 
-void Checker::images_extraction()
-{
-   int k =0;
-   string  y_line;
-   int lines;
-   images.clear();
-   ifstream y_file("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-      if(y_file.is_open())
-      {
-         for(int i=0; i<SV_LEN*lines;i++)
-         {
-            if(k == SV_LEN-1 )
-            {
-               getline(y_file, y_line, '\n');
-               k = 0;
-            }
-            else
-            {
-               getline(y_file, y_line, ' ');
-               k++;
-            }
-            images.push_back(stod(y_line));
-         }
-      }
-      else
-      {
-         cout<<BKG_RED<<"ERROR"<<BKG_RST<<RED<<" OPENING Y FILE"<<endl;
-         cout<<RST<<DIM<<"         @"<<sc_time_stamp()<<"   #"<<name()<<RST<<endl;
-      }
-   y_file.close();   
-}
-
 void Checker::labels_extraction()
 {
    string  l_line;
    int lines;
    labels.clear();
-   ifstream l_file("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
-   lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/labels/labels.txt");
+   ifstream l_file("saved_data/labels/labels.txt");
+   lines = num_of_lines("saved_data/labels/labels.txt");
       if(l_file.is_open())
       {
          for(int i=0; i<lines;i++)

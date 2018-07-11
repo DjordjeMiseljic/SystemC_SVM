@@ -11,8 +11,6 @@ MemCtrl::MemCtrl(sc_module_name name): sc_module(name),
    s_mc_t1.register_b_transport(this, &MemCtrl::b_transport);
    SC_THREAD(memory_init);
    
-   // for(int i=0; i!=RAM_SIZE; i++)
-   //    ram[i]=0;
    cout<<name<<" constructed"<<endl;
    
    ram.reserve(SV_NUM*SV_LEN + SV_NUM + 10+ 10*SV_LEN);
@@ -26,18 +24,6 @@ void MemCtrl::memory_init()
    uint64 addr;
 
    file_extract();
-   // cout<<"sum of sv: "<<sum_of_sv(9)*784<<endl;
-   // cout<<"sum of lambdas: "<<sum_of_sv(9)<<endl;
-   // addr = sum_of_sv(9)*SV_LEN+sum_of_sv(9)+10;
-   // unsigned char  *test =read_from_mem(addr);
-   
-   // //din_t *test2 = (lin_t*)test;
-   // for (int i = 0; i < 784; ++i)
-   // {
-   //    cout<<"entered"<<endl;
-   //    test_image.push_back(((bin_t*)test)[i]);
-   //    cout<<i<<". pixel is: "<<test_image[i]<<endl;
-   // }
    return;
 }
 void MemCtrl::b_transport(pl_t& pl, sc_time& offset)
@@ -85,7 +71,7 @@ void MemCtrl::file_extract()
    for(int i=0; i<10; i++)
       {
          //extracting support vectors
-         str = "../../ML_number_recognition_SVM/saved_data/support_vectors/sv";
+         str = "saved_data/support_vectors/sv";
          str = str + to_string(i);
          str = str+".txt";
          lines = num_of_lines(str);
@@ -117,12 +103,12 @@ void MemCtrl::file_extract()
          k = 0;
          //extracting lambdas and targets
          lines = num_of_lines(str);
-         str = "../../ML_number_recognition_SVM/saved_data/lambdas/lambdas";
+         str = "saved_data/lambdas/lambdas";
          str = str + to_string(i);
          str = str+".txt";
          ifstream l_file(str);
 
-         str = "../../ML_number_recognition_SVM/saved_data/targets/targets";
+         str = "saved_data/targets/targets";
          str = str + to_string(i);
          str = str+".txt";
          ifstream t_file(str);
@@ -141,7 +127,7 @@ void MemCtrl::file_extract()
             cout<<RED<<"ERROR OPENING L_FILE of T_FILE number: "<<i<<RST<<endl;
          j = 0;
          //extracting biases
-         str = "../../ML_number_recognition_SVM/saved_data/bias/bias";
+         str = "saved_data/bias/bias";
          str = str + to_string(i);
          str = str+".txt";
          ifstream b_file(str);
@@ -192,8 +178,8 @@ void MemCtrl::images_extraction()
    string  y_line;
    int lines;
    
-   lines = num_of_lines("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
-   ifstream y_file("../../ML_number_recognition_SVM/saved_data/test_images/y.txt");
+   lines = num_of_lines("saved_data/test_images/y.txt");
+   ifstream y_file("saved_data/test_images/y.txt");
    
    
    if(y_file.is_open())
