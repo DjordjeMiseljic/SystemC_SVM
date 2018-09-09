@@ -9,7 +9,6 @@ VP::VP(sc_module_name name) :
    de("Deskew"),
    br("BRAM"),
 
-	mc("MControl"),
    dm("DMA"),
    fifo(785)
 {
@@ -19,13 +18,12 @@ VP::VP(sc_module_name name) :
 
    cout<<name<<" constructed"<<endl;
 	s_vp_i0.bind(ic.s_ic_t);
-	s_vp_i1.bind(mc.s_mc_t1);
    ic.s_ic_i0.bind(br.s_br_t0);
    ic.s_ic_i1.bind(de.s_de_t);
    ic.s_ic_i2.bind(cl.s_cl_t);
    ic.s_ic_i3.bind(dm.s_dm_t);
    de.s_de_i.bind(br.s_br_t1);
-	dm.s_dm_i.bind(mc.s_mc_t0);
+	dm.s_dm_i.bind(s_vp_t1);
 
    dm.p_fifo(fifo);
    cl.p_fifo(fifo);
